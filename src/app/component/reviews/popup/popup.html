@@ -1,0 +1,20 @@
+<p>popup works!</p>
+
+
+<p-button (click)="showDialog()" label="留下評論" />
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
+  <ng-template #header>
+    <div class="inline-flex items-center justify-center gap-2">
+      <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+      <span class="font-bold whitespace-nowrap">使用者名稱</span>
+    </div>
+  </ng-template>
+  <span class="text-surface-500 dark:text-surface-400 block mb-8">評論</span>
+  <div class="flex items-center gap-4 mb-4">
+    <input pInputText id="" class="flex-auto" autocomplete="off" />
+  </div>
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" severity="secondary" (click)="visible = false" />
+    <p-button label="Save" [outlined]="true" severity="secondary" (click)="visible = false" />
+  </ng-template>
+</p-dialog>
