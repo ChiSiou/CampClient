@@ -10,7 +10,7 @@ export class SReview {
   constructor(private httpClient: HttpClient) { }
 
   getRiviewAPI() {
-    return this.httpClient.get<IReview[]>('http://localhost:5227/Review');
+    return this.httpClient.get<IReview[]>('https://localhost:7011/api/APIReview');
   }
 
 }

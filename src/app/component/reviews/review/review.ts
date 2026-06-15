@@ -10,15 +10,18 @@ import { IReview } from '../interfaces/IReview';
 })
 export class Review {
 
-    constructor(private sReview: SReview) { }
+  constructor(private sReview: SReview) { }
 
-  Reviews: IReview[] = [];
+  reviews: IReview[] = [];
 
   ngOnInit(): void {
     this.sReview.getRiviewAPI().subscribe((data) => {
-      this.Reviews = data;
+      this.reviews = data;
       console.log(data);
     });
   }
+
+
+
 
 }

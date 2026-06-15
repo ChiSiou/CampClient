@@ -12,6 +12,10 @@ export const routes: Routes = [
       {
         path: 'member',
         loadComponent: () => import('./component/member/member').then(m => m.Member)
+      },
+      {
+        path: 'test-review',
+        loadComponent: () => import('./component/reviews/review/review').then(m => m.Review)
       }
     ]
 
