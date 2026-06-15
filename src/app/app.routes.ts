@@ -12,7 +12,15 @@ export const routes: Routes = [
       {
         path: 'member',
         loadComponent: () => import('./component/member/member').then(m => m.Member)
-      }
+      },
+       {
+        path: 'login',
+        loadComponent: () => import('./component/member/login/login').then(m => m.Login)
+      },
+      {
+        path: 'register',
+        loadComponent: () => import('./component/member/register/register').then(m => m.Register)
+      },
     ]
 
   }
