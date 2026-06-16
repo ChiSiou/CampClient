@@ -26,6 +26,7 @@ export class Review {
   rows: number = 10;
   totalReviews: number = 120;
   activeIndex: number = 0;
+  campAVGScore: number = 0;
 
   lightboxVisible: boolean = false;
   lightboxImages: { picId?: number; imageUrl: string }[] = [];
@@ -35,10 +36,18 @@ export class Review {
     this.sReview.getRiviewAPI().subscribe((data) => {
       this.reviews = data;
       console.log(data);
-
       // 抓取其他資料
       this.totalReviews = data.length;
-
+      // --- 計算平均分開始 ---
+      if (this.totalReviews > 0) {
+        // 1. 先用 reduce 把所有的 rating 加總
+        const totalScore = data.reduce((sum, item) => sum + (item.rating || 0), 0);
+        // 2. 除以總筆數，並用 +...toFixed(1) 四捨五入到小數點後第一位（可依需求調整）
+        this.campAVGScore = +(totalScore / data.length).toFixed(1);
+      } else {
+        this.campAVGScore = 0; // 如果沒資料就給 0，避免除以 0 變成 NaN
+      }
+      // --- 計算平均分結束 ---
     });
   }
 
@@ -58,10 +67,10 @@ export class Review {
       this.sReview.deleteReviewAPI(id).subscribe({
         next: () => {
           this.reviews = this.reviews.filter(item => item.reviewId !== id);
-          console.log('Item deleted successfully');
+          console.log('評論成功刪除');
         },
         error: (err) => {
-          console.error('Failed to delete item', err);
+          console.error('評論刪除失敗', err);
         }
       });
     }
