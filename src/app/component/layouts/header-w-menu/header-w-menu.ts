@@ -1,7 +1,7 @@
+import { Menu } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
 import { Component, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { Menu } from 'primeng/menu';
 import type { MenuItem } from 'primeng/api';
 
 @Component({
