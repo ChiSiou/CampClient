@@ -5,6 +5,7 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
 
 const CampPreset = definePreset(Aura, {
   semantic: {

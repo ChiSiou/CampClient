@@ -4,8 +4,8 @@
       <!-- Logo -->
       <a class="logo" routerLink="/">
         <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M12 2L2 21H22L12 2Z" fill="currentColor"/>
-          <path d="M12 8L6 19H18L12 8Z" fill="#fff" opacity="0.35"/>
+          <path d="M12 2L2 21H22L12 2Z" fill="currentColor" />
+          <path d="M12 8L6 19H18L12 8Z" fill="#fff" opacity="0.35" />
         </svg>
         <span class="logo__text">CampClient</span>
       </a>
@@ -19,27 +19,12 @@
       <!-- right side -->
       <div class="header-actions">
         <!-- login icon -->
-        <a
-          pButton
-          icon="pi pi-user"
-          routerLink="/member"
-          [rounded]="true"
-          [outlined]="true"
-          severity="secondary"
-          aria-label="會員"
-        ></a>
+        <a pButton icon="pi pi-user" routerLink="/member" [rounded]="true" [outlined]="true" severity="secondary"
+          aria-label="會員" routerLink="/login"></a>
 
         <!-- hamburger menu -->
-        <button
-          pButton
-          type="button"
-          icon="pi pi-bars"
-          [rounded]="true"
-          [outlined]="true"
-          severity="secondary"
-          aria-label="開啟選單"
-          (click)="toggleMenu($event)"
-        ></button>
+        <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"
+          aria-label="開啟選單" (click)="toggleMenu($event)"></button>
         <p-menu #menu [model]="menuItems" [popup]="true" />
       </div>
     </div>

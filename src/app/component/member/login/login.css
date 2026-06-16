@@ -1,0 +1,188 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 背景 */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* 登入卡片 */
+.login-container {
+  width: 340px;
+
+  backdrop-filter: blur(12px);
+
+  background: rgba(255, 255, 255, 0.15);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  border-radius: 20px;
+
+  padding: 20px;
+
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Logo */
+.logo-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-section h1 {
+  color: white;
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.logo-section p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 標題 */
+.login-form h2 {
+  text-align: center;
+  color: white;
+  margin-bottom: 25px;
+}
+
+/* Input */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  color: white;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.input-group input {
+  padding: 14px;
+
+  border-radius: 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  background: rgba(255, 255, 255, 0.2);
+
+  color: white;
+
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group input:focus {
+  border-color: #95d5b2;
+}
+
+/* 功能列 */
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.remember {
+  color: white;
+  font-size: 14px;
+}
+
+.action-row a {
+  color: #b7e4c7;
+  text-decoration: none;
+}
+
+/* 登入按鈕 */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #2d6a4f;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  background: #1b4332;
+}
+
+/* 分隔線 */
+.divider {
+  text-align: center;
+  margin: 22px 0;
+  color: white;
+}
+
+/* Google */
+.google-btn {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  margin-bottom: 20px;
+}
+
+/* 註冊 */
+.register-text {
+  text-align: center;
+  color: white;
+}
+
+.register-text a {
+  color: #b7e4c7;
+  text-decoration: none;
+  font-weight: bold;
+}
