@@ -39,10 +39,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-<<<<<<< HEAD
-    provideHttpClient()
-  ]
-=======
     providePrimeNG({
       theme: {
         preset: CampPreset,
@@ -52,5 +48,4 @@ export const appConfig: ApplicationConfig = {
       },
     }),
   ],
->>>>>>> origin/dev
 };
