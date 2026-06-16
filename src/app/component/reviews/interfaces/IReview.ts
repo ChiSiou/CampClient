@@ -6,9 +6,10 @@ export interface IReview {
   commentText: string,
   isHaveImgs: boolean,
   status: number,
-  createdAt: Date,
-  updatedAt: Date,
+  createdAt: Date | null,
+  updatedAt: Date | null,
   reviewAtId: number,
   orderId: number,
   userRole: number,
+  reviewImages?: { imageUrl: string }[],
 }

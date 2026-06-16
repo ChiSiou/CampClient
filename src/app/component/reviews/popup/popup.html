@@ -2,19 +2,47 @@
 
 
 <p-button (click)="showDialog()" label="留下評論" />
+
+<p-toast />
 <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
+
   <ng-template #header>
-    <div class="inline-flex items-center justify-center gap-2">
+    <div class="inline-flex items-center justify-center">
       <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
       <span class="font-bold whitespace-nowrap">使用者名稱</span>
     </div>
   </ng-template>
-  <span class="text-surface-500 dark:text-surface-400 block mb-8">評論</span>
-  <div class="flex items-center gap-4 mb-4">
-    <input pInputText id="" class="flex-auto" autocomplete="off" />
+
+  <div class="flex flex-col items-center gap-2">
+    <p-rating #ratingValue="ngModel" [(ngModel)]="new_rating" required name="ratingValue"
+      [invalid]="ratingValue.invalid && (ratingValue.touched || reviewForm.submitted)" [style]="{
+        '--p-rating-icon-size': '24px'
+    }" />
+    @if (ratingValue.invalid) {
+    <p-message severity="error" size="small" variant="simple">星數必填</p-message>
+    }
   </div>
+
+  <div class="my-2">
+    <p-floatlabel variant="on">
+      <textarea pTextarea id="on_label" [(ngModel)]="new_commentText" rows="2" cols="30" style="width: 100%;"
+        class="h-full p-2"></textarea>
+      <label for="on_label">{{commentTip}}</label>
+    </p-floatlabel>
+  </div>
+  <div class="card">
+    <p-fileupload [customUpload]="true" (onSelect)="onSelect($event)"
+      [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇"
+      cancelLabel="取消" [showUploadButton]="false">
+      <ng-template #empty>
+        <div>可將圖片拖曳進方框內上傳</div>
+      </ng-template>
+    </p-fileupload>
+  </div>
+
   <ng-template #footer>
-    <p-button label="Cancel" [text]="true" severity="secondary" (click)="visible = false" />
-    <p-button label="Save" [outlined]="true" severity="secondary" (click)="visible = false" />
+    <p-button label="取消" [text]="true" severity="secondary" (click)="visible = false" />
+    <p-button label="評論" [outlined]="true" severity="secondary" (click)="onSubmit(reviewForm)" type="submit" />
   </ng-template>
+
 </p-dialog>
