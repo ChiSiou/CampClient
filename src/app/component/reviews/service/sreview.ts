@@ -9,7 +9,7 @@ export class SReview {
 
   constructor(private httpClient: HttpClient) { }
 
-  connString = "http://localhost:5192/api/APIReview";
+  connString = "https://localhost:7011/api/APIReview";
 
   getRiviewAPI() {
     return this.httpClient.get<IReview[]>(this.connString);
@@ -19,8 +19,12 @@ export class SReview {
     return this.httpClient.post<IReview[]>(this.connString, para);
   }
 
+  deleteReviewAPI(id: number) {
+    return this.httpClient.delete<IReview[]>(`${this.connString}/${id}`);
+  }
+
   uploadImage(formData: FormData) {
-    return this.httpClient.post<{ imageUrl: string }>('http://localhost:5192/api/Upload/review-image', formData);
+    return this.httpClient.post<{ imageUrl: string }>('https://localhost:7011/api/Upload/review-image', formData);
   }
 
 }

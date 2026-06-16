@@ -47,7 +47,7 @@
           <span class="text-surface-500 dark:text-surface-400">評論時間 {{review.createdAt}} ∣ 更新時間
             {{review.updatedAt}}</span>
           <p-button icon="pi pi-cog" text></p-button>
-          <p-button icon="pi pi-trash" severity="secondary" text></p-button>
+          <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deleteReview(review.reviewId)"></p-button>
         </div>
       </ng-template>
 

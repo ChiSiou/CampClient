@@ -53,4 +53,18 @@ export class Review {
     this.lightboxVisible = true;
   }
 
+  deleteReview(id: number) {
+    if (confirm('確定要刪除這則評論嗎？')) { // User confirmation
+      this.sReview.deleteReviewAPI(id).subscribe({
+        next: () => {
+          this.reviews = this.reviews.filter(item => item.reviewId !== id);
+          console.log('Item deleted successfully');
+        },
+        error: (err) => {
+          console.error('Failed to delete item', err);
+        }
+      });
+    }
+  }
+
 }
