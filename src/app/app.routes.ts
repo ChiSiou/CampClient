@@ -12,17 +12,27 @@ export const routes: Routes = [
       },
       {
         path: 'member',
-        loadComponent: () => import('./component/member/member').then((m) => m.Member),
+        loadComponent: () => import('./component/member/member').then(m => m.Member)
       },
-
       {
-        path: 'register',
-        loadComponent: () => import('./component/member/register/register').then((m) => m.Register),
+        path: 'review',
+        loadComponent: () => import('./component/reviews/review/review').then(m => m.Review)
       },
-    ],
+      {
+        path: 'review-popup',
+        loadComponent: () => import('./component/reviews/popup/popup').then(m => m.Popup)
+      }
+    ]
   },
+
+  {
+    path: 'register',
+    loadComponent: () => import('./component/member/register/register').then((m) => m.Register),
+  },
+
+
   {
     path: 'login',
     loadComponent: () => import('./component/member/login/login').then((m) => m.Login),
-  },
-];
+  }]
+  ;

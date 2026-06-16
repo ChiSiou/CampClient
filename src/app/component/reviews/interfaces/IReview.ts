@@ -1,0 +1,15 @@
+export interface IReview {
+  reviewId: number,
+  userId: number,
+  campId: number,
+  rating: number,
+  commentText: string,
+  isHaveImgs: boolean,
+  status: number,
+  createdAt: Date | null,
+  updatedAt: Date | null,
+  reviewAtId: number,
+  orderId: number,
+  userRole: number,
+  reviewImages?: { imageUrl: string }[],
+}

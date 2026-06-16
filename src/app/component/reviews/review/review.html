@@ -1,0 +1,75 @@
+<!-- <p>review works!</p> -->
+<!-- <hr> -->
+
+<div class="container">
+
+  <p>營地平均分數：{{campAVGScore}}</p>
+
+  @for (review of reviews; track review.reviewId) {
+
+  <!-- <p>營地ID：{{review.campId}}</p>
+  <p>使用者ID：{{review.userId}}</p>
+  <p>評論時間：{{review.createdAt}}</p>
+  <p>編輯時間：{{review.updatedAt}}</p>
+  <p>星數：{{review.rating}}</p>
+  <p-rating [(ngModel)]="review.rating" [readonly]="true" />
+  <p>評論：{{review.commentText}}</p>
+  @if(review.isHaveImgs){
+  @for(i of review.reviewImages; track i.imageUrl){
+  <img [src]="i.imageUrl" alt="">
+  }
+  } -->
+
+  <div>
+    <p-card class="card mb-4 p-8">
+
+      <ng-template #header>
+
+      </ng-template>
+      <div class="flex">
+
+        <div class="mb-2">
+          <p-rating [(ngModel)]="review.rating" [readonly]="true" [style]="{'--p-rating-icon-size': '24px'}" />
+        </div>
+        <div class="mb-2">
+          <!-- <p-avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> -->
+          <span class="font-bold"><b>使用者ID -{{review.userId}}</b></span>
+        </div>
+      </div>
+
+      <ng-template #footer>
+        <div class="flex flex-wrap reviews-center justify-between gap-4">
+          <div class="flex reviews-center gap-2">
+            @if(review.isHaveImgs && review.reviewImages?.length){
+            @for(i of review.reviewImages; track i.imageUrl; let idx = $index){
+            <img [src]="i.imageUrl" alt="" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+              class="me-2" (click)="openLightbox(review.reviewImages!, idx)" />
+            }
+            }
+          </div>
+          <span class="text-surface-500 dark:text-surface-400">評論時間 {{review.createdAt}} ∣ 更新時間
+            {{review.updatedAt}}</span>
+          <p-button icon="pi pi-cog" text></p-button>
+          <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deleteReview(review.reviewId)"></p-button>
+        </div>
+      </ng-template>
+
+      <p class="m-0">
+        {{review.commentText}}
+      </p>
+    </p-card>
+  </div>
+
+  }@empty {
+  <p>目前沒有任何評論。</p>
+  }
+  <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalReviews"
+    [rowsPerPageOptions]="[10, 20, 30, 40]" />
+</div>
+
+<p-galleria [(visible)]="lightboxVisible" [value]="lightboxImages" [activeIndex]="lightboxIndex" [fullScreen]="true"
+  [showThumbnails]="false" [showItemNavigators]="true">
+  <ng-template #item let-img>
+    <img [src]="img.imageUrl" alt="" style="max-width: 90vw; max-height: 80vh; object-fit: contain;" />
+  </ng-template>
+</p-galleria>
