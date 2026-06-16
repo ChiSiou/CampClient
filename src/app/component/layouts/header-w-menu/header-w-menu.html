@@ -1,2 +1,92 @@
+<div class="layout">
+  <header class="site-header">
+    <div class="site-header__inner">
+      <!-- Logo -->
+      <a class="logo" routerLink="/">
+        <svg class="logo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2L2 21H22L12 2Z" fill="currentColor"/>
+          <path d="M12 8L6 19H18L12 8Z" fill="#fff" opacity="0.35"/>
+        </svg>
+        <span class="logo__text">CampClient</span>
+      </a>
 
-<router-outlet></router-outlet>
+      <!-- center nav -->
+      <nav class="main-nav">
+        <a pButton label="分享經驗 (社群)" routerLink="/community" [text]="true" [rounded]="true" severity="secondary"></a>
+        <a pButton label="成為營主" routerLink="/host" [text]="true" [rounded]="true" severity="secondary"></a>
+      </nav>
+
+      <!-- right side -->
+      <div class="header-actions">
+        <!-- login icon -->
+        <a
+          pButton
+          icon="pi pi-user"
+          routerLink="/member"
+          [rounded]="true"
+          [outlined]="true"
+          severity="secondary"
+          aria-label="會員"
+        ></a>
+
+        <!-- hamburger menu -->
+        <button
+          pButton
+          type="button"
+          icon="pi pi-bars"
+          [rounded]="true"
+          [outlined]="true"
+          severity="secondary"
+          aria-label="開啟選單"
+          (click)="toggleMenu($event)"
+        ></button>
+        <p-menu #menu [model]="menuItems" [popup]="true" />
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="footer-col">
+        <h4 class="footer-col__title">支援</h4>
+        <a class="footer-col__link" routerLink="/help">幫助中心</a>
+        <a class="footer-col__link" routerLink="/safety">安全資訊</a>
+        <a class="footer-col__link" routerLink="/contact">聯絡客服</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col__title">社群</h4>
+        <a class="footer-col__link" routerLink="/community">露營經驗分享</a>
+        <a class="footer-col__link" routerLink="/blog">部落格</a>
+        <a class="footer-col__link" routerLink="/events">活動</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col__title">營主</h4>
+        <a class="footer-col__link" routerLink="/host">成為營主</a>
+        <a class="footer-col__link" routerLink="/host/resources">營主資源</a>
+        <a class="footer-col__link" routerLink="/host/community">營主社群</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-col__title">關於</h4>
+        <a class="footer-col__link" routerLink="/about">關於我們</a>
+        <a class="footer-col__link" routerLink="/careers">招募資訊</a>
+        <a class="footer-col__link" routerLink="/legal">法律條款</a>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 CampClient</span>
+      <div class="site-footer__bottom-links">
+        <a routerLink="/privacy">隱私權政策</a>
+        <a routerLink="/terms">服務條款</a>
+        <a routerLink="/sitemap">網站地圖</a>
+      </div>
+    </div>
+  </footer>
+</div>
