@@ -23,12 +23,12 @@
 
       <div class="input-group">
         <label>電子信箱</label>
-        <input type="email" placeholder="請輸入 Email">
+        <input [(ngModel)]="email" name="email" type=" email" placeholder="請輸入 Email">
       </div>
 
       <div class="input-group">
         <label>密碼</label>
-        <input type="password" placeholder="請輸入密碼">
+        <input [(ngModel)]='password' name="password" type="password" placeholder="請輸入密碼">
       </div>
 
       <div class="action-row">
@@ -39,11 +39,9 @@
 
         <a href="#">忘記密碼？</a>
       </div>
-
-      <button type="submit" class="login-btn">
+      <button (click)="GetloginApi({email,password})" type="button" class="login-btn">
         登入
       </button>
-
       <div class="divider">
         <span>或</span>
       </div>
