@@ -76,4 +76,30 @@ export class Review {
     }
   }
 
+  putReview() {
+
+    // let param = {
+    //   reviewId: this.new_reviewId,
+    //   userId: this.new_userId,
+    //   campId: this.new_campId,
+    //   rating: this.new_rating,
+    //   commentText: this.new_commentText,
+    //   isHaveImgs: this.new_isHaveImgs,
+    //   status: this.new_status,
+    //   createdAt: this.new_createdAt,
+    //   updatedAt: this.new_updatedAt,
+    //   reviewAtId: this.new_reviewAtId,
+    //   orderId: this.new_orderId,
+    //   userRole: this.new_userRole,
+    //   reviewImages: this.uploadedImageUrls.map(url => ({ imageUrl: url })),
+    // }
+
+    // this.sReview.putRiviewAPI(param.reviewId,param).subscribe((data) => {
+    //   this.reviews.push(param);
+    //   data = this.reviews;
+    //   console.log(data);
+    // });
+
+  }
+
 }

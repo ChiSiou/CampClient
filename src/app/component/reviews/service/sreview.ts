@@ -27,4 +27,8 @@ export class SReview {
     return this.httpClient.post<{ imageUrl: string }>('https://localhost:7011/api/Upload/review-image', formData);
   }
 
+  putReviewAPI(id: number, para: IReview) {
+    return this.httpClient.put<IReview[]>(`${this.connString}/${id}`, para);
+  }
+
 }
