@@ -2,15 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { loginData } from '../../../interface/loginData';
 import { MemberService } from '../../../Service/member-service';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, ButtonModule, ToastModule],
+  imports: [FormsModule, ButtonModule, ToastModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -22,13 +21,9 @@ export class Login {
     private httpClient: HttpClient,
     private memberService: MemberService,
     private routes: Router,
-  ) {}
+  ) { }
 
-  GetloginApi(para: loginData) {
-    const data = {
-      email: this.email,
-      password: this.password,
-    };
+  GetloginApi(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
         console.log('response', res);
@@ -41,6 +36,8 @@ export class Login {
         console.log(err);
         alert('帳號或密碼錯誤');
       },
+
     });
+
   }
 }
