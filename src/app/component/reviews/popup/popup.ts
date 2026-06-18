@@ -14,6 +14,7 @@ import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { Button, ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
+import { MemberService } from '../../../Service/member-service';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -42,7 +43,7 @@ export class Popup {
   // 資料
   reviews: IReview[] = [];
   new_reviewId: number = 0;
-  new_userId: number = 99906;
+  new_userId: number = 1;
   new_campId: number = 1;
   new_rating: number = 0;
   new_commentText: string = '';
@@ -53,6 +54,7 @@ export class Popup {
   new_reviewAtId: number = 0;
   new_orderId: number = 0;
   new_userRole: number = 0;
+  new_userName: string = "";
 
   // 使用者傳圖
   private messageService = inject(MessageService);
@@ -66,7 +68,12 @@ export class Popup {
     valid: false,
   };
 
-  constructor(private sReview: SReview) {}
+  constructor(private sReview: SReview, private memberService: MemberService) {
+    this.new_userName = this.memberService.getname();
+  }
+
+  ngOnInit(): void {
+  }
 
   showDialog() {
     this.visible = true;
@@ -142,6 +149,7 @@ export class Popup {
       orderId: this.new_orderId,
       userRole: this.new_userRole,
       reviewImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
+      userName: this.new_userName,
     };
     this.sReview.postRiviewAPI(param).subscribe((data) => {
       this.reviews.push(param);

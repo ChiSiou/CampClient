@@ -17,6 +17,7 @@ import { FloatLabel } from "primeng/floatlabel";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
 import { MessageService } from 'primeng/api';
 import { PrimeNG } from 'primeng/config';
+import { MemberService } from '../../../Service/member-service';
 import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({
@@ -28,7 +29,7 @@ import { date } from '@primeuix/themes/aura/datepicker';
 })
 export class Review {
 
-  constructor(private sReview: SReview, private primeng: PrimeNG) {
+  constructor(private sReview: SReview, private primeng: PrimeNG, private memberService: MemberService) {
     this.primeng.setTranslation({ pending: '等待上傳' });
   }
 
@@ -80,8 +81,10 @@ export class Review {
     this.sReview.getRiviewAPI().subscribe((data) => {
       this.reviews = data;
       console.log(data);
+
       // 抓取其他資料
       this.totalReviews = data.length;
+
       // --- 計算平均分開始 ---
       if (this.totalReviews > 0) {
         // 1. 先用 reduce 把所有的 rating 加總

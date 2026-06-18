@@ -8,8 +8,8 @@
 
   <ng-template #header>
     <div class="inline-flex items-center justify-center">
-      <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
-      <span class="font-bold whitespace-nowrap">使用者名稱</span>
+      <p-avatar [label]="new_userName ? new_userName.charAt(0).toUpperCase() : '?' " shape="circle" />
+      <span class="font-bold whitespace-nowrap">{{ new_userName || '使用者' }}</span>
     </div>
   </ng-template>
 
