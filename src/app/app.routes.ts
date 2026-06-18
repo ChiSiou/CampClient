@@ -16,10 +16,14 @@ export const routes: Routes = [
         loadComponent: () => import('./component/reviews/review/review').then((m) => m.Review),
       },
       {
-        path: 'review-popup',
-        loadComponent: () => import('./component/reviews/popup/popup').then((m) => m.Popup),
+        path: 'review/add',
+        loadComponent: () => import('./component/reviews/popup/popup').then(m => m.Popup)
       },
-    ],
+      {
+        path: 'forum',
+        loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum)
+      }
+    ]
   },
   {
     path: '',

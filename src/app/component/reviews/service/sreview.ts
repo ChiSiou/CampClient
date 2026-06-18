@@ -15,6 +15,10 @@ export class SReview {
     return this.httpClient.get<IReview[]>(this.connString);
   }
 
+  getRiviewByIdAPI(id: number) {
+    return this.httpClient.get<IReview[]>(`${this.connString}/${id}`);
+  }
+
   postRiviewAPI(para: IReview) {
     return this.httpClient.post<IReview[]>(this.connString, para);
   }
@@ -25,6 +29,10 @@ export class SReview {
 
   uploadImage(formData: FormData) {
     return this.httpClient.post<{ imageUrl: string }>('https://localhost:7011/api/Upload/review-image', formData);
+  }
+
+  putReviewAPI(id: number, para: IReview) {
+    return this.httpClient.put<IReview[]>(`${this.connString}/${id}`, para);
   }
 
 }

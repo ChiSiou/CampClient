@@ -12,4 +12,5 @@ export interface IReview {
   orderId: number,
   userRole: number,
   reviewImages?: { imageUrl: string }[],
+  userName?: string,
 }

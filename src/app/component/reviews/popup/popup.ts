@@ -14,6 +14,8 @@ import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { Button, ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
+import { MemberService } from '../../../Service/member-service';
+import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -53,6 +55,7 @@ export class Popup {
   new_reviewAtId: number = 0;
   new_orderId: number = 0;
   new_userRole: number = 0;
+  new_userName: string = "";
 
   // 使用者傳圖
   private messageService = inject(MessageService);
@@ -61,13 +64,18 @@ export class Popup {
 
   // 畫面
   visible: boolean = false;
-  commentTip = '評論';
   reviewForm = {
     submitted: false,
     valid: false,
   };
 
-  constructor(private sReview: SReview) {}
+  constructor(private sReview: SReview, private primeng: PrimeNG, private memberService: MemberService) {
+    this.new_userName = this.memberService.getname();
+    this.primeng.setTranslation({ pending: '等待上傳' });
+  }
+
+  ngOnInit(): void {
+  }
 
   showDialog() {
     this.visible = true;
@@ -143,6 +151,7 @@ export class Popup {
       orderId: this.new_orderId,
       userRole: this.new_userRole,
       reviewImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
+      userName: this.new_userName,
     };
     this.sReview.postRiviewAPI(param).subscribe((data) => {
       this.reviews.push(param);
