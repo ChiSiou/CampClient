@@ -16,6 +16,7 @@ import { Message } from "primeng/message";
 import { FloatLabel } from "primeng/floatlabel";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
 import { MessageService } from 'primeng/api';
+import { PrimeNG } from 'primeng/config';
 import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({
@@ -27,7 +28,9 @@ import { date } from '@primeuix/themes/aura/datepicker';
 })
 export class Review {
 
-  constructor(private sReview: SReview) { }
+  constructor(private sReview: SReview, private primeng: PrimeNG) {
+    this.primeng.setTranslation({ pending: '等待上傳' });
+  }
 
   reviews: IReview[] = [];
   first: number = 0;
