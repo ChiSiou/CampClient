@@ -15,7 +15,16 @@ export class MemberService {
   login(data: loginData) {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
   }
-  memberregister(data : memberregisterData){
-    return this.http.post<string>(`${this.apiUrl}/MemberRegister`,data)
+  memberregister(data: memberregisterData) {
+    return this.http.post<string>(`${this.apiUrl}/MemberRegister`, data);
+  }
+
+  islogin() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

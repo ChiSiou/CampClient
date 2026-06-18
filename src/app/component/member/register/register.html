@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CampGo 註冊</title>
-  <link rel="stylesheet" href="register.css" />
+  <link rel="stylesheet" href="./register.css">
 </head>
+
 <body>
 
   <div class="register-page">
@@ -21,22 +23,22 @@
 
         <div class="form-group">
           <label for="name">姓名</label>
-          <input [(ngModel)] = "Name"  name="name" type="text" placeholder="請輸入姓名" />
+          <input [(ngModel)]="Name" name="name" type="text" placeholder="請輸入姓名" />
         </div>
 
         <div class="form-group">
           <label for="phone">電話</label>
-          <input [(ngModel)] = "Phone" name="phone" type="tel" placeholder="請輸入電話" />
+          <input [(ngModel)]="Phone" name="phone" type="tel" placeholder="請輸入電話" />
         </div>
 
         <div class="form-group">
           <label for="email">MAIL</label>
-          <input [(ngModel)] = "Email" name="email" type="email" placeholder="請輸入 Email" />
+          <input [(ngModel)]="Email" name="email" type="email" placeholder="請輸入 Email" />
         </div>
 
         <div class="form-group">
           <label for="password">密碼</label>
-          <input  [(ngModel)] = "Password" name="password" type="password" placeholder="請輸入密碼" />
+          <input [(ngModel)]="Password" name="password" type="password" placeholder="請輸入密碼" />
         </div>
 
         <button type="submit" class="register-btn" (click)="GetRegistApi({Name,Email,Password,Phone})">註冊帳號</button>
@@ -52,4 +54,5 @@
   </div>
 
 </body>
+
 </html>
