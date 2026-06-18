@@ -1,25 +1,58 @@
-<div class="Registration">
-    <h2> REGISTER HERE..</h2>
-    <div class="container">
-        <form>
-            <br>
-            <label style="text-align: left;">Full Name:</label><br>
-            <input type="text" name="user name" placeholder="Name.." required>
-            <br>
-            <label>Email:</label> <br>
-            <input type="text" name="email address" placeholder="Email Address.." required>
-            <br>
-            <br>
-            <label>Phone Number:</label><br>
-            <input type="tel" name="Phone Number" placeholder="Enter Phone Number..">
-            <br>
-            <label>Password: </label> <br>
-            <input type="password" name="user password" placeholder="Password" required>
-            <br>
-            <label>Confirm Password: </label> <br>
-            <input type="password" name="confirm user password" placeholder="Confirm Password" required>
-            <br>
-            <input type="Submit" value="REGISTER" (click)="regist()">
-        </form>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampGo 註冊</title>
+  <link rel="stylesheet" href="./register.css">
+</head>
+
+<body>
+
+  <div class="register-page">
+    <div class="register-card">
+
+      <div class="logo">
+        <div class="icon">🏕️</div>
+        <h1>CampGo</h1>
+        <p>加入我們，開始你的露營旅程</p>
+      </div>
+
+      <form class="register-form">
+
+        <div class="form-group">
+          <label for="name">姓名</label>
+          <input [(ngModel)]="Name" name="name" type="text" placeholder="請輸入姓名" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">電話</label>
+          <input [(ngModel)]="Phone" name="phone" type="tel" placeholder="請輸入電話" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">MAIL</label>
+          <input [(ngModel)]="Email" name="email" type="email" placeholder="請輸入 Email" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">密碼</label>
+          <input [(ngModel)]="Password" name="password" type="password" placeholder="請輸入密碼" />
+        </div>
+
+        <button type="submit" class="register-btn" (click)="GetRegistApi({Name,Email,Password,Phone})">註冊帳號</button>
+
+        <div class="login-link">
+          已經有帳號？
+          <a routerLink="/login">前往登入</a>
+        </div>
+
+      </form>
+
     </div>
-</div>
+  </div>
+
+</body>
+
+</html>

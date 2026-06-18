@@ -2,15 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { loginData } from '../../../interface/loginData';
 import { MemberService } from '../../../Service/member-service';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, ButtonModule, ToastModule],
+  imports: [FormsModule, ButtonModule, ToastModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -22,24 +22,32 @@ export class Login {
     private httpClient: HttpClient,
     private memberService: MemberService,
     private routes: Router,
+    private messageService: MessageService,
   ) {}
 
-  GetloginApi(para: loginData) {
-    const data = {
-      email: this.email,
-      password: this.password,
-    };
+  GetloginApi(data: loginData) {
+    var user = localStorage.getItem('user');
     this.memberService.login(data).subscribe({
       next: (res) => {
         console.log('response', res);
         localStorage.setItem('token', res.token);
-        cookieStore.set('token', res.token);
-        alert('登入成功');
         this.routes.navigate(['/']);
+
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'success',
+          summary: '登入成功',
+          detail: '歡迎回來',
+        });
       },
       error: (err) => {
         console.log(err);
-        alert('帳號或密碼錯誤');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '登入失敗',
+          detail: '帳號或密碼錯誤',
+        });
       },
     });
   }

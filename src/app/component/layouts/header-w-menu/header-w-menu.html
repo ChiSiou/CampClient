@@ -19,8 +19,8 @@
       <!-- right side -->
       <div class="header-actions">
         <!-- login icon -->
-        <a pButton icon="pi pi-user" routerLink="/member" [rounded]="true" [outlined]="true" severity="secondary"
-          aria-label="會員" routerLink="/login"></a>
+        <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
+          (click)="islogin()"></a>
 
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"

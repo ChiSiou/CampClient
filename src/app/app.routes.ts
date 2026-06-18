@@ -12,11 +12,11 @@ export const routes: Routes = [
       },
       {
         path: 'member',
-        loadComponent: () => import('./component/member/member').then(m => m.Member)
+        loadComponent: () => import('./component/member/member').then((m) => m.Member),
       },
       {
         path: 'review',
-        loadComponent: () => import('./component/reviews/review/review').then(m => m.Review)
+        loadComponent: () => import('./component/reviews/review/review').then((m) => m.Review),
       },
       {
         path: 'review/add',
@@ -30,9 +30,8 @@ export const routes: Routes = [
     loadComponent: () => import('./component/member/register/register').then((m) => m.Register),
   },
 
-
   {
     path: 'login',
     loadComponent: () => import('./component/member/login/login').then((m) => m.Login),
-  }]
-  ;
+  },
+];

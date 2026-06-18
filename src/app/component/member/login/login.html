@@ -11,7 +11,6 @@
 <body>
 
   <div class="login-container">
-
     <div class="logo-section">
       <h1>🏕 CampGo</h1>
       <p>探索最美的露營地</p>
@@ -30,7 +29,6 @@
         <label>密碼</label>
         <input [(ngModel)]='password' name="password" type="password" placeholder="請輸入密碼">
       </div>
-
       <div class="action-row">
         <label class="remember">
           <input type="checkbox">
@@ -39,7 +37,7 @@
 
         <a href="#">忘記密碼？</a>
       </div>
-      <button (click)="GetloginApi({email,password})" type="button" class="login-btn">
+      <button class="" (click)="GetloginApi({email,password})" class="login-btn">
         登入
       </button>
       <div class="divider">
@@ -52,7 +50,7 @@
 
       <p class="register-text">
         還沒有帳號？
-        <a href="#">立即註冊</a>
+        <a routerLink="/register">立即註冊</a>
       </p>
 
     </form>
