@@ -1,10 +1,10 @@
-import { MemberService } from './../../../Service/member-service';
 import { Menu } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { Component, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import type { MenuItem } from 'primeng/api';
+import { MemberService } from '../../member/Service/member-service';
 @Component({
   selector: 'app-header-w-menu',
   imports: [RouterOutlet, RouterLink, ButtonModule, Menu],

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { loginData } from '../../../interface/loginData';
-import { MemberService } from '../../../Service/member-service';
+import { loginData } from '../interface/loginData';
+import { MemberService } from '../Service/member-service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
@@ -32,6 +32,7 @@ export class Login {
       next: (res) => {
         console.log('response', res);
         localStorage.setItem('token', res.token);
+        ///把後端回傳的 JWT token 存到瀏覽器的 localStorage 裡面
 
         var name = this.memberService.getname();
         this.messageService.add({

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampGo 註冊</title>
+  <link rel="stylesheet" href="./owner-register.css">
+</head>
+
+<body>
+
+  <div class="register-page">
+    <div class="register-card">
+
+      <div class="logo">
+        <div class="icon">🏕️</div>
+        <h1>CampGo</h1>
+        <p>加入我們，開始你的露營旅程</p>
+      </div>
+
+      <form class="register-form">
+
+        <div class="form-group">
+          <label for="name">姓名</label>
+          <input [(ngModel)]="Name" name="name" type="text" placeholder="請輸入姓名" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">身分證字號</label>
+          <input [(ngModel)]="idNumber" name="idNumber" type="idNumber" placeholder="請輸入 身分證字號" />
+        </div>
+
+        <div class="form-group">
+          <label for="Address">地址</label>
+          <input [(ngModel)]="Address" name="Address" type="Address" placeholder="請輸入 地址" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">照片</label>
+          <input [(ngModel)]="ProfilePicture" name="ProfilePicture" type="password" placeholder="請輸入密碼" />
+        </div>
+
+        <!-- <button type="submit" class="register-btn" (click)="GetRegistApi({Name,Email,Password,Phone})">註冊帳號</button> -->
+
+      </form>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

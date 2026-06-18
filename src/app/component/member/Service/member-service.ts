@@ -1,6 +1,6 @@
 import { MessageService } from 'primeng/api';
-import { LoginResponse } from './../interface/loginResponse';
-import { loginData } from './../interface/loginData';
+import { LoginResponse } from '../interface/loginResponse';
+import { loginData } from '../interface/loginData';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { memberregisterData } from '../interface/memberRegisterData';

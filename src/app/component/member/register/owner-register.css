@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Microsoft JhengHei', Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(34, 49, 34, 0.65), rgba(34, 49, 34, 0.65)),
+    url('https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 250, 240, 0.95);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.logo .icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.logo h1 {
+  color: #2f4f2f;
+  font-size: 32px;
+  letter-spacing: 1px;
+}
+
+.logo p {
+  margin-top: 8px;
+  color: #6b705c;
+  font-size: 15px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #3f4f32;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 2px solid #d8c8a8;
+  border-radius: 14px;
+  font-size: 15px;
+  background-color: #fffdf7;
+  outline: none;
+  transition: 0.25s;
+}
+
+.form-group input:focus {
+  border-color: #6b8e23;
+  box-shadow: 0 0 0 4px rgba(107, 142, 35, 0.18);
+}
+
+.register-btn {
+  margin-top: 10px;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6b8e23, #3f6b2f);
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(63, 107, 47, 0.4);
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 6px;
+  color: #6b705c;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #3f6b2f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 28px 22px;
+  }
+
+  .logo h1 {
+    font-size: 28px;
+  }
+}
