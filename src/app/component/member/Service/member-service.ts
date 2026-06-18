@@ -49,6 +49,9 @@ export class MemberService {
   memberregister(data: memberregisterData) {
     return this.http.post<string>(`${this.apiUrl}/MemberRegister`, data);
   }
+  ownerRegister(data: memberregisterData) {
+    return this.http.post<string>(`${this.apiUrl}/MemberRegister`, data);
+  }
   getname() {
     const token = localStorage.getItem('token');
     if (token) {
