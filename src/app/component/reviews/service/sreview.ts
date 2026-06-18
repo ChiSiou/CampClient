@@ -15,6 +15,10 @@ export class SReview {
     return this.httpClient.get<IReview[]>(this.connString);
   }
 
+  getRiviewByIdAPI(id: number) {
+    return this.httpClient.get<IReview[]>(`${this.connString}/${id}`);
+  }
+
   postRiviewAPI(para: IReview) {
     return this.httpClient.post<IReview[]>(this.connString, para);
   }

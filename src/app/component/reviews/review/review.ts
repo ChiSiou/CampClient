@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { SReview } from '../service/sreview';
 import { IReview } from '../interfaces/IReview';
 import { RatingModule, Rating } from 'primeng/rating';
@@ -10,12 +10,20 @@ import { MenuModule } from 'primeng/menu';
 import { PanelModule } from 'primeng/panel';
 import { CardModule } from 'primeng/card';
 import { GalleriaModule } from 'primeng/galleria';
+import { Dialog } from "primeng/dialog";
+import { Toast } from "primeng/toast";
+import { Message } from "primeng/message";
+import { FloatLabel } from "primeng/floatlabel";
+import { FileSelectEvent, FileUpload } from "primeng/fileupload";
+import { MessageService } from 'primeng/api';
+import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({
   selector: 'app-review',
-  imports: [Rating, FormsModule, PaginatorModule, AvatarModule, ButtonModule, MenuModule, PanelModule, CardModule, GalleriaModule],
+  imports: [Rating, FormsModule, PaginatorModule, AvatarModule, ButtonModule, MenuModule, PanelModule, CardModule, GalleriaModule, Dialog, Toast, Message, FloatLabel, FileUpload],
   templateUrl: './review.html',
   styleUrl: './review.css',
+  providers: [MessageService],
 })
 export class Review {
 
@@ -32,7 +40,40 @@ export class Review {
   lightboxImages: { picId?: number; imageUrl: string }[] = [];
   lightboxIndex: number = 0;
 
+  // 編輯視窗
+  editVisible = false;
+
+  editParam = {
+    reviewId: 0,
+    userId: 0,
+    campId: 0,
+    rating: 0,
+    commentText: "",
+    isHaveImgs: false,
+    status: 0,
+    createdAt: null,
+    updatedAt: null,
+    reviewAtId: 0,
+    orderId: 0,
+    userRole: 0,
+    reviewImages: [] as { imageUrl: string }[],
+    userName: "",
+  };
+
+  // 使用者傳圖
+  private messageService = inject(MessageService);
+  selectedFiles: File[] = [];
+  uploadedImageUrls: string[] = [];
+  reviewForm = {
+    submitted: false,
+    valid: false,
+  };
+
   ngOnInit(): void {
+    this.getData();
+  }
+
+  getData() {
     this.sReview.getRiviewAPI().subscribe((data) => {
       this.reviews = data;
       console.log(data);
@@ -68,6 +109,7 @@ export class Review {
         next: () => {
           this.reviews = this.reviews.filter(item => item.reviewId !== id);
           console.log('評論成功刪除');
+          this.getData();
         },
         error: (err) => {
           console.error('評論刪除失敗', err);
@@ -76,30 +118,71 @@ export class Review {
     }
   }
 
+  showEditDialog(id: number) {
+    this.sReview.getRiviewByIdAPI(id).subscribe((data: any) => {
+      this.editParam = { ...data, reviewImages: data.reviewImages ?? [] };
+      this.selectedFiles = [];
+      this.uploadedImageUrls = [];
+      this.editVisible = true;
+    });
+  }
+
+  onSelect(event: any) {
+    this.selectedFiles = event.currentFiles;
+  }
+
+  onSubmit(form: any) {
+    if (this.editParam.rating > 0) {
+      form.valid = true;
+    } else {
+      form.valid = false;
+    }
+
+    if (!form.valid) {
+      this.messageService.add({ severity: 'error', summary: '評論失敗', detail: '請檢查必填欄位。', life: 3000 });
+      return;
+    }
+
+    if (this.selectedFiles.length > 0) {
+      this.uploadAllFiles().then(() => {
+        this.putReview();
+      });
+    } else {
+      this.putReview();
+    }
+  }
+
+  removeExistingImage(index: number) {
+    this.editParam.reviewImages = this.editParam.reviewImages.filter((_, i) => i !== index);
+    this.editParam.isHaveImgs = this.editParam.reviewImages.length > 0;
+  }
+
+  async uploadAllFiles(): Promise<void> {
+    for (const file of this.selectedFiles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res: any = await this.sReview.uploadImage(formData).toPromise();
+      this.editParam.reviewImages = [...(this.editParam.reviewImages ?? []), { imageUrl: res.imageUrl }];
+    }
+    this.editParam.isHaveImgs = this.editParam.reviewImages.length > 0;
+    this.uploadedImageUrls = this.editParam.reviewImages.map(x => x.imageUrl);
+  }
+
   putReview() {
+    const param = this.editParam;
 
-    // let param = {
-    //   reviewId: this.new_reviewId,
-    //   userId: this.new_userId,
-    //   campId: this.new_campId,
-    //   rating: this.new_rating,
-    //   commentText: this.new_commentText,
-    //   isHaveImgs: this.new_isHaveImgs,
-    //   status: this.new_status,
-    //   createdAt: this.new_createdAt,
-    //   updatedAt: this.new_updatedAt,
-    //   reviewAtId: this.new_reviewAtId,
-    //   orderId: this.new_orderId,
-    //   userRole: this.new_userRole,
-    //   reviewImages: this.uploadedImageUrls.map(url => ({ imageUrl: url })),
-    // }
-
-    // this.sReview.putRiviewAPI(param.reviewId,param).subscribe((data) => {
-    //   this.reviews.push(param);
-    //   data = this.reviews;
-    //   console.log(data);
-    // });
-
+    this.sReview.putReviewAPI(param.reviewId, param).subscribe({
+      next: () => {
+        this.getData();
+        this.messageService.add({ severity: 'success', summary: '評論成功', detail: '更新完成。', life: 3000 });
+        this.editVisible = false;
+        this.selectedFiles = [];
+      },
+      error: (err) => {
+        console.error('評論更新失敗', err);
+        this.messageService.add({ severity: 'error', summary: '更新失敗', detail: '請稍後再試。', life: 3000 });
+      }
+    });
   }
 
 }

@@ -32,7 +32,7 @@ export class Popup {
   // 資料
   reviews: IReview[] = [];
   new_reviewId: number = 0;
-  new_userId: number = 1;
+  new_userId: number = 99906;
   new_campId: number = 1;
   new_rating: number = 0;
   new_commentText: string = "";
@@ -51,7 +51,6 @@ export class Popup {
 
   // 畫面
   visible: boolean = false;
-  commentTip = '評論';
   reviewForm = {
     submitted: false,
     valid: false,

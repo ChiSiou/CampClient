@@ -7,19 +7,6 @@
 
   @for (review of reviews; track review.reviewId) {
 
-  <!-- <p>營地ID：{{review.campId}}</p>
-  <p>使用者ID：{{review.userId}}</p>
-  <p>評論時間：{{review.createdAt}}</p>
-  <p>編輯時間：{{review.updatedAt}}</p>
-  <p>星數：{{review.rating}}</p>
-  <p-rating [(ngModel)]="review.rating" [readonly]="true" />
-  <p>評論：{{review.commentText}}</p>
-  @if(review.isHaveImgs){
-  @for(i of review.reviewImages; track i.imageUrl){
-  <img [src]="i.imageUrl" alt="">
-  }
-  } -->
-
   <div>
     <p-card class="card mb-4 p-8">
 
@@ -33,7 +20,7 @@
         </div>
         <div class="mb-2">
           <!-- <p-avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> -->
-          <span class="font-bold"><b>使用者ID -{{review.userId}}</b></span>
+          <span class="font-bold"><b>使用者名稱 -{{review.userName}} 使用者ID -{{review.userId}}</b></span>
         </div>
       </div>
 
@@ -49,7 +36,7 @@
           </div>
           <span class="text-surface-500 dark:text-surface-400">評論時間 {{review.createdAt}} ∣ 更新時間
             {{review.updatedAt}}</span>
-          <p-button icon="pi pi-cog" text></p-button>
+          <p-button icon="pi pi-cog" text (onClick)="showEditDialog(review.reviewId)"></p-button>
           <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deleteReview(review.reviewId)"></p-button>
         </div>
       </ng-template>
@@ -67,9 +54,59 @@
     [rowsPerPageOptions]="[10, 20, 30, 40]" />
 </div>
 
+<!-- 相簿顯示功能 -->
 <p-galleria [(visible)]="lightboxVisible" [value]="lightboxImages" [activeIndex]="lightboxIndex" [fullScreen]="true"
   [showThumbnails]="false" [showItemNavigators]="true">
   <ng-template #item let-img>
     <img [src]="img.imageUrl" alt="" style="max-width: 90vw; max-height: 80vh; object-fit: contain;" />
   </ng-template>
 </p-galleria>
+
+<!-- 編輯評論功能 -->
+<p-toast />
+<p-dialog [(visible)]="editVisible" [modal]="true" [style]="{ width: '25rem' }">
+
+  <ng-template #header>
+    <div class="inline-flex items-center justify-center gap-2">
+      <p-avatar [label]="editParam.userName ? editParam.userName.charAt(0).toUpperCase() : '?' " shape="circle" />
+      <span class="font-bold whitespace-nowrap">{{ editParam.userName || '使用者' }}</span>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col items-center gap-2">
+    <p-rating #ratingValue="ngModel" [(ngModel)]="editParam.rating" required name="ratingValue"
+      [invalid]="ratingValue.invalid && (ratingValue.touched || reviewForm.submitted)" [style]="{
+        '--p-rating-icon-size': '24px'
+    }" />
+    @if (ratingValue.invalid) {
+    <p-message severity="error" size="small" variant="simple">星數必填</p-message>
+    }
+  </div>
+
+  <div class="my-2">
+    <textarea pTextarea id="on_label" [(ngModel)]="editParam.commentText" rows="2" cols="30" style="width: 100%;"
+      class="h-full p-2"></textarea>
+  </div>
+
+  <!-- 現有圖片預覽 + 刪除 -->
+  <div *ngIf="editParam.reviewImages && editParam.reviewImages.length > 0" class="d-flex mb-3">
+    <div *ngFor="let img of editParam.reviewImages; let i = index" class="relative">
+      <img [src]="img.imageUrl" style="width:80px; height:80px; border-radius:6px; object-fit:cover;" />
+      <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm"
+        style="position:relative; top:-36px; right:12px; width:22px; height:22px;" (click)="removeExistingImage(i)">
+      </button>
+    </div>
+  </div>
+
+  <p-fileupload [customUpload]="true" (onSelect)="onSelect($event)" [multiple]="true" accept="image/*"
+    maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消" [showUploadButton]="false">
+    <ng-template #empty>
+      <div>可將圖片拖曳進方框內上傳</div>
+    </ng-template>
+  </p-fileupload>
+
+  <ng-template #footer>
+    <p-button label="取消" [text]="true" severity="secondary" (click)="editVisible = false" />
+    <p-button label="評論" [outlined]="true" severity="secondary" (click)="onSubmit(reviewForm)" type="submit" />
+  </ng-template>
+</p-dialog>
