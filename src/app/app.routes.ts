@@ -19,7 +19,7 @@ export const routes: Routes = [
         loadComponent: () => import('./component/reviews/review/review').then(m => m.Review)
       },
       {
-        path: 'review-popup',
+        path: 'review/add',
         loadComponent: () => import('./component/reviews/popup/popup').then(m => m.Popup)
       }
     ]
