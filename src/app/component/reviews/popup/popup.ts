@@ -22,20 +22,30 @@ interface UploadEvent {
 
 @Component({
   selector: 'app-popup',
-  imports: [Button, Dialog, Avatar, FileUploadModule, ToastModule, FloatLabel, NgClass, FormsModule, RatingModule, ReactiveFormsModule, Message],
+  imports: [
+    Button,
+    Dialog,
+    Avatar,
+    FileUploadModule,
+    ToastModule,
+    FloatLabel,
+    FormsModule,
+    RatingModule,
+    ReactiveFormsModule,
+    Message,
+  ],
   templateUrl: './popup.html',
   styleUrl: './popup.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class Popup {
-
   // 資料
   reviews: IReview[] = [];
   new_reviewId: number = 0;
   new_userId: number = 1;
   new_campId: number = 1;
   new_rating: number = 0;
-  new_commentText: string = "";
+  new_commentText: string = '';
   new_isHaveImgs: boolean = false;
   new_status: number = 0;
   new_createdAt: Date | null = null;
@@ -57,7 +67,7 @@ export class Popup {
     valid: false,
   };
 
-  constructor(private sReview: SReview) { }
+  constructor(private sReview: SReview) {}
 
   showDialog() {
     this.visible = true;
@@ -75,19 +85,34 @@ export class Popup {
     }
 
     if (!form.valid) {
-      this.messageService.add({ severity: 'error', summary: '評論失敗', detail: '請檢查必填欄位。', life: 3000 });
+      this.messageService.add({
+        severity: 'error',
+        summary: '評論失敗',
+        detail: '請檢查必填欄位。',
+        life: 3000,
+      });
       return;
     }
 
     if (this.selectedFiles.length > 0) {
       this.uploadAllFiles().then(() => {
         this.addNewReview();
-        this.messageService.add({ severity: 'success', summary: '評論成功', detail: '回到訂單頁面。', life: 3000 });
+        this.messageService.add({
+          severity: 'success',
+          summary: '評論成功',
+          detail: '回到訂單頁面。',
+          life: 3000,
+        });
         this.visible = false;
       });
     } else {
       this.addNewReview();
-      this.messageService.add({ severity: 'success', summary: '評論成功', detail: '回到訂單頁面。', life: 3000 });
+      this.messageService.add({
+        severity: 'success',
+        summary: '評論成功',
+        detail: '回到訂單頁面。',
+        life: 3000,
+      });
       this.visible = false;
     }
   }
@@ -104,7 +129,6 @@ export class Popup {
   }
 
   addNewReview() {
-
     let param = {
       reviewId: this.new_reviewId,
       userId: this.new_userId,
@@ -118,8 +142,8 @@ export class Popup {
       reviewAtId: this.new_reviewAtId,
       orderId: this.new_orderId,
       userRole: this.new_userRole,
-      reviewImages: this.uploadedImageUrls.map(url => ({ imageUrl: url })),
-    }
+      reviewImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
+    };
     this.sReview.postRiviewAPI(param).subscribe((data) => {
       this.reviews.push(param);
       data = this.reviews;

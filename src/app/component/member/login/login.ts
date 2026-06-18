@@ -3,10 +3,11 @@ import { loginData } from '../../../interface/loginData';
 import { MemberService } from '../../../Service/member-service';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ import { MessageService } from 'primeng/api';
 export class Login {
   email: string = '';
   password: string = '';
+  token = localStorage.getItem('token');
 
   constructor(
     private httpClient: HttpClient,
@@ -26,26 +28,26 @@ export class Login {
   ) {}
 
   GetloginApi(data: loginData) {
-    var user = localStorage.getItem('user');
     this.memberService.login(data).subscribe({
       next: (res) => {
         console.log('response', res);
         localStorage.setItem('token', res.token);
-        this.routes.navigate(['/']);
 
+        var name = this.memberService.getname();
         this.messageService.add({
           key: 'top-right',
           severity: 'success',
           summary: '登入成功',
-          detail: '歡迎回來',
+          detail: '歡迎回來 ' + name,
         });
+        this.routes.navigate(['/']);
       },
       error: (err) => {
         console.log(err);
         this.messageService.add({
           key: 'top-right',
           severity: 'error',
-          summary: '登入失敗',
+          summary: `登入失敗`,
           detail: '帳號或密碼錯誤',
         });
       },
