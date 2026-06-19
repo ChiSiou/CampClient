@@ -1,3 +1,4 @@
+import { Member } from './../../member/member';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { SReview } from '../service/sreview';
 import { IReview } from '../interfaces/IReview';
@@ -17,7 +18,7 @@ import { FloatLabel } from "primeng/floatlabel";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
 import { MessageService } from 'primeng/api';
 import { PrimeNG } from 'primeng/config';
-import { MemberService } from '../../../Service/member-service';
+import { MemberService } from '../../member/Service/member-service';
 import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({
@@ -75,6 +76,8 @@ export class Review {
 
   ngOnInit(): void {
     this.getData();
+    this.editParam.userId = Number(this.sReview.getUserId());
+    this.editParam.campId = Number(this.sReview.getCampId());
   }
 
   getData() {

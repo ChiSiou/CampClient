@@ -1,3 +1,4 @@
+import { Member } from './../../member/member';
 import { Component, inject, NgModule } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
@@ -14,7 +15,7 @@ import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { Button, ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { MemberService } from '../../../Service/member-service';
+import { MemberService } from '../../member/Service/member-service';
 import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
@@ -71,6 +72,8 @@ export class Popup {
 
   constructor(private sReview: SReview, private primeng: PrimeNG, private memberService: MemberService) {
     this.new_userName = this.memberService.getname();
+    this.new_userId = Number(this.sReview.getUserId());
+    this.new_campId = Number(this.sReview.getCampId());
     this.primeng.setTranslation({ pending: '等待上傳' });
   }
 
