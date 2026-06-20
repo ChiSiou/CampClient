@@ -22,7 +22,11 @@ export const routes: Routes = [
       {
         path: 'forum',
         loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum)
-      }
+      },
+      {
+        path: 'member-center',
+        loadComponent: () => import('./component/member/memberCenter/member-center').then(m => m.MemberCenter)
+      },
     ]
   },
   {
