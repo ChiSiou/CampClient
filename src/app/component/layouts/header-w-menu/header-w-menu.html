@@ -19,8 +19,17 @@
       <!-- right side -->
       <div class="header-actions">
         <!-- login icon -->
-        <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
-          (click)="islogin('member-center')"></a>
+        <!-- <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員" -->
+      @if (username) {
+    <div class="user-info">
+      <span class="user-info__name">{{ username }}</span>
+      (<span class="user-info__role">{{ userRole }}</span>)
+    </div>
+  }
+
+  <!-- login icon -->
+  <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
+    (click)="islogin('member-center')"></a>      <!-- (click)="islogin('member-center')"></a> -->
 
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"

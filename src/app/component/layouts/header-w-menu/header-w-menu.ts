@@ -18,8 +18,11 @@ export class HeaderWMenu {
     private memberservice: MemberService,
     private messageService: MessageService
   ) { }
+  username = '';
+  userRole = '';
   ngOnInit() {
-    console.log(this.memberservice.getname());
+    this.username = this.memberservice.getname();
+    this.userRole = this.memberservice.getrole();
   }
 
   readonly menu = viewChild.required<Menu>('menu');
