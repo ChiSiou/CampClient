@@ -23,25 +23,33 @@
 
         <div class="form-group">
           <label for="name">姓名</label>
-          <input [(ngModel)]="Name" name="name" type="text" placeholder="請輸入姓名" />
+          <input [(ngModel)]="ownerData.Name" name="name" type="text" placeholder="請輸入姓名" />
         </div>
 
         <div class="form-group">
           <label for="phone">身分證字號</label>
-          <input [(ngModel)]="idNumber" name="idNumber" type="idNumber" placeholder="請輸入 身分證字號" />
+          <input [(ngModel)]="ownerData.IdNumber" name="idNumber" type="idNumber" placeholder="請輸入 身分證字號" />
         </div>
 
         <div class="form-group">
           <label for="Address">地址</label>
-          <input [(ngModel)]="Address" name="Address" type="Address" placeholder="請輸入 地址" />
+          <input [(ngModel)]="ownerData.Address" name="Address" type="Address" placeholder="請輸入 地址" />
         </div>
 
-        <div class="form-group">
-          <label for="password">照片</label>
-          <input [(ngModel)]="ProfilePicture" name="ProfilePicture" type="password" placeholder="請輸入密碼" />
+        <div class="form-group photo-upload">
+          <label class="file-btn">
+            選擇圖片
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+          </label>
+
+
+          <button type="button" class="upload-btn" (click)="submitowner()">
+            送出
+          </button>@if (previewUrl) {
+  <img [src]="previewUrl" class="preview-img" />
+}
         </div>
 
-        <!-- <button type="submit" class="register-btn" (click)="GetRegistApi({Name,Email,Password,Phone})">註冊帳號</button> -->
 
       </form>
 

@@ -13,14 +13,23 @@
       <!-- center nav -->
       <nav class="main-nav">
         <a pButton label="野營社群" routerLink="forum" [text]="true" [rounded]="true" severity="secondary"></a>
-        <a pButton label="成為營主" routerLink="/host" [text]="true" [rounded]="true" severity="secondary"></a>
+        <a pButton label="成為營主" (click)="ownerislogin('owner-register')" [text]="true" [rounded]="true" severity="secondary"></a>
       </nav>
 
       <!-- right side -->
       <div class="header-actions">
         <!-- login icon -->
-        <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
-          (click)="islogin()"></a>
+        <!-- <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員" -->
+      @if (username) {
+    <div class="user-info">
+      <span class="user-info__name">{{ username }}</span>
+      (<span class="user-info__role">{{ userRole }}</span>)
+    </div>
+  }
+
+  <!-- login icon -->
+  <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
+    (click)="islogin('member-center')"></a>      <!-- (click)="islogin('member-center')"></a> -->
 
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"
@@ -52,7 +61,7 @@
 
       <div class="footer-col">
         <h4 class="footer-col__title">營主</h4>
-        <a class="footer-col__link" routerLink="/host">成為營主</a>
+        <a class="footer-col__link" (click)="ownerislogin('owner-register')">成為營主</a>
         <a class="footer-col__link" routerLink="/host/resources">營主資源</a>
         <a class="footer-col__link" routerLink="/host/community">營主社群</a>
       </div>

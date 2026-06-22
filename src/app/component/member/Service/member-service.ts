@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { memberregisterData } from '../interface/memberRegisterData';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { ownerregisterData } from '../interface/ownerRegisterData';
 
 @Injectable({
   providedIn: 'root',
@@ -17,24 +18,25 @@ export class MemberService {
     private http: HttpClient,
     private routes: Router,
     private messageService: MessageService,
-  ) {}
+  ) { }
 
   login(data: loginData) {
+  
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
   }
+  islogin(route: string) {
+    const token = localStorage.getItem('token');
 
-  islogin() {
-    var token = localStorage.getItem('token');
-    if (token) {
-      this.routes.navigate(['/']);
-      return true;
-    } else {
+    if (!token) {  ///沒有token = 未登入 導至登入頁面
       this.routes.navigate(['/login']);
       return false;
     }
+
+    this.routes.navigate([`/${route}`]);
+    return true;
   }
   logout() {
-    if (this.islogin()) {
+    if (this.islogin('')) {
       localStorage.removeItem('token');
       this.routes.navigate(['/login']);
     } else {
@@ -49,14 +51,30 @@ export class MemberService {
   memberregister(data: memberregisterData) {
     return this.http.post<string>(`${this.apiUrl}/MemberRegister`, data);
   }
-  getname() {
+  ownerregister(data: ownerregisterData) {
+  const token = localStorage.getItem('token');
+    return this.http.post<string>(`${this.apiUrl}/OwnerRegister`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  }
+  uploadProfilePhoto(file: File) {
+  const token = localStorage.getItem('token');
+  return this.http.post(`${this.apiUrl}/UploadProfilePhoto`, file, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
+  getname() {  //取得存在localstotage的token反譯出的名字
     const token = localStorage.getItem('token');
     if (token) {
       const decoded: any = jwtDecode(token);
       return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
     }
   }
-  getrole() {
+  getrole() {  //取得存在localstotage的token反譯出的身分
     const token = localStorage.getItem('token');
     if (token) {
       const decoded: any = jwtDecode(token);

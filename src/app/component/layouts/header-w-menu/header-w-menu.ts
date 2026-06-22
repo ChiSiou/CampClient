@@ -3,7 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { Component, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import type { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { MemberService } from '../../member/Service/member-service';
 @Component({
   selector: 'app-header-w-menu',
@@ -16,9 +16,13 @@ export class HeaderWMenu {
   constructor(
     private routes: Router,
     private memberservice: MemberService,
-  ) {}
+    private messageService: MessageService
+  ) { }
+  username = '';
+  userRole = '';
   ngOnInit() {
-    console.log(this.memberservice.getname());
+    this.username = this.memberservice.getname();
+    this.userRole = this.memberservice.getrole();
   }
 
   readonly menu = viewChild.required<Menu>('menu');
@@ -37,5 +41,23 @@ export class HeaderWMenu {
     this.menu().toggle(event);
   }
 
-  islogin = () => this.memberservice.islogin();
+  islogin(url:string) { return this.memberservice.islogin(url) };
+
+  ownerislogin(route: string) {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '失敗',
+        detail: '請先登入',
+      });
+
+      return;
+    }
+
+    this.routes.navigate([`/${route}`]);
+  }
 }
+
