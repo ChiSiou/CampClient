@@ -27,6 +27,22 @@ export const routes: Routes = [
         path: 'member-center',
         loadComponent: () => import('./component/member/memberCenter/member-center').then(m => m.MemberCenter)
       },
+      {
+        path: 'search',
+        loadComponent: () => import('./component/search/search').then(m => m.Search)
+      },
+      {
+        path: 'camp/:id',
+        loadComponent: () => import('./component/camp-detail/camp-detail').then(m => m.CampDetail)
+      },
+      {
+        path: 'checkout',
+        loadComponent: () => import('./component/checkout/checkout').then(m => m.Checkout)
+      },
+      {
+        path: 'payment/result',
+        loadComponent: () => import('./component/payment-result/payment-result').then(m => m.PaymentResult)
+      },
     ]
   },
   {

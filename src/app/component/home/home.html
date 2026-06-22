@@ -1,1 +1,46 @@
-<p>home works!</p>
+<!-- Banner 輪播 -->
+<section class="banner-section" *ngIf="!loading && feed?.announcements?.length">
+  <p-carousel [value]="feed!.announcements" [numVisible]="1" [numScroll]="1" [circular]="true"
+    [autoplayInterval]="4000">
+    <ng-template #item let-item>
+      <a [routerLink]="item.linkUrl || '/'" class="banner-slide">
+        <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.title" class="banner-img" />
+        <div class="banner-overlay">
+          <span class="banner-title">{{ item.title }}</span>
+        </div>
+      </a>
+    </ng-template>
+  </p-carousel>
+</section>
+
+<!-- Banner Skeleton -->
+<section class="banner-section" *ngIf="loading">
+  <p-skeleton height="420px" borderRadius="0" />
+</section>
+
+<!-- 熱門營區 -->
+<section class="camps-section">
+  <div class="camps-section__inner">
+    <h2 class="section-title">熱門營區</h2>
+
+    <!-- Skeleton -->
+    <div class="camps-grid" *ngIf="loading">
+      <div class="camp-card-skeleton" *ngFor="let i of [1,2,3,4,5,6]">
+        <p-skeleton height="200px" borderRadius="12px 12px 0 0" />
+        <div class="camp-card-skeleton__body">
+          <p-skeleton width="60%" height="18px" />
+          <p-skeleton width="40%" height="14px" styleClass="mt-2" />
+          <p-skeleton width="30%" height="14px" styleClass="mt-2" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 真實資料 -->
+    <div class="camps-grid" *ngIf="!loading">
+      <app-camp-card
+        *ngFor="let camp of feed?.featuredCamps"
+        [camp]="camp"
+      />
+    </div>
+  </div>
+</section>
