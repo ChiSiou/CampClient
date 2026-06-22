@@ -22,7 +22,23 @@ export const routes: Routes = [
       {
         path: 'forum',
         loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum)
-      }
+      },
+      {
+        path: 'search',
+        loadComponent: () => import('./component/search/search').then(m => m.Search)
+      },
+      {
+        path: 'camp/:id',
+        loadComponent: () => import('./component/camp-detail/camp-detail').then(m => m.CampDetail)
+      },
+      {
+        path: 'checkout',
+        loadComponent: () => import('./component/checkout/checkout').then(m => m.Checkout)
+      },
+      {
+        path: 'payment/result',
+        loadComponent: () => import('./component/payment-result/payment-result').then(m => m.PaymentResult)
+      },
     ]
   },
   {

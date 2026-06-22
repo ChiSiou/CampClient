@@ -17,7 +17,7 @@ import { FloatLabel } from "primeng/floatlabel";
 import { FileSelectEvent, FileUpload } from "primeng/fileupload";
 import { MessageService } from 'primeng/api';
 import { PrimeNG } from 'primeng/config';
-import { MemberService } from '../../../Service/member-service';
+import { MemberService } from '../../member/Service/member-service';
 import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({

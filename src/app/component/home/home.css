@@ -1,0 +1,99 @@
+/* ===== Banner ===== */
+.banner-section {
+  width: 100%;
+}
+
+.banner-slide {
+  display: block;
+  position: relative;
+  text-decoration: none;
+}
+
+.banner-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 40px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+}
+
+.banner-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* ===== 熱門營區 ===== */
+.camps-section {
+  padding: 48px 0;
+}
+
+.camps-section__inner {
+  max-width: 1760px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: #222;
+}
+
+.camps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ===== Skeleton ===== */
+.camp-card-skeleton {
+  border-radius: 12px;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+}
+
+.camp-card-skeleton__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .camps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .banner-img {
+    height: 240px;
+  }
+
+  .banner-overlay {
+    padding: 16px 20px;
+  }
+
+  .banner-title {
+    font-size: 18px;
+  }
+
+  .camps-section__inner {
+    padding: 0 20px;
+  }
+
+  .camps-grid {
+    grid-template-columns: 1fr;
+  }
+}

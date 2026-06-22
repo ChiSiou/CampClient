@@ -14,7 +14,7 @@ import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { Button, ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { MemberService } from '../../../Service/member-service';
+import { MemberService } from '../../member/Service/member-service';
 import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
