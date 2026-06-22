@@ -6,6 +6,7 @@ import {
   CampSearchResponseDto,
   CampMapResponseDto,
   CampFilterDto,
+  CampSearchOption,
 } from '../interfaces/camp.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -24,5 +25,9 @@ export class SearchService {
 
   getFilters() {
     return this.http.get<CampFilterDto>(`${this.base}/Search/filters`);
+  }
+
+  getOptions() {
+    return this.http.get<CampSearchOption[]>(`${this.base}/Search/options`);
   }
 }

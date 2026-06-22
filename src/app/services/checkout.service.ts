@@ -23,6 +23,7 @@ export class CheckoutService {
   }
   // 這裡直接操作 DOM 轉成表單提交以重定向到第三方支付頁面。
   redirectToPayment(result: CheckoutResultDto) {
+    if (!result.success || !result.paymentServiceUrl || !result.paymentFormParams) return;
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = result.paymentServiceUrl;

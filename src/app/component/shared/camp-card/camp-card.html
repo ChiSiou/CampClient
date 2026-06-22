@@ -3,7 +3,7 @@
   <!-- 圖片區 -->
   <div class="camp-card__img-wrap">
     <img
-      [src]="camp.imageUrls?.[currentImageIndex] || 'assets/placeholder.jpg'"
+      [src]="camp.imageUrls[currentImageIndex] || 'assets/placeholder.jpg'"
       [alt]="camp.name"
       class="camp-card__img"
     />
@@ -14,7 +14,7 @@
     </button>
 
     <!-- 多圖切換（超過1張才顯示） -->
-    <ng-container *ngIf="(camp.imageUrls?.length ?? 0) > 1">
+    @if (camp.imageUrls.length > 1) {
       <button class="camp-card__img-nav camp-card__img-nav--prev" (click)="prevImage($event)">
         <i class="pi pi-chevron-left"></i>
       </button>
@@ -22,13 +22,11 @@
         <i class="pi pi-chevron-right"></i>
       </button>
       <div class="camp-card__dots">
-        <span
-          *ngFor="let img of camp.imageUrls; let i = index"
-          class="camp-card__dot"
-          [class.active]="i === currentImageIndex"
-        ></span>
+        @for (img of camp.imageUrls; track $index) {
+          <span class="camp-card__dot" [class.active]="$index === currentImageIndex"></span>
+        }
       </div>
-    </ng-container>
+    }
   </div>
 
   <!-- 內容區 -->
@@ -40,20 +38,30 @@
 
     <span class="camp-card__area">{{ camp.area }}・海拔 {{ camp.elevation }}m</span>
 
-    <ul class="camp-card__highlights" *ngIf="camp.highlights?.length">
-      <li *ngFor="let h of camp.highlights">{{ h }}</li>
-    </ul>
+    @if (camp.highlights.length) {
+      <ul class="camp-card__highlights">
+        @for (h of camp.highlights; track h) {
+          <li>{{ h }}</li>
+        }
+      </ul>
+    }
 
-    <div class="camp-card__tags" *ngIf="camp.tags?.length">
-      <span class="camp-tag" *ngFor="let tag of camp.tags">{{ tag }}</span>
-    </div>
+    @if (camp.tags.length) {
+      <div class="camp-card__tags">
+        @for (tag of camp.tags; track tag) {
+          <span class="camp-tag">{{ tag }}</span>
+        }
+      </div>
+    }
 
     <div class="camp-card__footer">
       <span class="camp-card__price">NT$ {{ camp.basePrice | number }} 起</span>
-      <div class="camp-card__rating" *ngIf="camp.averageRating">
-        <p-rating [(ngModel)]="camp.averageRating" [readonly]="true" />
-        <span class="camp-card__review-count">({{ camp.reviewCount }})</span>
-      </div>
+      @if (camp.averageRating) {
+        <div class="camp-card__rating">
+          <p-rating [(ngModel)]="camp.averageRating" [readonly]="true" />
+          <span class="camp-card__review-count">({{ camp.reviewCount }})</span>
+        </div>
+      }
     </div>
 
   </div>

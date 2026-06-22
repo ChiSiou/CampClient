@@ -1,0 +1,93 @@
+<div class="search-bar">
+
+  <!-- 地點 -->
+  <div class="search-bar__field">
+    <label class="search-bar__label">地點</label>
+    <input
+      class="search-bar__input"
+      [(ngModel)]="area"
+      placeholder="搜尋目的地"
+    />
+  </div>
+
+  <div class="search-bar__divider"></div>
+
+  <!-- 時間 -->
+  <div class="search-bar__field">
+    <label class="search-bar__label">時間</label>
+    <p-datepicker
+      [(ngModel)]="dateRange"
+      selectionMode="range"
+      [readonlyInput]="true"
+      placeholder="選擇日期"
+      dateFormat="mm/dd"
+      [minDate]="today"
+      styleClass="search-datepicker"
+    />
+  </div>
+
+  <div class="search-bar__divider"></div>
+
+  <!-- 客人/需求 -->
+  <div class="search-bar__field">
+    <label class="search-bar__label">客人</label>
+    <button class="search-bar__input search-bar__guest-btn" (click)="guestPanel.toggle($event)">
+      {{ guestLabel }}
+    </button>
+    <p-popover #guestPanel>
+      <div class="guest-panel">
+
+        @if (selfOwnedOptions.length > 0) {
+          <div class="guest-category-title">自帶裝備</div>
+          @for (opt of selfOwnedOptions; track opt.id) {
+            <div class="guest-row">
+              <div class="guest-row__info">
+                <span class="guest-row__name">{{ opt.itemName }}</span>
+              </div>
+              <div class="guest-row__counter">
+                <button class="counter-btn" (click)="adjust(opt.id, -1)" [disabled]="(quantities[opt.id] ?? 0) === 0">
+                  <i class="pi pi-minus"></i>
+                </button>
+                <span class="counter-value">{{ quantities[opt.id] ?? 0 }}</span>
+                <button class="counter-btn" (click)="adjust(opt.id, 1)">
+                  <i class="pi pi-plus"></i>
+                </button>
+              </div>
+            </div>
+          }
+        }
+
+        @if (noEquipmentOptions.length > 0) {
+          <div class="guest-category-title">免裝備</div>
+          @for (opt of noEquipmentOptions; track opt.id) {
+            <div class="guest-row">
+              <div class="guest-row__info">
+                <span class="guest-row__name">{{ opt.itemName }}</span>
+              </div>
+              <div class="guest-row__counter">
+                <button class="counter-btn" (click)="adjust(opt.id, -1)" [disabled]="(quantities[opt.id] ?? 0) === 0">
+                  <i class="pi pi-minus"></i>
+                </button>
+                <span class="counter-value">{{ quantities[opt.id] ?? 0 }}</span>
+                <button class="counter-btn" (click)="adjust(opt.id, 1)">
+                  <i class="pi pi-plus"></i>
+                </button>
+              </div>
+            </div>
+          }
+        }
+
+        @if (selfOwnedOptions.length === 0 && noEquipmentOptions.length === 0) {
+          <div class="guest-loading">載入中...</div>
+        }
+
+      </div>
+    </p-popover>
+  </div>
+
+  <!-- 搜尋按鈕 -->
+  <button class="search-bar__submit" (click)="search()">
+    <i class="pi pi-search"></i>
+  </button>
+
+</div>

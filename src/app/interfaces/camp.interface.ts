@@ -13,6 +13,8 @@ export interface AnnouncementItem {
   linkUrl: string | null;
 }
 
+// ===== Phase 2：搜尋 =====
+
 export interface CampSearchResultDto {
   id: number;
   name: string;
@@ -29,18 +31,21 @@ export interface CampSearchResultDto {
   tags: string[];
 }
 
-// ===== Phase 2：搜尋 =====
-
 export interface CampSearchRequest {
   keyword?: string;
   area?: string;
-  checkIn?: string;
-  checkOut?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  southWestLat?: number;
+  southWestLng?: number;
+  northEastLat?: number;
+  northEastLng?: number;
+  zoom?: number;
   requirements?: RequirementItem[];
   tagIds?: number[];
   facilityIds?: number[];
   sortBy?: 'Recommended' | 'PriceAsc' | 'PriceDesc' | 'RatingDesc' | 'ElevationAsc' | 'ElevationDesc';
-  page?: number;
+  pageNumber?: number;
   pageSize?: number;
 }
 
@@ -49,43 +54,52 @@ export interface RequirementItem {
   quantity: number;
 }
 
+export interface CampSearchOption {
+  id: number;
+  itemName: string;
+  category: number;  // 1=自帶裝備, 2=免裝備
+}
+
 export interface CampSearchResponseDto {
-  total: number;
-  page: number;
-  pageSize: number;
-  items: CampSearchResultDto[];
+  totalCount: number;
+  sortBy: string;
+  results: CampSearchResultDto[];
 }
 
 export interface CampMapResponseDto {
   isClustered: boolean;
-  markers: CampMapMarker[];
+  clusters: MapClusterItem[] | null;
+  markers: CampMapMarkerDto[] | null;
 }
 
-export interface CampMapMarker {
-  campgroundId: number;
+export interface MapClusterItem {
+  latitude: number;
+  longitude: number;
+  count: number;
+}
+
+export interface CampMapMarkerDto {
+  id: number;
+  latitude: number;
+  longitude: number;
+  basePrice: number;
   name: string;
-  lat: number;
-  lng: number;
-  avgRating: number | null;
-  lowestPrice: number | null;
+  area: string;
+  coverImageUrl: string | null;
+  averageRating: number;
+  reviewCount: number;
 }
 
 export interface CampFilterDto {
-  environmentTags: TagItem[];
-  policyTags: TagItem[];
-  facilities: FacilityItem[];
+  environmentTags: FilterTagItem[];
+  policyTags: FilterTagItem[];
+  facilityTags: FilterTagItem[];
 }
 
-export interface TagItem {
+export interface FilterTagItem {
   tagId: number;
   tagName: string;
-  iconUrl: string | null;
-}
-
-export interface FacilityItem {
-  facilityId: number;
-  facilityName: string;
-  iconUrl: string | null;
+  iconClass: string;
 }
 
 // ===== Phase 3：營區詳細頁 =====
@@ -111,18 +125,26 @@ export interface CampDetailTagItem {
 }
 
 export interface CampLocationDto {
-  campgroundId: number;
   fullAddress: string;
-  lat: number;
-  lng: number;
+  targetLatitude: number;
+  targetLongitude: number;
 }
 
 export interface CampMapZoneDto {
   zoneId: number;
   zoneName: string;
-  zoneType: number;
-  geoJson: string | null;
+  zoneDescription: string;
+  geoJson: string;
+  weekdayPrice: number;
+  weekendPrice: number;
   totalSites: number;
+  availableSites: number | null;
+  nearbyFacilities: ZoneFacilityItem[];
+}
+
+export interface ZoneFacilityItem {
+  facilityName: string;
+  iconUrl: string;
 }
 
 // ===== Phase 4：日曆/選位 =====
@@ -145,7 +167,7 @@ export interface GanttRowItem {
 export interface SiteDailyStatus {
   date: string;
   dailyPrice: number;
-  status: 'A' | 'U';
+  status: string;
 }
 
 export interface CampZoneDetailDto {
@@ -156,6 +178,12 @@ export interface CampZoneDetailDto {
   photoUrls: string[];
   facilities: FacilityItem[];
   capacityPeoplePerSite: number | null;
+}
+
+export interface FacilityItem {
+  facilityId: number;
+  facilityName: string;
+  iconUrl: string | null;
 }
 
 export interface CampZoneCalendarDto {
@@ -171,7 +199,7 @@ export interface ZoneDailySummary {
   date: string;
   dailyPrice: number;
   remainingSites: number;
-  status: 'A' | 'U';
+  status: string;
 }
 
 export interface UnitCard {
@@ -261,10 +289,11 @@ export interface CampsiteLineItem {
 
 export interface EquipmentBreakdownItem {
   productVariantId: number;
-  name: string;
+  productName: string;
+  variantName: string | null;
   quantity: number;
-  unitPrice: number;
-  subTotal: number;
+  pricePerUnit: number;
+  itemSubTotal: number;
 }
 
 export interface CheckoutSubmitDto {
@@ -284,12 +313,13 @@ export interface EquipmentSelectionItem {
 }
 
 export interface CheckoutResultDto {
-  success: true;
-  orderId: number;
-  orderNumber: string;
-  paymentServiceUrl: string;
-  paymentFormParams: Record<string, string>;
-  lockExpiresAt: string;
+  success: boolean;
+  orderId: number | null;
+  orderNumber: string | null;
+  paymentServiceUrl: string | null;
+  paymentFormParams: Record<string, string> | null;
+  lockExpiresAt: string | null;
+  unavailableItems: string[] | null;
 }
 
 // ===== Phase 6：付款/退款 =====
@@ -315,7 +345,7 @@ export interface RefundResultDto {
 
 export interface RefundItemResult {
   orderDetailId: number;
-  itemType: 'Campsite' | 'Equipment';
+  itemType: string;
   itemName: string;
   checkInDate: string;
   daysBeforeCheckIn: number;
@@ -359,9 +389,9 @@ export interface WithdrawalRequestDto {
 
 export interface WithdrawalResultDto {
   success: boolean;
-  withdrawalId?: number;
-  status?: string;
-  feeCharged?: number;
-  actualAmount?: number;
+  withdrawalId: number | null;
+  status: string | null;
+  feeCharged: number;
+  actualAmount: number;
   message: string;
 }

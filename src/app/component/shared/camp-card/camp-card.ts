@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgClass, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { CampSearchResultDto } from '../../../interfaces/camp.interface';
   selector: 'app-camp-card',
   templateUrl: './camp-card.html',
   styleUrl: './camp-card.css',
-  imports: [CommonModule, RouterLink, RatingModule, FormsModule, ButtonModule],
+  imports: [RouterLink, NgClass, DecimalPipe, RatingModule, FormsModule, ButtonModule],
 })
 export class CampCard {
   @Input() camp!: CampSearchResultDto;

@@ -1,46 +1,70 @@
 <!-- Banner 輪播 -->
-<section class="banner-section" *ngIf="!loading && feed?.announcements?.length">
-  <p-carousel [value]="feed!.announcements" [numVisible]="1" [numScroll]="1" [circular]="true"
-    [autoplayInterval]="4000">
-    <ng-template #item let-item>
-      <a [routerLink]="item.linkUrl || '/'" class="banner-slide">
-        <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.title" class="banner-img" />
-        <div class="banner-overlay">
-          <span class="banner-title">{{ item.title }}</span>
-        </div>
-      </a>
-    </ng-template>
-  </p-carousel>
-</section>
+@if (!loading && feed?.announcements?.length) {
+  <section class="banner-section">
+    <p-carousel [value]="feed!.announcements" [numVisible]="1" [numScroll]="1" [circular]="true"
+      [autoplayInterval]="4000">
+      <ng-template #item let-item>
+        <a [routerLink]="item.linkUrl || '/'" class="banner-slide">
+          <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.title" class="banner-img" />
+          <div class="banner-overlay">
+            <span class="banner-title">{{ item.title }}</span>
+          </div>
+        </a>
+      </ng-template>
+    </p-carousel>
+    <div class="banner-search">
+      <app-search-bar />
+    </div>
+  </section>
+}
 
 <!-- Banner Skeleton -->
-<section class="banner-section" *ngIf="loading">
-  <p-skeleton height="420px" borderRadius="0" />
-</section>
+@if (loading) {
+  <section class="banner-section">
+    <p-skeleton height="420px" borderRadius="0" />
+  </section>
+}
 
 <!-- 熱門營區 -->
 <section class="camps-section">
   <div class="camps-section__inner">
-    <h2 class="section-title">熱門營區</h2>
-
-    <!-- Skeleton -->
-    <div class="camps-grid" *ngIf="loading">
-      <div class="camp-card-skeleton" *ngFor="let i of [1,2,3,4,5,6]">
-        <p-skeleton height="200px" borderRadius="12px 12px 0 0" />
-        <div class="camp-card-skeleton__body">
-          <p-skeleton width="60%" height="18px" />
-          <p-skeleton width="40%" height="14px" styleClass="mt-2" />
-          <p-skeleton width="30%" height="14px" styleClass="mt-2" />
-        </div>
+    <div class="section-header">
+      <h2 class="section-title">熱門營區</h2>
+      <div class="section-nav">
+        <button class="section-nav__btn" (click)="scrollCamps(-1)"><i class="pi pi-chevron-left"></i></button>
+        <button class="section-nav__btn" (click)="scrollCamps(1)"><i class="pi pi-chevron-right"></i></button>
       </div>
     </div>
 
+    <!-- Skeleton -->
+    @if (loading) {
+      <div class="camps-row">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="camp-card-skeleton">
+            <p-skeleton height="200px" borderRadius="12px 12px 0 0" />
+            <div class="camp-card-skeleton__body">
+              <p-skeleton width="60%" height="18px" />
+              <p-skeleton width="40%" height="14px" class="mt-2" />
+              <p-skeleton width="30%" height="14px" class="mt-2" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
     <!-- 真實資料 -->
-    <div class="camps-grid" *ngIf="!loading">
-      <app-camp-card
-        *ngFor="let camp of feed?.featuredCamps"
-        [camp]="camp"
-      />
-    </div>
+    @if (!loading) {
+      <div class="camps-row" #campsRow>
+        @for (camp of feed?.featuredCamps ?? []; track camp.id) {
+          <app-camp-card [camp]="camp" />
+        }
+        <a routerLink="/search" [queryParams]="{sortBy: 'Recommended'}" class="view-all-card">
+          <div class="view-all-card__inner">
+            <span>瀏覽全部</span>
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </a>
+      </div>
+    }
   </div>
 </section>
