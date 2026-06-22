@@ -3,11 +3,18 @@ export interface IForum {
   userId: number;
   title: string;
   mainContent: string;
-  imageUrl: string;
   postDate?: string | null;
   postCategoryId: number;
+  postCategoryName?: string | null;
   userRole?: number | null;
   postTag: string;
   templateId?: number | null;
   campId?: number | null;
+  isHaveImgs?: boolean | null;
+  moreImages?: IMoreImage[];
+}
+
+export interface IMoreImage {
+  fromId?: number | null;
+  imageUrl?: string | null;
 }
