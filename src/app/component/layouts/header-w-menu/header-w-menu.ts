@@ -16,13 +16,20 @@ export class HeaderWMenu {
   constructor(
     private routes: Router,
     private memberservice: MemberService,
-    private messageService: MessageService
-  ) { }
+    private messageService: MessageService,
+  ) {}
+
   username = '';
   userRole = '';
+
   ngOnInit() {
     this.username = this.memberservice.getname();
     this.userRole = this.memberservice.getrole();
+    const token = localStorage.getItem('token');
+    if (token != null) {
+      const decoded: any = jwtDecode(token);
+      console.log(decoded);
+    }
   }
 
   readonly menu = viewChild.required<Menu>('menu');
@@ -41,7 +48,9 @@ export class HeaderWMenu {
     this.menu().toggle(event);
   }
 
-  islogin(url:string) { return this.memberservice.islogin(url) };
+  islogin(url: string) {
+    return this.memberservice.islogin(url);
+  }
 
   ownerislogin(route: string) {
     const token = localStorage.getItem('token');
@@ -60,4 +69,3 @@ export class HeaderWMenu {
     this.routes.navigate([`/${route}`]);
   }
 }
-
