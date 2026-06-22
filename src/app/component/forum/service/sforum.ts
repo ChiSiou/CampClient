@@ -16,7 +16,7 @@ export class Sforum {
   }
 
   getPostById(id: number) {
-    return this.http.get<IForum[]>(`${this.apiUrl}/${id}`);
+    return this.http.get<IForum>(`${this.apiUrl}/${id}`);
   }
 
   postPost(para: IForum) {

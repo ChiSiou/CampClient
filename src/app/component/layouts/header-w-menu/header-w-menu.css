@@ -101,7 +101,7 @@
 .site-footer {
   background-color: #f7f9f3;
   border-top: 1px solid var(--border-color);
-  margin-top: 40px;
+  /* margin-top: 40px; */
 }
 
 .site-footer__inner {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Sforum } from '../service/sforum';
 import { IForum } from '../interfaces/Iforum';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-forum',
@@ -17,7 +18,7 @@ export class Forum implements OnInit {
 
   categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區'];
 
-  constructor(private sforumService: Sforum) { }
+  constructor(private sforumService: Sforum, private router: Router) { }
 
   ngOnInit(): void {
     this.sforumService.getPosts().subscribe({
@@ -42,4 +43,13 @@ export class Forum implements OnInit {
     }
     return 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=600';
   }
+
+  gotoPost(id: number) {
+    this.router.navigate(['post', id]);
+  }
+
+  addPost() {
+
+  }
+
 }

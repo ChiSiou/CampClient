@@ -3,26 +3,22 @@
 
     <!-- 分類篩選按鈕 -->
     <div class="justify-align-center py-4">
+      <p-button (click)="addPost()" label="我要發文" class="mx-2" />
       @for (cat of categories; track cat) {
-        <p-button
-          [label]="cat"
-          variant="outlined"
-          [severity]="selectedCategory === cat || (cat === '全部' && !selectedCategory) ? 'success' : 'secondary'"
-          class="mx-2"
-          (onClick)="filterByCategory(cat)">
-        </p-button>
+      <p-button [label]="cat" variant="outlined"
+        [severity]="selectedCategory === cat || (cat === '全部' && !selectedCategory) ? 'success' : 'secondary'"
+        class="mx-2" (onClick)="filterByCategory(cat)">
+      </p-button>
       }
     </div>
 
     <!-- 文章列表 -->
     <div class="row">
       @for (post of filteredPosts; track post.postId) {
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="lc-block bg-white rounded shadow">
-            <img
-              [src]="getMainImage(post)"
-              class="img-fluid card-img-top rounded-top"
-              width="1080" height="768" loading="lazy"
+      <div class="col-xl-3 col-md-6 mb-4">
+        <button (click)="gotoPost(post.postId)" class="border border-1">
+          <div class="lc-block bg-white shadow">
+            <img [src]="getMainImage(post)" class="img-fluid card-img-top" width="1080" height="768" loading="lazy"
               [alt]="post.title">
             <div class="lc-block p-4">
               <small class="text-muted">{{ post.postCategoryName }}</small>
@@ -31,11 +27,12 @@
               <small class="text-muted">{{ post.postDate | date:'yyyy-MM-dd' }}</small>
             </div>
           </div>
-        </div>
+        </button>
+      </div>
       }
 
       @if (filteredPosts.length === 0) {
-        <p class="text-center text-muted py-5">目前沒有符合分類的文章</p>
+      <p class="text-center text-muted py-5">目前沒有符合分類的文章</p>
       }
     </div>
 

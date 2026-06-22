@@ -21,7 +21,11 @@ export const routes: Routes = [
       },
       {
         path: 'forum',
-        loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum)
+        loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum),
+      },
+      {
+        path: 'post/:id',
+        loadComponent: () => import('./component/forum/post/post').then((m) => m.Post),
       },
       {
         path: 'member-center',
