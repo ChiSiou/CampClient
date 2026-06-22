@@ -39,7 +39,7 @@
         <p>{{ post.mainContent }}</p>
 
         @for(p of post.moreImages;track p.imageUrl){
-        <img class="w-100" [src]="p.imageUrl" alt="附圖" />
+        <img class="w-100 p-4" [src]="p.imageUrl" alt="附圖" />
         }
 
       </article>
