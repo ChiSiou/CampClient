@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import * as L from 'leaflet';
+import 'leaflet.markercluster';
 import { CampCard } from '../shared/camp-card/camp-card';
 import { SearchBar, SearchBarInitial } from '../shared/search-bar/search-bar';
 import { SearchFilters } from '../shared/search-filters/search-filters';
@@ -20,7 +22,11 @@ import {
   templateUrl: './search.html',
   styleUrl: './search.css',
 })
-export class Search implements OnInit {
+export class Search implements OnInit, AfterViewInit {
+  @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
+  private map!: L.Map;
+  private clusterGroup!: L.MarkerClusterGroup;
+
   results: CampSearchResultDto[] = [];
   markers: CampMapMarkerDto[] = [];
   totalCount = 0;
@@ -77,7 +83,40 @@ export class Search implements OnInit {
       });
       this.searchService.searchMap(request).subscribe(res => {
         this.markers = res.markers ?? [];
+        this.renderMarkers();
       });
+    });
+  }
+
+  ngAfterViewInit() {
+    // 台灣中心點，縮放層級 7 大概可以看到整個台灣
+    this.map = L.map(this.mapContainer.nativeElement).setView([23.6978, 120.9605], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(this.map);
+
+    this.clusterGroup = L.markerClusterGroup();
+    this.map.addLayer(this.clusterGroup);
+
+    // 地圖比 API 回應慢初始化時，先補畫一次已經拿到的 markers
+    this.renderMarkers();
+  }
+
+  private renderMarkers() {
+    if (!this.clusterGroup) return; // 地圖還沒初始化完成，先跳過，等 ngAfterViewInit 補畫
+
+    this.clusterGroup.clearLayers();
+
+    this.markers.forEach(m => {
+      const marker = L.marker([m.latitude, m.longitude]);
+      marker.bindPopup(`
+        <strong>${m.name}</strong><br/>
+        ${m.area}<br/>
+        NT$ ${m.basePrice} 起<br/>
+        ★ ${m.averageRating.toFixed(1)} (${m.reviewCount})
+      `);
+      this.clusterGroup.addLayer(marker);
     });
   }
 
