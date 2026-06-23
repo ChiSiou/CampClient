@@ -102,6 +102,7 @@
   background-color: #f7f9f3;
   border-top: 1px solid var(--border-color);
   /* margin-top: 40px; */
+  z-index: 1;
 }
 
 .site-footer__inner {

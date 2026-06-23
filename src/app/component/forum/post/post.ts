@@ -1,6 +1,6 @@
 import { Sforum } from './../service/sforum';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IForum } from '../interfaces/Iforum';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
@@ -25,7 +25,8 @@ import { InputTextModule } from 'primeng/inputtext';
     DividerModule,
     PopoverModule,
     InputGroupModule,
-    InputTextModule
+    InputTextModule,
+    RouterLink
   ],
   templateUrl: './post.html',
   styleUrl: './post.scss',
@@ -36,7 +37,7 @@ export class Post implements OnInit {
   postId!: number;
   postRoute?: string = '';
   postMainPic?: string;
-  constructor(private sforumService: Sforum, private route: ActivatedRoute) { }
+  constructor(private sforumService: Sforum, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.postId = Number(this.route.snapshot.paramMap.get('id'));

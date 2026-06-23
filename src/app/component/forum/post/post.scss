@@ -1,40 +1,43 @@
 .post-bg {
-  background: linear-gradient(160deg, #f0f7e6 0%, #e8f5e9 100%);
+  position: relative;
+  padding-bottom: 4rem;
 }
 
-// Hero 封面
+// Hero 封面（滿版模糊背景，蓋掉左右綠色底）
 .hero-cover {
-  position: relative;
-  width: 100%;
-  height: 380px;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: blur(12px);
+    transform: scale(1.1);
+
   }
 
   .hero-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.5) 100%);
-  }
 
-  .hero-tags {
-    position: absolute;
-    bottom: 1.5rem;
-    left: 2rem;
-    display: flex;
-    gap: 0.5rem;
   }
 }
 
 .container {
+  position: relative;
+  z-index: 1;
   max-width: 860px;
-  margin: 0 auto;
+  margin: 6rem auto;
   padding: 0 1.5rem;
-  transform: translateY(-6rem);
+}
+
+.hero-tags {
+  margin-bottom: 1rem;
 }
 
 // 卡片
@@ -179,15 +182,11 @@
 
 // 響應式
 @media (max-width: 600px) {
-  .hero-cover {
-    height: 240px;
-  }
-
   .article-title {
     font-size: 1.5rem;
   }
 
   .container {
-    transform: translateY(-1.5rem);
+    margin: 2.5rem auto;
   }
 }
