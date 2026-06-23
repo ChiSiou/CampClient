@@ -1,7 +1,7 @@
 /* ===== (從麒修那裏co的css)posts-section ===== */
 .posts-section {
   padding: 48px 0;
-  margin: 0 1rem;
+  margin: 0 0.1rem;
 }
 
 .posts-section__inner {
@@ -23,9 +23,13 @@
   gap: 24px;
 }
 
+.imgs {
+  height: 240px;
+}
+
 .card_img {
-  width: 100%;
-  height: 360px;
+  width: 300px;
+  height: 400px;
   overflow: hidden;
   object-fit: cover;
   position: relative;
@@ -33,30 +37,13 @@
 
 .card_img .lc-block.p-4 {
   position: relative;
-  z-index: 1;
   background: inherit;
 }
 
 .card_img img {
-
-  height: 200px;
   transition: transform 0.3s;
 }
 
 .card_img:hover img {
   transform: scale(1.04);
-}
-
-/* ===== Skeleton ===== */
-.camp-card-skeleton {
-  border-radius: 12px;
-  border: 1px solid #ebebeb;
-  overflow: hidden;
-}
-
-.camp-card-skeleton__body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }

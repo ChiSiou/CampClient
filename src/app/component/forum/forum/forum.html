@@ -18,12 +18,11 @@
       <div class="col-xl-3 col-md-6 posts-section">
         <button (click)="gotoPost(post.postId)" class=" border border-0 rounded">
           <div class="lc-block bg-white shadow rounded-bottom rounded-top card_img">
-            <img [src]="getMainImage(post)" class="img-fluid card-img-top " width="1080" loading="lazy"
-              [alt]="post.title">
+            <img [src]="getMainImage(post)" class="img-fluid imgs" width="1080" loading="lazy" [alt]="post.title">
             <div class="lc-block p-4">
               <small class="text-muted">{{ post.postCategoryName }}</small>
               <h2 class="h5 mt-1">{{ post.title }}</h2>
-              <p class="text-truncate">{{ post.mainContent }}</p>
+              <p class="text-truncate" style="max-width: 300px;"> {{ post.mainContent }} </p>
               <small class="text-muted">{{ post.postDate | date:'yyyy-MM-dd' }}</small>
             </div>
           </div>
