@@ -43,6 +43,10 @@ export const routes: Routes = [
         path: 'payment/result',
         loadComponent: () => import('./component/payment-result/payment-result').then(m => m.PaymentResult)
       },
+      {
+        path: 'camp/:id/rental',
+        loadComponent: () => import('./component/camping-rental/camping-rental').then(m => m.CampingRentalComponent)
+      }
     ]
   },
   {
