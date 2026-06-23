@@ -1,0 +1,47 @@
+<div class="add-post-bg">
+  <div class="container">
+    <h1 class="page-title">發表文章</h1>
+
+    <form #form="ngForm" (ngSubmit)="onSubmit(postForm)" class="add-post-form">
+
+      <div class="field">
+        <label for="title">標題 *</label>
+        <input id="title" type="text" pInputText [(ngModel)]="new_title" name="title" class="w-full"
+          placeholder="請輸入標題" />
+      </div>
+
+      <div class="field">
+        <label for="category">分類 *</label>
+        <p-select id="category" [(ngModel)]="new_postCategoryId" name="postCategoryId" [options]="categories"
+          optionLabel="name" optionValue="id" placeholder="請選擇分類" class="w-full">
+        </p-select>
+      </div>
+
+      <div class="field">
+        <label for="content">內容 *</label>
+        <textarea id="content" pTextarea [(ngModel)]="new_mainContent" name="mainContent" rows="8" class="w-full"
+          placeholder="請輸入文章內容"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="tag">標籤</label>
+        <input id="tag" type="text" pInputText [(ngModel)]="new_postTag" name="postTag" class="w-full"
+          placeholder="請輸入標籤，以逗號分隔" />
+      </div>
+
+      <div class="field">
+        <label>附圖</label>
+        <p-fileUpload name="images[]" [multiple]="true" accept="image/*" [auto]="false" [customUpload]="true"
+          (onSelect)="onSelect($event)" chooseLabel="選擇圖片">
+        </p-fileUpload>
+      </div>
+
+      <div class="form-actions">
+        <p-button label="送出" icon="pi pi-send" type="submit"></p-button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<p-toast />
