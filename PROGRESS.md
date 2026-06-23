@@ -84,7 +84,10 @@
 - 輪播指示點（綠色橢圓）已隱藏：`:host ::ng-deep .p-carousel-indicators { display: none }`
 
 **重要業務邏輯（換電腦容易忘記）**：
-- 後端 `GetFeaturedCampsAsync`：**沒有評論的營區不會出現**，測試時記得幫每個營區都補幾筆 Reviews
+- 後端 `GetFeaturedCampsAsync`（同仁 TING 已改善，commit `69fffbc go 首頁營區增加 try catch`）：
+  - **候選名單**：原本只從「有評論」的營區裡選，現在改成「有評論」**聯集**「近期 30 天有訂單」的營區都會進入候選名單（`reviewStatsMap.Keys.Union(orderCountMap.Keys)`），沒評論但近期賣得不錯的營區也能上首頁熱門榜
+  - 排序公式不變：`ReviewCount + OrderCount` 越高越優先，平均星數當第二排序
+  - `Highlights` 解析加了防呆，抽成 `ParseHighlights()` + `try/catch (JsonException)`，格式不合法時回空清單而不是讓整支 API 炸掉
 - `Highlights` 欄位：後端 `Campgrounds` 資料表**手動加了 `Highlights nvarchar(500)` 欄位**（沒用 EF Migration，換環境要重跑 `ALTER TABLE`），存 JSON 陣列字串
 
 ### ⬜ Phase F3：搜尋與地圖 —— 待開始
