@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>🏕️ 露營網站 - 線上營位與裝備租借</h2>
+
+  <div *ngIf="!homeData" class="loading">
+    正在從 .NET API 載入最新營區與租借資料...
+  </div>
+
+  <div *ngIf="homeData" class="gear-grid">
+    <div class="gear-card" *ngFor="let camp of homeData.campgrounds">
+      <img [src]="camp.imageUrl || 'assets/default-gear.png'" alt="營區照片" width="100%">
+      <h3>{{ camp.name }}</h3>
+      <p class="price">每晚價格：${{ camp.price || '現場洽詢' }} 元</p>
+
+      <button (click)="onSelectCamp(camp.id)">
+        立即預訂 / 租借
+      </button>
+    </div>
+  </div>
+</div>
