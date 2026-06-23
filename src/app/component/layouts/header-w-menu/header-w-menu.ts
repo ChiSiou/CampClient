@@ -48,24 +48,18 @@ export class HeaderWMenu {
     this.menu().toggle(event);
   }
 
-  islogin(url: string) {
-    return this.memberservice.islogin(url);
+  memberislogin() {
+    const islogin = this.memberservice.islogin();
+    if (islogin) {
+      this.routes.navigate(['/member-center']);
+    }
   }
 
   ownerislogin(route: string) {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      this.messageService.add({
-        key: 'top-right',
-        severity: 'error',
-        summary: '失敗',
-        detail: '請先登入',
-      });
-
-      return;
+    const islogin = this.memberservice.islogin();
+    if (islogin) {
+      this.routes.navigate(['/']);
     }
-
-    this.routes.navigate([`/${route}`]);
+    this.routes.navigate(['/owner-register']);
   }
 }

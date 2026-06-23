@@ -5,10 +5,12 @@ import { loginData } from '../interface/loginData';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { memberregisterData } from '../interface/memberRegisterData';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { ownerregisterData } from '../interface/ownerRegisterData';
 import { profilePhotoResponse } from '../interface/profilePhotoResponse';
+import { Memberedit } from '../memberedit/memberedit';
+import { MemberEdit } from '../interface/MemberEdit';
 
 @Injectable({
   providedIn: 'root',
@@ -28,20 +30,34 @@ export class MemberService {
   login(data: loginData) {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
   }
-  islogin(route: string) {
+  islogin() {
     const token = localStorage.getItem('token');
 
     if (!token) {
       ///沒有token = 未登入 導至登入頁面
       this.routes.navigate(['/login']);
       return false;
+    } else {
+      try {
+        const decoded = jwtDecode(token);
+        if (!decoded.exp) {
+          this.logout();
+          return false;
+        }
+        const now = Math.floor(Date.now() / 1000);
+        if (decoded.exp < now) {
+          this.logout();
+          return false;
+        }
+        return true;
+      } catch {
+        this.logout();
+        return false;
+      }
     }
-
-    this.routes.navigate([`/${route}`]);
-    return true;
   }
   logout() {
-    if (this.islogin('')) {
+    if (this.islogin()) {
       localStorage.removeItem('token');
       this.routes.navigate(['/login']);
     } else {
@@ -112,5 +128,27 @@ export class MemberService {
       const decoded: any = jwtDecode(token);
       return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
+  }
+  getemail() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+    }
+  }
+  getphone() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
+    }
+  }
+  memberEdit(data: FormData) {
+    const token = localStorage.getItem('token');
+    return this.http.post<string>(`${this.apiUrl}/MemberEdit`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 }

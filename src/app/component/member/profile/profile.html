@@ -27,23 +27,23 @@
   <section class="info-section">
     <div class="section-header">
       <h2>個人資料</h2>
-      <button class="edit-btn">編輯資料</button>
+      <button class="edit-btn" routerLink="/member-center/memberEdit">編輯資料</button>
     </div>
 
     <div class="form-grid">
       <div class="form-group">
         <label>姓名</label>
-        <input type="text" value={{name}} readonly />
+        <input type="text" [value]="name" readonly />
       </div>
 
       <div class="form-group">
         <label>Email</label>
-        <input type="email" value="test@gmail.com" readonly />
+        <input type="email" [value]="email" readonly />
       </div>
 
       <div class="form-group">
         <label>手機號碼</label>
-        <input type="text" value="0912-345-678" readonly />
+        <input type="text" [value]="phone" readonly />
       </div>
 
       <div class="form-group">
