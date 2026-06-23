@@ -1,6 +1,7 @@
 /* ===== (從麒修那裏co的css)posts-section ===== */
 .posts-section {
   padding: 48px 0;
+  margin: 0 1rem;
 }
 
 .posts-section__inner {
@@ -24,7 +25,7 @@
 
 .card_img {
   width: 100%;
-  height: 100%;
+  height: 360px;
   overflow: hidden;
   object-fit: cover;
   position: relative;
@@ -37,6 +38,8 @@
 }
 
 .card_img img {
+
+  height: 200px;
   transition: transform 0.3s;
 }
 

@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IForum } from '../interfaces/Iforum';
+import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +12,18 @@ import { IForum } from '../interfaces/Iforum';
 export class Sforum {
   private apiUrl = 'https://localhost:7011/api/APIPost';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+  ) { }
+
+  getUserId(): number {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return Number(decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']);
+    }
+    return 0;
+  }
 
   getPosts(page: number = 1, size: number = 20): Observable<IForum[]> {
     return this.http.get<IForum[]>(`${this.apiUrl}?page=${page}&size=${size}`);
