@@ -1,0 +1,148 @@
+.filters-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 24px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.filters-trigger:hover {
+  border-color: #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filters-trigger__badge {
+  background: #8fae54;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 彈窗內容 ===== */
+.filters-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.filters-section__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.filters-row {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* 海拔高度 */
+.filters-elevation {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.filters-elevation__slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 220px;
+}
+
+.filters-elevation__label {
+  font-size: 12px;
+  color: #717171;
+}
+
+.filters-elevation__value {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #647e30;
+  background: #f4f7ec;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* 營區評價 */
+.filters-rating {
+  flex: 1;
+}
+
+.filters-rating__options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.filters-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+}
+
+/* 環境/政策/設備 */
+.filters-section__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+}
+
+.filters-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+}
+
+/* 底部按鈕 */
+.filters-btn {
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.filters-btn--ghost {
+  background: none;
+  color: #222;
+  text-decoration: underline;
+}
+
+.filters-btn--primary {
+  background: #222;
+  color: #fff;
+}
+
+.filters-btn--primary:hover {
+  background: #444;
+}

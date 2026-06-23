@@ -1,0 +1,101 @@
+<button class="filters-trigger" (click)="open()">
+  <i class="pi pi-sliders-h"></i>
+  篩選
+  @if (activeCount > 0) {
+    <span class="filters-trigger__badge">{{ activeCount }}</span>
+  }
+</button>
+
+<p-dialog
+  [(visible)]="visible"
+  header="篩選條件"
+  [modal]="true"
+  [style]="{ width: '720px' }"
+  [draggable]="false"
+>
+  <div class="filters-dialog">
+
+    <!-- 海拔高度 + 營區評價 -->
+    <div class="filters-row">
+      <div class="filters-elevation">
+        <div class="filters-section__title">海拔高度</div>
+        <div class="filters-elevation__slider">
+          <span class="filters-elevation__label">高海拔</span>
+          <p-slider [(ngModel)]="minElevation" [min]="0" [max]="3000" [step]="100" orientation="vertical" />
+          <span class="filters-elevation__label">平地</span>
+        </div>
+        <div class="filters-elevation__value">{{ minElevation }}m 以上</div>
+      </div>
+
+      <div class="filters-rating">
+        <div class="filters-section__title">營區評價</div>
+        <div class="filters-rating__options">
+          <label class="filters-radio">
+            <p-radioButton name="rating" [value]="4.5" [(ngModel)]="minRating" />
+            4.5星以上
+          </label>
+          <label class="filters-radio">
+            <p-radioButton name="rating" [value]="4" [(ngModel)]="minRating" />
+            4星以上
+          </label>
+          <label class="filters-radio">
+            <p-radioButton name="rating" [value]="3" [(ngModel)]="minRating" />
+            3星以上
+          </label>
+          <label class="filters-radio">
+            <p-radioButton name="rating" [value]="null" [(ngModel)]="minRating" />
+            不限
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 環境 -->
+    <div class="filters-section">
+      <div class="filters-section__title">環境</div>
+      <div class="filters-section__items">
+        @for (tag of environmentTags; track tag.tagId) {
+          <label class="filters-checkbox">
+            <p-checkbox [binary]="true" [ngModel]="selectedTagIds.has(tag.tagId)" (ngModelChange)="toggleTag(tag.tagId)" />
+            @if (tag.iconClass) { <i [class]="tag.iconClass"></i> }
+            {{ tag.tagName }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- 政策 -->
+    <div class="filters-section">
+      <div class="filters-section__title">政策</div>
+      <div class="filters-section__items">
+        @for (tag of policyTags; track tag.tagId) {
+          <label class="filters-checkbox">
+            <p-checkbox [binary]="true" [ngModel]="selectedTagIds.has(tag.tagId)" (ngModelChange)="toggleTag(tag.tagId)" />
+            @if (tag.iconClass) { <i [class]="tag.iconClass"></i> }
+            {{ tag.tagName }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- 設備 -->
+    <div class="filters-section">
+      <div class="filters-section__title">設備</div>
+      <div class="filters-section__items">
+        @for (facility of facilityTags; track facility.tagId) {
+          <label class="filters-checkbox">
+            <p-checkbox [binary]="true" [ngModel]="selectedFacilityIds.has(facility.tagId)" (ngModelChange)="toggleFacility(facility.tagId)" />
+            @if (facility.iconClass) { <i [class]="facility.iconClass"></i> }
+            {{ facility.tagName }}
+          </label>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button class="filters-btn filters-btn--ghost" (click)="reset()">清除全部</button>
+    <button class="filters-btn filters-btn--primary" (click)="apply()">套用篩選</button>
+  </ng-template>
+</p-dialog>

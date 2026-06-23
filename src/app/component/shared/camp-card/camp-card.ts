@@ -14,6 +14,7 @@ import { CampSearchResultDto } from '../../../interfaces/camp.interface';
 })
 export class CampCard {
   @Input() camp!: CampSearchResultDto;
+  @Input() layout: 'vertical' | 'horizontal' = 'vertical';
 
   currentImageIndex = 0;
 

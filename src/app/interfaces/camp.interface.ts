@@ -44,6 +44,8 @@ export interface CampSearchRequest {
   requirements?: RequirementItem[];
   tagIds?: number[];
   facilityIds?: number[];
+  minElevation?: number;
+  minRating?: number;
   sortBy?: 'Recommended' | 'PriceAsc' | 'PriceDesc' | 'RatingDesc' | 'ElevationAsc' | 'ElevationDesc';
   pageNumber?: number;
   pageSize?: number;

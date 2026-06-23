@@ -9,6 +9,35 @@
   max-width: 860px;
 }
 
+/* 縮小模式（搜尋頁 toolbar 用，旁邊還要放篩選/排序按鈕） */
+.search-bar--compact {
+  max-width: 100%;
+  padding: 4px 4px 4px 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.search-bar--compact .search-bar__field {
+  padding: 2px 10px;
+}
+
+.search-bar--compact .search-bar__label {
+  font-size: 11px;
+}
+
+.search-bar--compact .search-bar__input {
+  font-size: 13px;
+}
+
+.search-bar--compact .search-bar__divider {
+  height: 26px;
+}
+
+.search-bar--compact .search-bar__submit {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
 .search-bar__field {
   display: flex;
   flex-direction: column;

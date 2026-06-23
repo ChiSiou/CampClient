@@ -1,11 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { ButtonModule } from 'primeng/button';
 import { SearchService } from '../../../services/search.service';
-import { CampSearchOption } from '../../../interfaces/camp.interface';
+import { CampSearchOption, RequirementItem } from '../../../interfaces/camp.interface';
+
+export interface SearchBarInitial {
+  area?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  requirements?: RequirementItem[];
+}
 
 @Component({
   selector: 'app-search-bar',
@@ -14,6 +21,9 @@ import { CampSearchOption } from '../../../interfaces/camp.interface';
   imports: [FormsModule, DatePickerModule, PopoverModule, ButtonModule],
 })
 export class SearchBar implements OnInit {
+  @Input() initial?: SearchBarInitial;
+  @Input() compact = false;
+
   area = '';
   dateRange: Date[] = [];
   today = new Date();
@@ -25,10 +35,19 @@ export class SearchBar implements OnInit {
   constructor(private router: Router, private searchService: SearchService) {}
 
   ngOnInit() {
+    if (this.initial?.area) this.area = this.initial.area;
+    if (this.initial?.checkInDate && this.initial?.checkOutDate) {
+      this.dateRange = [new Date(this.initial.checkInDate), new Date(this.initial.checkOutDate)];
+    }
+
     this.searchService.getOptions().subscribe(options => {
       this.selfOwnedOptions = options.filter(o => o.category === 1);
       this.noEquipmentOptions = options.filter(o => o.category === 2);
       options.forEach(o => this.quantities[o.id] = 0);
+
+      this.initial?.requirements?.forEach(r => {
+        this.quantities[r.itemId] = r.quantity;
+      });
     });
   }
 
@@ -49,20 +68,19 @@ export class SearchBar implements OnInit {
   }
 
   search() {
-    const params: Record<string, any> = { sortBy: 'Recommended' };
-    if (this.area) params['area'] = this.area;
-    if (this.dateRange?.[0]) params['checkInDate'] = this.formatDate(this.dateRange[0]);
-    if (this.dateRange?.[1]) params['checkOutDate'] = this.formatDate(this.dateRange[1]);
+    const params: Record<string, any> = { pageNumber: 1 };
+    params['area'] = this.area || null;
+    params['checkInDate'] = this.dateRange?.[0] ? this.formatDate(this.dateRange[0]) : null;
+    params['checkOutDate'] = this.dateRange?.[1] ? this.formatDate(this.dateRange[1]) : null;
 
     const requirements = Object.entries(this.quantities)
       .filter(([, qty]) => qty > 0)
       .map(([id, qty]) => ({ itemId: Number(id), quantity: qty }));
 
-    if (requirements.length > 0) {
-      params['requirements'] = JSON.stringify(requirements);
-    }
+    // 數量歸零時要明確傳 null，merge 模式才會清掉網址上舊的 requirements
+    params['requirements'] = requirements.length > 0 ? JSON.stringify(requirements) : null;
 
-    this.router.navigate(['/search'], { queryParams: params });
+    this.router.navigate(['/search'], { queryParams: params, queryParamsHandling: 'merge' });
   }
 
   private formatDate(date: Date): string {

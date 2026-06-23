@@ -1,1 +1,56 @@
-<p>search works!</p>
+<div class="search-page">
+
+  <!-- 左側：搜尋 Bar + 篩選按鈕 + 卡片清單 -->
+  <div class="search-page__list">
+
+    <div class="search-page__toolbar">
+      <app-search-bar [initial]="searchBarInitial" [compact]="true" class="search-page__search-bar" />
+      <app-search-filters
+        [initialTagIds]="initialTagIds"
+        [initialFacilityIds]="initialFacilityIds"
+        [initialMinElevation]="initialMinElevation"
+        [initialMinRating]="initialMinRating"
+      />
+    </div>
+
+    <div class="search-page__sort-row">
+      <div class="search-page__count">共 {{ totalCount }} 筆結果</div>
+      <p-select
+        [options]="sortOptions"
+        [(ngModel)]="sortBy"
+        (onChange)="onSortChange()"
+        optionLabel="label"
+        optionValue="value"
+        class="search-page__sort-select"
+      />
+    </div>
+
+    @if (loading) {
+      <div class="search-page__loading">載入中...</div>
+    } @else {
+      @for (camp of results; track camp.id) {
+        <app-camp-card [camp]="camp" layout="horizontal" />
+      } @empty {
+        <div class="search-page__empty">沒有符合條件的營區</div>
+      }
+    }
+
+    @if (!loading && totalCount > pageSize) {
+      <p-paginator
+        [first]="(pageNumber - 1) * pageSize"
+        [rows]="pageSize"
+        [totalRecords]="totalCount"
+        (onPageChange)="onPageChange($event)"
+      />
+    }
+
+  </div>
+
+  <!-- 右側：地圖 -->
+  <div class="search-page__map">
+    <div class="search-page__map-placeholder">
+      地圖（{{ markers.length }} 個標記，待接 Leaflet）
+    </div>
+  </div>
+
+</div>
