@@ -1,0 +1,86 @@
+<!-- 右側內容 -->
+<main class="content">
+  <div class="page-title">
+    <h1>會員中心</h1>
+    <p>管理你的個人資料、訂單與帳號設定</p>
+  </div>
+
+  <!-- 統計卡片 -->
+  <section class="stats">
+    <div class="stat-card">
+      <h3>12</h3>
+      <p>我的訂單</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>8</h3>
+      <p>我的收藏</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>3</h3>
+      <p>未讀通知</p>
+    </div>
+  </section>
+
+  <!-- 會員資料 -->
+  <section class="info-section">
+    <div class="section-header">
+      <h2>個人資料</h2>
+      <button class="edit-btn" routerLink="/member-center/memberEdit">編輯資料</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>姓名</label>
+        <input type="text" [value]="name" readonly />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [value]="email" readonly />
+      </div>
+
+      <div class="form-group">
+        <label>手機號碼</label>
+        <input type="text" [value]="phone" readonly />
+      </div>
+
+      <div class="form-group">
+        <label>會員等級</label>
+        <input type="text" value="一般會員" readonly />
+      </div>
+    </div>
+  </section>
+
+  <!-- 快速功能 -->
+  <section class="quick-actions">
+    <h2>快速功能</h2>
+
+    <div class="action-list">
+      <div class="action-card">
+        <div class="icon">🧾</div>
+        <div>
+          <h3>查看訂單</h3>
+          <p>查看你的預約與付款紀錄</p>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="icon">❤️</div>
+        <div>
+          <h3>我的收藏</h3>
+          <p>管理你收藏的營地</p>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="icon">🔔</div>
+        <div>
+          <h3>通知中心</h3>
+          <p>查看最新系統通知</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

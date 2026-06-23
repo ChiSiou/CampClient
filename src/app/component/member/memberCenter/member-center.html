@@ -2,111 +2,22 @@
   <!-- 左側選單 -->
   <aside class="sidebar">
     <div class="profile-card">
-      <img
-        class="avatar"
-        src="https://i.pravatar.cc/150?img=12"
-        alt="會員頭像"
-      />
+      <img class="avatar" src="{{profilePhotoUrl}}" alt="會員頭像" />
 
-      <h2>王小明</h2>
+      <h2>{{name}}</h2>
       <p>一般會員</p>
     </div>
 
     <nav class="menu">
-      <a class="active" href="#">個人資料</a>
-      <a href="#">我的訂單</a>
+      <a routerLink="/member-center">個人資料</a>
+      <a routerLink="orders">我的訂單</a>
       <a href="#">我的收藏</a>
       <a href="#">行程管理</a>
       <a href="#">訊息通知</a>
       <a href="#">帳號設定</a>
-      <a href="#" class="logout">登出</a>
+      <a (click)="logout()" class="logout">登出</a>
     </nav>
   </aside>
+  <router-outlet></router-outlet>
 
-  <!-- 右側內容 -->
-  <main class="content">
-    <div class="page-title">
-      <h1>會員中心</h1>
-      <p>管理你的個人資料、訂單與帳號設定</p>
-    </div>
-
-    <!-- 統計卡片 -->
-    <section class="stats">
-      <div class="stat-card">
-        <h3>12</h3>
-        <p>我的訂單</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>8</h3>
-        <p>我的收藏</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>3</h3>
-        <p>未讀通知</p>
-      </div>
-    </section>
-
-    <!-- 會員資料 -->
-    <section class="info-section">
-      <div class="section-header">
-        <h2>個人資料</h2>
-        <button class="edit-btn">編輯資料</button>
-      </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>姓名</label>
-          <input type="text" value="王小明" readonly />
-        </div>
-
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" value="test@gmail.com" readonly />
-        </div>
-
-        <div class="form-group">
-          <label>手機號碼</label>
-          <input type="text" value="0912-345-678" readonly />
-        </div>
-
-        <div class="form-group">
-          <label>會員等級</label>
-          <input type="text" value="一般會員" readonly />
-        </div>
-      </div>
-    </section>
-
-    <!-- 快速功能 -->
-    <section class="quick-actions">
-      <h2>快速功能</h2>
-
-      <div class="action-list">
-        <div class="action-card">
-          <div class="icon">🧾</div>
-          <div>
-            <h3>查看訂單</h3>
-            <p>查看你的預約與付款紀錄</p>
-          </div>
-        </div>
-
-        <div class="action-card">
-          <div class="icon">❤️</div>
-          <div>
-            <h3>我的收藏</h3>
-            <p>管理你收藏的營地</p>
-          </div>
-        </div>
-
-        <div class="action-card">
-          <div class="icon">🔔</div>
-          <div>
-            <h3>通知中心</h3>
-            <p>查看最新系統通知</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
 </div>

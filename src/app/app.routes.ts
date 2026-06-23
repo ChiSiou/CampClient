@@ -17,33 +17,53 @@ export const routes: Routes = [
       },
       {
         path: 'review/add',
-        loadComponent: () => import('./component/reviews/popup/popup').then(m => m.Popup)
+        loadComponent: () => import('./component/reviews/popup/popup').then((m) => m.Popup),
       },
       {
         path: 'forum',
-        loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum)
+        loadComponent: () => import('./component/forum/forum/forum').then((m) => m.Forum),
       },
       {
         path: 'member-center',
-        loadComponent: () => import('./component/member/memberCenter/member-center').then(m => m.MemberCenter)
+        loadComponent: () =>
+          import('./component/member/memberCenter/member-center').then((m) => m.MemberCenter),
+        children: [
+          {
+            path: 'orders',
+            loadComponent: () => import('./component/member/orders/orders').then((m) => m.Orders),
+          },
+          {
+            path: 'memberEdit',
+            loadComponent: () =>
+              import('./component/member/memberedit/memberedit').then((m) => m.Memberedit),
+          },
+          {
+            path: '',
+            loadComponent: () =>
+              import('./component/member/profile/profile').then((m) => m.Profile),
+          },
+        ],
       },
+
       {
         path: 'search',
-        loadComponent: () => import('./component/search/search').then(m => m.Search)
+        loadComponent: () => import('./component/search/search').then((m) => m.Search),
       },
       {
         path: 'camp/:id',
-        loadComponent: () => import('./component/camp-detail/camp-detail').then(m => m.CampDetail)
+        loadComponent: () =>
+          import('./component/camp-detail/camp-detail').then((m) => m.CampDetail),
       },
       {
         path: 'checkout',
-        loadComponent: () => import('./component/checkout/checkout').then(m => m.Checkout)
+        loadComponent: () => import('./component/checkout/checkout').then((m) => m.Checkout),
       },
       {
         path: 'payment/result',
-        loadComponent: () => import('./component/payment-result/payment-result').then(m => m.PaymentResult)
+        loadComponent: () =>
+          import('./component/payment-result/payment-result').then((m) => m.PaymentResult),
       },
-    ]
+    ],
   },
   {
     path: '',

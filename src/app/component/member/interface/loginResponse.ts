@@ -1,4 +1,5 @@
 export interface LoginResponse {
-  token: string;
- 
+  Token: string;
+  Roles: string[];
+  ActiveRole: string;
 }

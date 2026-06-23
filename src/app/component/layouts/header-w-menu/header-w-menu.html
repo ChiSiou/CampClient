@@ -13,23 +13,24 @@
       <!-- center nav -->
       <nav class="main-nav">
         <a pButton label="野營社群" routerLink="forum" [text]="true" [rounded]="true" severity="secondary"></a>
-        <a pButton label="成為營主" (click)="ownerislogin('owner-register')" [text]="true" [rounded]="true" severity="secondary"></a>
+        <a pButton label="成為營主" (click)="ownerislogin('owner-register')" [text]="true" [rounded]="true"
+          severity="secondary"></a>
       </nav>
 
       <!-- right side -->
       <div class="header-actions">
         <!-- login icon -->
         <!-- <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員" -->
-      @if (username) {
-    <div class="user-info">
-      <span class="user-info__name">{{ username }}</span>
-      (<span class="user-info__role">{{ userRole }}</span>)
-    </div>
-  }
 
-  <!-- login icon -->
-  <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
-    (click)="islogin('member-center')"></a>      <!-- (click)="islogin('member-center')"></a> -->
+        <div class="user-info">
+          <span class="user-info__name">{{ username ??'Guest' }}</span>
+          (<span class="user-info__role">{{ userRole ??'Guest' }}</span>)
+        </div>
+
+
+        <!-- login icon -->
+        <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
+          (click)="memberislogin()"></a> <!-- (click)="islogin('member-center')"></a> -->
 
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"

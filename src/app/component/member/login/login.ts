@@ -30,8 +30,12 @@ export class Login {
   GetloginApi(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
-        console.log('response', res);
         localStorage.setItem('token', res.token);
+        localStorage.setItem('roles', JSON.stringify(res.roles));
+        localStorage.setItem('activeRole', res.activeRole);
+
+        const decoded: any = jwtDecode(res.token);
+        console.log('decoded token:', decoded);
         ///把後端回傳的 JWT token 存到瀏覽器的 localStorage 裡面
 
         var name = this.memberService.getname();
