@@ -49,7 +49,7 @@ export class Forum implements OnInit {
   }
 
   addPost() {
-
+    this.router.navigate(['post']);
   }
 
 }

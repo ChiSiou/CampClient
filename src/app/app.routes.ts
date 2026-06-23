@@ -28,6 +28,10 @@ export const routes: Routes = [
         loadComponent: () => import('./component/forum/post/post').then((m) => m.Post),
       },
       {
+        path: 'post',
+        loadComponent: () => import('./component/forum/add-post/add-post').then((m) => m.AddPost),
+      },
+      {
         path: 'member-center',
         loadComponent: () => import('./component/member/memberCenter/member-center').then(m => m.MemberCenter)
       },

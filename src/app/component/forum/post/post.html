@@ -53,7 +53,20 @@
           <p-button icon="pi pi-thumbs-up" [outlined]="true" severity="secondary" title="讚耶" size="small"></p-button>
 
           <p-button icon="pi pi-bookmark" [outlined]="true" severity="secondary" title="收藏文章" size="small"></p-button>
-          <p-button icon="pi pi-share-alt" [outlined]="true" severity="secondary" title="分享文章" size="small"></p-button>
+          <!-- <p-button icon="pi pi-share-alt" [outlined]="true" severity="secondary" title="分享文章" size="small"></p-button> -->
+
+          <p-button (click)="op.toggle($event); copyPostRoute()" icon="pi pi-share-alt" [outlined]="true" label="分享" size="small" />
+          <p-popover #op>
+            <div class="flex flex-col gap-4 w-[25rem]">
+              <div>
+                <span class="font-medium text-surface-900 dark:text-surface-0 block mb-2">連結已複製！</span>
+                <p-inputgroup>
+                  <input pInputText [value]="postRoute" readonly class="w-[25rem]" />
+                </p-inputgroup>
+              </div>
+            </div>
+          </p-popover>
+
         </div>
 
         <div class="tag-list" *ngIf="post.postTag">
