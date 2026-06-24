@@ -1,3 +1,4 @@
+import { MemberService } from './../../member/Service/member-service';
 import { Sforum } from './../service/sforum';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -37,7 +38,9 @@ export class Post implements OnInit {
   postId!: number;
   postRoute?: string = '';
   postMainPic?: string;
-  constructor(private sforumService: Sforum, private route: ActivatedRoute, private router: Router) { }
+  postUserName?: string = '使用者';
+
+  constructor(private sforumService: Sforum, private sMember: MemberService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.postId = Number(this.route.snapshot.paramMap.get('id'));
@@ -50,10 +53,12 @@ export class Post implements OnInit {
         if (this.post?.isHaveImgs && this.post?.moreImages?.length) {
           this.postMainPic = this.post.moreImages?.[0]?.imageUrl ?? '';
         }
+        this.sMember.getname().subscribe((data: string) => {
+          this.postUserName = data ? data : "使用者";
+        });
       },
       error: (err) => console.error('載入文章失敗', err),
     });
-
   }
 
   getMainImage() {

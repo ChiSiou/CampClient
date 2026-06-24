@@ -1,7 +1,7 @@
 .add-post-bg {
   min-height: 100vh;
   padding: 4rem 1.5rem;
-  background: linear-gradient(135deg, #f6fbee 0%, #eef7e0 50%, #f6fbee 100%);
+  background: linear-gradient(180deg, #fbfff5 0%, #fbfdf6 50%, #ffffff 100%);
 }
 
 .add-post-bg .container {
