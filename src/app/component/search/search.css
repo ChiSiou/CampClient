@@ -45,15 +45,10 @@
   height: 100%;
 }
 
-.search-page__map-placeholder {
+.search-page__map-container {
   width: 100%;
   height: 100%;
   background: #eef1ea;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #717171;
-  font-size: 14px;
 }
 
 .search-page__loading,
@@ -61,4 +56,132 @@
   text-align: center;
   color: #717171;
   padding: 40px 0;
+}
+
+/* hover 卡片時凸顯對應圖釘/群聚圓圈，不移動地圖
+   注意：不能用 transform，Leaflet 用 inline transform 控制圖釘位置，CSS transform 會覆蓋掉位置
+   filter 對個別圖釘和群聚圓圈都有效，是兩種情況通用的基本凸顯效果 */
+:host ::ng-deep .marker--highlight {
+  filter: drop-shadow(0 0 8px #e8534a) brightness(1.05);
+}
+
+/* 個別圖釘（非群聚）hover 時額外放大內層 pin，因為放大的是內層元素，不影響外層定位用的 transform */
+:host ::ng-deep .marker--highlight .camp-marker-pin {
+  width: 42px;
+  height: 42px;
+  margin: -5px 0 0 -5px;
+  transition: width 0.15s, height 0.15s;
+}
+
+:host ::ng-deep .marker--highlight .camp-marker-pin svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 自訂營區圖示：綠色圓底圖釘。divIcon 是命令式產生的 DOM，要用 ::ng-deep 才能套到樣式
+   注意：.camp-marker-icon 是 Leaflet 用來定位的外層元素（用 inline transform 控制座標），
+   不能在它身上加 CSS transform，旋轉造型全部放在內層 .camp-marker-pin */
+:host ::ng-deep .camp-marker-pin {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #8fae54;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: width 0.15s, height 0.15s;
+}
+
+:host ::ng-deep .camp-marker-pin svg {
+  transform: rotate(45deg);
+  width: 16px;
+  height: 16px;
+  color: #fff;
+  transition: width 0.15s, height 0.15s;
+}
+
+/* ===== 地圖 popup 卡片（仿 Airbnb 風格） ===== */
+:host ::ng-deep .camp-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .camp-popup .leaflet-popup-content {
+  margin: 0;
+  width: 220px !important;
+}
+
+:host ::ng-deep .camp-popup__card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+:host ::ng-deep .camp-popup__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 130px;
+}
+
+:host ::ng-deep .camp-popup__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host ::ng-deep .camp-popup__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #fff;
+  color: #222;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .camp-popup__body {
+  padding: 10px 12px 12px;
+}
+
+:host ::ng-deep .camp-popup__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .camp-popup__area {
+  font-size: 12px;
+  color: #717171;
+  margin-bottom: 8px;
+}
+
+:host ::ng-deep .camp-popup__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+:host ::ng-deep .camp-popup__rating {
+  color: #717171;
+}
+
+:host ::ng-deep .camp-popup__price {
+  font-weight: 700;
+  color: #8fae54;
+}
+
+:host ::ng-deep .camp-popup__price small {
+  font-weight: 400;
+  color: #717171;
 }

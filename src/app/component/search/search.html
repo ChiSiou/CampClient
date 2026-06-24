@@ -29,7 +29,12 @@
       <div class="search-page__loading">載入中...</div>
     } @else {
       @for (camp of results; track camp.id) {
-        <app-camp-card [camp]="camp" layout="horizontal" />
+        <app-camp-card
+          [camp]="camp"
+          layout="horizontal"
+          (mouseenter)="onCardHover(camp.id)"
+          (mouseleave)="onCardHoverEnd(camp.id)"
+        />
       } @empty {
         <div class="search-page__empty">沒有符合條件的營區</div>
       }
@@ -48,9 +53,7 @@
 
   <!-- 右側：地圖 -->
   <div class="search-page__map">
-    <div class="search-page__map-placeholder">
-      地圖（{{ markers.length }} 個標記，待接 Leaflet）
-    </div>
+    <div #mapContainer class="search-page__map-container"></div>
   </div>
 
 </div>

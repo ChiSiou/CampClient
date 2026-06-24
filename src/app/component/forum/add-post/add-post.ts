@@ -10,6 +10,7 @@ import { SelectModule } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { Sforum } from '../service/sforum';
 import { IForum } from '../interfaces/Iforum';
+import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
   currentFiles: any;
@@ -34,6 +35,8 @@ interface UploadEvent {
 })
 export class AddPost {
   // 資料
+
+  posts: IForum[] = [];
   new_userId: number = 1;
   new_title: string = '';
   new_mainContent: string = '';
@@ -63,14 +66,18 @@ export class AddPost {
     valid: false,
   };
 
-  constructor(private sforumService: Sforum, private router: Router) { }
+  constructor(private sforumService: Sforum, private router: Router, private primeng: PrimeNG) {
+    this.primeng.setTranslation({ pending: '等待上傳' });
+
+  }
 
   ngOnInit(): void {
     this.new_userId = this.sforumService.getUserId();
   }
 
   onSelect(event: UploadEvent) {
-    this.selectedFiles = event.currentFiles ?? (event as any).files;
+    this.selectedFiles = event.currentFiles;
+    // this.selectedFiles = event.currentFiles ?? (event as any).files;
   }
 
   onSubmit(form: any) {
@@ -122,8 +129,14 @@ export class AddPost {
       moreImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
     };
 
-    this.sforumService.postPost(param).subscribe({
-      next: () => {
+    this.sforumService.postPost(param).subscribe((data) => {
+
+
+      this.posts.push(param);
+      data = this.posts;
+      console.log(data);
+
+      try {
         this.messageService.add({
           severity: 'success',
           summary: '發文成功',
@@ -131,8 +144,8 @@ export class AddPost {
           life: 3000,
         });
         this.router.navigate(['forum']);
-      },
-      error: (err) => {
+      }
+      catch (err) {
         console.error('發文失敗', err);
         this.messageService.add({
           severity: 'error',
@@ -140,7 +153,7 @@ export class AddPost {
           detail: '請稍後再試。',
           life: 3000,
         });
-      },
+      }
     });
   }
 }

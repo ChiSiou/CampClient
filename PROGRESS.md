@@ -84,16 +84,109 @@
 - 輪播指示點（綠色橢圓）已隱藏：`:host ::ng-deep .p-carousel-indicators { display: none }`
 
 **重要業務邏輯（換電腦容易忘記）**：
-- 後端 `GetFeaturedCampsAsync`：**沒有評論的營區不會出現**，測試時記得幫每個營區都補幾筆 Reviews
+- 後端 `GetFeaturedCampsAsync`（同仁 TING 已改善，commit `69fffbc go 首頁營區增加 try catch`）：
+  - **候選名單**：原本只從「有評論」的營區裡選，現在改成「有評論」**聯集**「近期 30 天有訂單」的營區都會進入候選名單（`reviewStatsMap.Keys.Union(orderCountMap.Keys)`），沒評論但近期賣得不錯的營區也能上首頁熱門榜
+  - 排序公式不變：`ReviewCount + OrderCount` 越高越優先，平均星數當第二排序
+  - `Highlights` 解析加了防呆，抽成 `ParseHighlights()` + `try/catch (JsonException)`，格式不合法時回空清單而不是讓整支 API 炸掉
 - `Highlights` 欄位：後端 `Campgrounds` 資料表**手動加了 `Highlights nvarchar(500)` 欄位**（沒用 EF Migration，換環境要重跑 `ALTER TABLE`），存 JSON 陣列字串
 
-### ⬜ Phase F3：搜尋與地圖 —— 待開始
-對應後端 Phase 2，service 已建好（`search.service.ts`），元件殼已建（`component/search/`）
+### ✅ Phase F3：搜尋與地圖 —— 完成
+檔案：`src/app/component/search/`、`src/app/component/shared/search-filters/`
 
-- 搜尋結果列表（`POST /api/Search`，分頁），直接重用 `app-camp-card` 元件
-- 篩選器（`GET /api/Search/filters`）
-- 地圖模式（`POST /api/Search/map`，需要 Leaflet 或類似套件）
-- **收到 queryParams 後要把 `requirements` JSON string parse 回陣列**再傳給 API
+對應後端 Phase 2，`search.service.ts` 已用：`search()`（卡片清單）、`searchMap()`（地圖標記）、`getFilters()`、`getOptions()`
+
+**版面結構**：
+```
+┌─────────────────────────────────────────────┐
+│ 搜尋 Bar（compact 模式）+ 篩選按鈕              │ ← 只在卡片欄上方，不是整頁寬
+├─────────────────────────────────────────────┤
+│ 共 N 筆結果              排序選單（p-select）   │
+├──────────────────┬────────────────────────────┤
+│ 卡片清單 (40%)     │      地圖 (60%)            │
+│ 可上下滑動 + 分頁   │      sticky 固定           │
+└──────────────────┴────────────────────────────┘
+```
+
+**Query Params 設計（核心，全部用 `router.navigate(..., { queryParamsHandling: 'merge' })`）**：
+- `area`, `checkInDate`, `checkOutDate`, `requirements`（JSON string，`[{itemId,quantity}]`）：來自搜尋 Bar
+- `tagIds`, `facilityIds`（逗號分隔字串）, `minElevation`, `minRating`：來自篩選彈窗
+- `sortBy`：來自排序選單
+- `pageNumber`, `pageSize`：來自分頁器
+- `southWestLat/Lng`, `northEastLat/Lng`, `zoom`：來自地圖 bbox（見下方 Leaflet 章節）
+- **重要**：任何一處改變條件都只更新自己負責的欄位，用 `merge` 不覆蓋其他欄位；數量歸零/清空欄位時要明確傳 `null`（不能略過不寫），否則 `merge` 不會清掉網址上的舊值（踩過的坑：小木屋 -1 到 0 後永遠查 0 筆，就是這個原因）
+- 排序/篩選/搜尋 Bar 套用條件都會把 `pageNumber` 重置回 1，避免「篩到剩 5 筆但還停在第 3 頁」空畫面
+
+**篩選彈窗**（`search-filters` 元件）：
+- 按鈕 + `p-dialog`，彈窗內分區：海拔高度（`p-slider` 垂直）、營區評價門檻（`p-radioButton`）、環境/政策/設備（`p-checkbox` + icon，從 `GET /api/Search/filters` 動態載入）
+- 「套用篩選」才寫回網址，「清除全部」重置內部 state（不會自動套用）
+
+**搜尋 Bar 重用注意**：同一個 `app-search-bar` 元件首頁（浮動大尺寸）和搜尋頁（`[compact]="true"` 縮小版）共用，差異靠 CSS class 切換，不是兩個元件
+
+**卡片清單**：
+- `app-camp-card` 加 `[layout]="'horizontal'"`（左圖右內容），首頁繼續用預設 `vertical`
+- **固定高度 220px**，`overflow:hidden` + highlights/tags 限制 `max-height` 裁切，避免資料量不同造成每張卡片高度不一致（價格/星評位置跑掉）
+- `p-paginator` 每頁 20 筆，地圖**不受分頁影響**，永遠顯示全部符合條件的 markers（這是 Airbnb 的標準做法，地圖不該因為翻頁而重排閃爍）
+
+**後端這次同步補上的篩選邏輯**（`SearchService.GetFilteredCampgroundsAsync`）：
+- `MinElevation`：`Elevation >= MinElevation`
+- `MinRating`：要先算出 `ratings` 字典才能篩，所以插在 `GetReviewStatsAsync` 之後、排序之前（`SearchAsync` 和 `GetMapMarkersAsync` 都要插）
+- `TagIds`/`FacilityIds`：AND 邏輯（全部選的條件都要符合），標籤用 `TagMapping` 分組計數比對，設施用 `Campground.Facilities` 巢狀 `All+Any`
+- **地點搜尋 bug 修正**：`Area == query.Area`（完全比對）→ `Area.Contains(query.Area)`（模糊比對），不然搜「南投」配不到資料庫存的「南投縣埔里鎮」
+
+---
+
+#### Leaflet 地圖串接（Phase F3 的子任務，這次重點）
+
+**套件**：`leaflet` + `@types/leaflet` + `leaflet.markercluster` + `@types/leaflet.markercluster`
+
+**`angular.json` 改動**（換電腦/拉新分支記得檢查這兩處還在）：
+```jsonc
+"styles": [
+  "node_modules/leaflet/dist/leaflet.css",
+  "node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+  "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
+  // ...
+],
+"assets": [
+  { "glob": "**/*", "input": "public" },
+  { "glob": "**/*", "input": "node_modules/leaflet/dist/images", "output": "assets/leaflet/" }
+]
+```
+
+**核心概念**：Leaflet 是命令式操作 DOM 的庫，跟 Angular 宣告式 binding 不是同一套邏輯，所以用 `@ViewChild('mapContainer')` 抓 DOM 容器 + `ngAfterViewInit`（不能用 `ngOnInit`，DOM 還沒渲染完）手動呼叫 `L.map().setView()` 初始化。
+
+**已踩的坑（重要，不要重蹈覆轍）**：
+1. **地圖容器 CSS 一定要有明確 `width`/`height`**，不然地圖空白
+2. **預設圖示 404**：`L.Icon.Default` 內部 `_getIconUrl` 永遠會自動加偵測到的 `imagePath` 前綴（即使你給絕對路徑也會被疊加，例如疊出 `/media/assets/leaflet/...` 這種錯誤路徑），**唯一解法是 `delete (L.Icon.Default.prototype as any)._getIconUrl`**，讓它改用父類別 `Icon` 單純回傳 `options.xxxUrl` 的版本，不會加前綴。後來直接換成自訂 `L.divIcon`（見下方）後這個問題就無關了，但保留這段防呆
+3. **CSS `transform` 不能加在 Leaflet 用來定位圖示的元素上**：Leaflet 用 inline `style.transform = translate3d(...)` 控制圖釘座標，你的 CSS `transform`（旋轉、縮放）如果套在同一個元素會把定位覆蓋掉，圖釘位置會跑掉。解法：造型/動畫都包在**內層子元素**（例如 `.camp-marker-pin`），外層 `divIcon` 的 `className` 只負責定位，不要加任何 `transform`
+4. **`leaflet.markercluster` 是 side-effect import**：`import 'leaflet.markercluster'` 不用接收回傳值，純粹擴充 `L.markerClusterGroup()` 方法
+5. **圖示授權**：不能直接抓商業圖示站（如 Streamline）的圖案，免費版通常要求標註來源、商用可能違反條款。改用 MIT 授權的 [Tabler Icons](https://github.com/tabler/tabler-icons)，直接複製 `<path>` SVG markup 字串嵌入 `divIcon` 的 `html`，不需要額外裝 npm 套件
+
+**自訂營區圖示**（`campIcon`，`search.ts`）：
+- `L.divIcon`：綠色水滴形圖釘（`border-radius: 50% 50% 50% 0` + `rotate(-45deg)`）+ Tabler 帳篷 SVG（`stroke="currentColor"` 讓顏色跟著 CSS `color` 走）
+- 之後加「景點」標記，複製這個寫法、換顏色/換 SVG 即可（同一套架構）
+
+**Marker Popup**：仿 Airbnb 卡片風格（圖片 + 左上角分類標籤 + 名稱 + 地區 + 評分/價格），`L.divIcon`/`bindPopup` 的內容都是純字串 HTML，不是 Angular 模板，所以 popup 內的 CSS 也要用 `::ng-deep`
+
+**Hover 卡片 ↔ 地圖連動**（`onCardHover`/`onCardHoverEnd`）：
+- `(mouseenter)`/`(mouseleave)` 直接綁在 `<app-camp-card>` 標籤上（不用改 camp-card 元件加 `@Output`，因為是原生 DOM 事件，父層模板可以直接監聽子元件 host 元素）
+- `markersByCampId: Map<number, L.Marker>` 記錄 campId → marker 的對應關係
+- **重要設計決策**：hover **絕對不能移動/縮放地圖**（一開始用 `zoomToShowLayer` 會自動縮放，使用者發現會跟「拖地圖換結果」的設計衝突，已改掉）
+- 用 `clusterGroup.getVisibleParent(marker)` 找出「目前畫面上看得到、代表這個營區的東西」（可能是個別圖釘，也可能是代表它的群聚圓圈），只對看得到的東西加 CSS class 凸顯，看不到就不處理
+- 只有 `getVisibleParent(marker) === marker`（該圖釘本身就可見，沒被群聚收起來）才會 `openPopup()`；被收進群聚圓圈時不開 popup（沒有單一營區內容可顯示）
+- 凸顯效果：個別圖釘放大內層 `.camp-marker-pin`（安全，是內層元素的 width/height，不是 transform）；群聚圓圈用 `filter: drop-shadow` 發光（無法動結構，只能用 filter）
+
+**Clustering**：`L.markerClusterGroup()` 包住所有 markers，縮放層級自動決定顯示個別圖釘還是橘色數字圓圈，不用自己寫合併演算法
+
+**bbox 同步查詢**（`onMapMoveEnd`）：
+- 監聽 `map.on('moveend', ...)`（拖拉/縮放**結束後**才觸發一次，天然節流，不用自己 debounce）
+- 算出 `map.getBounds()` 四個角座標 + `getZoom()`，寫進網址（`merge`，並重置 `pageNumber: 1`）
+- **不會無限迴圈**：查詢結果回來後只更新卡片/markers，不會反過來呼叫 `map.setView()`，所以不会再次觸發 `moveend`
+- 地圖剛載入時 `setView()` 本身也會觸發一次 `moveend`，所以一進 `/search` 網址就會自動補上對應目前畫面範圍的 bbox 參數，這是預期行為
+
+**已知限制／待加強**（不是 bug，是刻意先簡化的部分）：
+- Marker 數量上限 200（後端 `MapMarkerMaxCount`），超過直接截斷不分群（`IsClustered` 永遠回 `false`），跟前端 `leaflet.markercluster` 是兩個獨立機制——前端的群聚只是「畫面呈現」，不是「後端真的把資料庫筆數合併」
+- 目前地圖只有「營區」一種標記，景點（Attraction）標記還沒做，圖示寫法已經設計成可以直接複製套用的架構
 
 ### ⬜ Phase F4：營區詳細頁 —— 待開始
 ### ⬜ Phase F5：日曆選位 —— 待開始（最複雜）

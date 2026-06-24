@@ -15,9 +15,15 @@
 
     <p-card styleClass="article-card" class="">
       <!-- 標題 -->
+      @if(!isEditPost){
       <h1 class="article-title">
         {{ post.title }}
       </h1>
+      } @else {
+      <div class="field">
+        <input pInputText [(ngModel)]="edit_title" name="edit_title" class="w-full article-title-input" />
+      </div>
+      }
 
       <!-- 作者資訊列 -->
       <div class="meta-row">
@@ -26,9 +32,14 @@
             size="large">
           </p-avatar>
           <div class="author-text">
-            <span class="author-name">用戶 #{{ post.userId }}</span>
+            <span class="author-name">{{post.userName}} #{{ post.userId }}</span>
             <span class="author-meta">
               <i class="pi pi-calendar"></i> {{ post.postDate | date:'yyyy-MM-dd' }}
+              @if(nowUserId === post.userId){
+              <p-button icon="pi pi-cog" text (onClick)="editPost(post.postId)" size="small"></p-button>
+              <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deletePost(post.postId)"
+                size="small"></p-button>
+              }
             </span>
           </div>
         </div>
@@ -37,14 +48,54 @@
       <p-divider></p-divider>
 
       <!-- 文章正文 -->
+      @if(!isEditPost){
       <article class="article-content">
         <p>{{ post.mainContent }}</p>
 
         @for(p of post.moreImages;track p.imageUrl){
-        <img class="w-100 p-4" [src]="p.imageUrl" alt="附圖" />
+        <img class="w-100 p-1" [src]="p.imageUrl" alt="附圖" />
         }
 
       </article>
+      } @else {
+      <div class="article-content-edit">
+        <div class="field">
+          <label for="edit_content">內容 *</label>
+          <textarea id="edit_content" pTextarea [(ngModel)]="edit_mainContent" name="edit_mainContent" rows="8"
+            class="w-full" placeholder="請輸入文章內容"></textarea>
+        </div>
+
+        <div class="field" *ngIf="edit_moreImages.length > 0">
+          <label>現有附圖</label>
+          <div class="d-flex flex-wrap gap-2">
+            @for(p of edit_moreImages; track p.imageUrl; let i = $index){
+            <div class="edit-image-item">
+              <img class="w-100 p-1" [src]="p.imageUrl" alt="附圖" />
+              <p-button icon="pi pi-times" severity="danger" text size="small"
+                (onClick)="removeEditImage(i)"></p-button>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label>新增附圖</label>
+          <p-fileupload name="editImages[]" [customUpload]="true" (onSelect)="onEditSelect($event)" [auto]="false"
+            [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
+            [showUploadButton]="false">
+            <ng-template #empty>
+              <div>可將圖片拖曳進方框內上傳</div>
+            </ng-template>
+          </p-fileupload>
+        </div>
+
+        <div class="form-actions">
+          <p-button label="送出" icon="pi pi-send" (onClick)="submitEditPost()"></p-button>
+          <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true"
+            (onClick)="cancelEditPost()"></p-button>
+        </div>
+      </div>
+      }
 
       <p-divider></p-divider>
 
@@ -52,13 +103,16 @@
       <div class="post-footer">
         <div class="action-btns">
 
-          <p-button icon="pi pi-thumbs-up" [outlined]="true" severity="secondary" title="讚耶" size="small"></p-button>
+          <p-button icon="pi pi-heart" [outlined]="true" severity="secondary" title="愛心" size="small"></p-button>
 
-          <p-button icon="pi pi-bookmark" [outlined]="true" severity="secondary" title="收藏文章" size="small"></p-button>
-          <!-- <p-button icon="pi pi-share-alt" [outlined]="true" severity="secondary" title="分享文章" size="small"></p-button> -->
+          <p-button icon="pi pi-bookmark" [outlined]="true" severity="secondary" title="收藏" size="small"></p-button>
 
           <p-button (click)="op.toggle($event); copyPostRoute()" icon="pi pi-share-alt" [outlined]="true" label="分享"
             size="small" />
+
+          <p-button (click)="isReplyPost = !isReplyPost;" icon="pi pi-comments" [outlined]="true" severity="secondary"
+            label="留言" size="small"></p-button>
+
           <p-popover #op>
             <div class="flex flex-col gap-4 w-[25rem]">
               <div>
@@ -69,7 +123,6 @@
               </div>
             </div>
           </p-popover>
-
         </div>
 
         <div class="tag-list" *ngIf="post.postTag">
@@ -80,6 +133,101 @@
 
       </div>
 
+      @if(isReplyPost){
+      <p-card class="reply-card">
+        <!-- 留言區 -->
+        <form #form="ngForm" (ngSubmit)="onSubmit(postForm)" class="add-post-form">
+
+          <div class="field">
+            <label for="content">留言 *</label>
+            <textarea id="content" pTextarea [(ngModel)]="new_mainContent" name="mainContent" rows="8" class="w-full"
+              placeholder="請輸入文章內容"></textarea>
+          </div>
+
+          <div class="field">
+            <label>附圖</label>
+            <p-fileupload name="images[]" [customUpload]="true" (onSelect)="onSelect($event)" [auto]="false"
+              [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
+              [showUploadButton]="false">
+              <ng-template #empty>
+                <div>可將圖片拖曳進方框內上傳</div>
+              </ng-template>
+            </p-fileupload>
+          </div>
+          <div class="form-actions">
+            <p-button label="送出" icon="pi pi-send" type="submit"></p-button>
+          </div>
+        </form>
+
+      </p-card>
+      }
+      <p-divider></p-divider>
+      @if (replies.length > 0) {
+      <p-card class="reply-card">
+        <h4>留言 ({{ replies.length }})</h4>
+        @for (r of replies; track r.replyId) {
+        <div class="reply-item">
+          <p-divider></p-divider>
+          <span class="author-name">{{ r.sendUserName }} #{{ r.sendUserId }}</span>
+          <span class="author-meta">
+            <i class="pi pi-calendar"></i> {{ r.createdAt | date:'yyyy-MM-dd' }}
+            <!-- 刪修留言 -->
+            @if(nowUserId === r.sendUserId){
+            <p-button icon="pi pi-cog" text (onClick)="editReply(r)" size="small"></p-button>
+            <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deleteReply(r.replyId!)"
+              size="small"></p-button>
+            }
+          </span>
+
+          @if(editingReplyId !== r.replyId){
+          <p>{{ r.replyContent }}</p>
+          @for (img of r.moreImages; track img.imageUrl) {
+          <img class="w-100 p-1" [src]="img.imageUrl" alt="附圖" />
+          }
+          } @else {
+          <div class="field">
+            <label for="edit_reply_content">留言 *</label>
+            <textarea id="edit_reply_content" pTextarea [(ngModel)]="edit_replyContent" name="edit_replyContent"
+              rows="4" class="w-full" placeholder="請輸入留言內容"></textarea>
+          </div>
+
+          <div class="field" *ngIf="edit_reply_moreImages.length > 0">
+            <label>現有附圖</label>
+            <div class="d-flex flex-wrap gap-2">
+              @for(p of edit_reply_moreImages; track p.imageUrl; let i = $index){
+              <div class="edit-image-item">
+                <img class="w-100 p-1" [src]="p.imageUrl" alt="附圖" />
+                <p-button icon="pi pi-times" severity="danger" text size="small"
+                  (onClick)="removeEditReplyImage(i)"></p-button>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <label>新增附圖</label>
+            <p-fileupload name="editReplyImages[]" [customUpload]="true" (onSelect)="onEditReplySelect($event)"
+              [auto]="false" [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced"
+              chooseLabel="選擇" cancelLabel="取消" [showUploadButton]="false">
+              <ng-template #empty>
+                <div>可將圖片拖曳進方框內上傳</div>
+              </ng-template>
+            </p-fileupload>
+          </div>
+
+          <div class="form-actions">
+            <p-button label="送出" icon="pi pi-send" (onClick)="submitEditReply()"></p-button>
+            <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true"
+              (onClick)="cancelEditReply()"></p-button>
+          </div>
+          }
+        </div>
+        }
+      </p-card>
+      }
     </p-card>
+
   </div>
 </div>
+
+<p-toast />

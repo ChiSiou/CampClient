@@ -1,0 +1,104 @@
+.add-post-bg {
+  min-height: 100vh;
+  padding: 4rem 1.5rem;
+  background: linear-gradient(180deg, #fbfff5 0%, #fbfdf6 50%, #ffffff 100%);
+}
+
+.add-post-bg .container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a2e1a;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.add-post-form {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.field input,
+.field textarea,
+.field .p-select {
+  width: 100%;
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.add-post-form ::ng-deep .p-inputtext,
+.add-post-form ::ng-deep .p-select,
+.add-post-form ::ng-deep .p-textarea {
+  border-radius: 10px;
+}
+
+.add-post-form ::ng-deep .p-inputtext:focus,
+.add-post-form ::ng-deep .p-select:not(.p-disabled).p-focus,
+.add-post-form ::ng-deep .p-textarea:focus {
+  border-color: #6aaa3a;
+  box-shadow: 0 0 0 2px rgba(106, 170, 58, 0.2);
+}
+
+.add-post-form ::ng-deep .p-fileupload-choose-button {
+  border-radius: 10px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ebebeb;
+}
+
+.form-actions ::ng-deep .p-button {
+  border-radius: 50px;
+  padding: 0.65rem 2rem;
+  font-weight: 600;
+  background: #6aaa3a;
+  border-color: #6aaa3a;
+}
+
+.form-actions ::ng-deep .p-button:hover {
+  background: #5c9430;
+  border-color: #5c9430;
+  transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .add-post-bg {
+    padding: 2.5rem 1rem;
+  }
+
+  .add-post-form {
+    padding: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
