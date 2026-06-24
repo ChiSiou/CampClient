@@ -61,6 +61,10 @@ export class Post implements OnInit {
   isReplyPost: boolean = false;
   nowUserId?: number;
   isEditPost: boolean = false;
+  edit_title: string = '';
+  edit_mainContent: string = '';
+  edit_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
+  edit_selectedFiles: File[] = [];
 
   // 回覆
   replies: IReply[] = [];
@@ -116,9 +120,89 @@ export class Post implements OnInit {
   }
 
   editPost(id: number) {
+    if (!this.post) return;
     this.isEditPost = true;
+    this.edit_title = this.post.title;
+    this.edit_mainContent = this.post.mainContent;
+    this.edit_moreImages = this.post.moreImages ? [...this.post.moreImages] : [];
+    this.edit_selectedFiles = [];
+  }
 
+  cancelEditPost() {
+    this.isEditPost = false;
+    this.edit_selectedFiles = [];
+  }
 
+  onEditSelect(event: UploadEvent) {
+    this.edit_selectedFiles = event.currentFiles;
+  }
+
+  removeEditImage(index: number) {
+    this.edit_moreImages.splice(index, 1);
+  }
+
+  async submitEditPost() {
+    if (!this.post) return;
+
+    if (!this.edit_title.trim() || !this.edit_mainContent.trim()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: '編輯失敗',
+        detail: '標題與內容為必填欄位。',
+        life: 3000,
+      });
+      return;
+    }
+
+    let newImageUrls: string[] = [];
+    if (this.edit_selectedFiles.length > 0) {
+      for (const file of this.edit_selectedFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res: any = await this.sforumService.uploadImage(formData).toPromise();
+        newImageUrls.push(res.imageUrl);
+      }
+    }
+
+    const moreImages = [
+      ...this.edit_moreImages,
+      ...newImageUrls.map((url) => ({ imageUrl: url })),
+    ];
+
+    const param: IForum = {
+      ...this.post,
+      title: this.edit_title,
+      mainContent: this.edit_mainContent,
+      postTag: this.post.postTag ?? '',
+      isHaveImgs: moreImages.length > 0,
+      moreImages: moreImages,
+    };
+
+    this.sforumService.putPostAPI(this.post.postId, param).subscribe({
+      next: () => {
+        this.post = param;
+        if (this.post.isHaveImgs && this.post.moreImages?.length) {
+          this.postMainPic = this.post.moreImages[0]?.imageUrl ?? '';
+        }
+        this.isEditPost = false;
+        this.edit_selectedFiles = [];
+        this.messageService.add({
+          severity: 'success',
+          summary: '編輯成功',
+          detail: '文章已更新。',
+          life: 3000,
+        });
+      },
+      error: (err) => {
+        console.error('編輯失敗', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: '編輯失敗',
+          detail: '請稍後再試。',
+          life: 3000,
+        });
+      },
+    });
   }
 
   deletePost(id: number) {

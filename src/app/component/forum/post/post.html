@@ -15,9 +15,15 @@
 
     <p-card styleClass="article-card" class="">
       <!-- 標題 -->
+      @if(!isEditPost){
       <h1 class="article-title">
         {{ post.title }}
       </h1>
+      } @else {
+      <div class="field">
+        <input pInputText [(ngModel)]="edit_title" name="edit_title" class="w-full article-title-input" />
+      </div>
+      }
 
       <!-- 作者資訊列 -->
       <div class="meta-row">
@@ -42,6 +48,7 @@
       <p-divider></p-divider>
 
       <!-- 文章正文 -->
+      @if(!isEditPost){
       <article class="article-content">
         <p>{{ post.mainContent }}</p>
 
@@ -50,6 +57,45 @@
         }
 
       </article>
+      } @else {
+      <div class="article-content-edit">
+        <div class="field">
+          <label for="edit_content">內容 *</label>
+          <textarea id="edit_content" pTextarea [(ngModel)]="edit_mainContent" name="edit_mainContent" rows="8"
+            class="w-full" placeholder="請輸入文章內容"></textarea>
+        </div>
+
+        <div class="field" *ngIf="edit_moreImages.length > 0">
+          <label>現有附圖</label>
+          <div class="d-flex flex-wrap gap-2">
+            @for(p of edit_moreImages; track p.imageUrl; let i = $index){
+            <div class="edit-image-item">
+              <img class="w-100 p-1" [src]="p.imageUrl" alt="附圖" />
+              <p-button icon="pi pi-times" severity="danger" text size="small"
+                (onClick)="removeEditImage(i)"></p-button>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label>新增附圖</label>
+          <p-fileupload name="editImages[]" [customUpload]="true" (onSelect)="onEditSelect($event)" [auto]="false"
+            [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
+            [showUploadButton]="false">
+            <ng-template #empty>
+              <div>可將圖片拖曳進方框內上傳</div>
+            </ng-template>
+          </p-fileupload>
+        </div>
+
+        <div class="form-actions">
+          <p-button label="送出" icon="pi pi-send" (onClick)="submitEditPost()"></p-button>
+          <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true"
+            (onClick)="cancelEditPost()"></p-button>
+        </div>
+      </div>
+      }
 
       <p-divider></p-divider>
 
@@ -134,10 +180,7 @@
         }
       </p-card>
       }
-
     </p-card>
-
-
 
   </div>
 </div>
