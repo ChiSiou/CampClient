@@ -13,11 +13,19 @@
       <!-- center nav -->
       <nav class="main-nav">
         <a pButton label="野營社群" routerLink="forum" [text]="true" [rounded]="true" severity="secondary"></a>
-        @if(activeUserRole === 'User'&& userrole.includes('Owner')){
-        <a pButton label="我的營地" (click)="switchRole('Owner')" [text]="true" [rounded]="true" severity="secondary"></a>
+        @if (activeUserRole === 'User') {
+        @if (userrole.includes('Owner')) {
+        <p-button label="我的營地" (onClick)="switchRole('Owner')" [text]="true" [rounded]="true" severity="secondary">
+        </p-button>
+        } @else {
+        <p-button label="成為營主" routerLink="/owner-register" [text]="true" [rounded]="true" severity="secondary">
+        </p-button>
         }
-        @if(activeUserRole === 'Owner'&& userrole.includes('User')){
-        <a pButton label="我是使用者" (click)="switchRole('User')" [text]="true" [rounded]="true" severity="secondary"></a>
+        }
+
+        @if (activeUserRole === 'Owner' && userrole.includes('User')) {
+        <p-button label="我是使用者" (onClick)="switchRole('User')" [text]="true" [rounded]="true" severity="secondary">
+        </p-button>
         }
       </nav>
 
