@@ -48,6 +48,13 @@
   padding: 0.5rem;
 }
 
+// 卡片 回應用
+.reply-card {
+  margin-top: 0.6rem;
+  border: 0;
+  box-shadow: none;
+}
+
 // 標題
 .article-title {
   font-size: 2rem;
@@ -179,6 +186,41 @@
     font-size: 0.85rem;
   }
 }
+
+// 回應的其他樣式
+.add-post-form {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.field input,
+.field textarea,
+.field .p-select {
+  width: 100%;
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
 
 // 響應式
 @media (max-width: 600px) {

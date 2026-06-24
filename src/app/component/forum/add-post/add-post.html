@@ -31,9 +31,13 @@
 
       <div class="field">
         <label>附圖</label>
-        <p-fileUpload name="images[]" [multiple]="true" accept="image/*" [auto]="false" [customUpload]="true"
-          (onSelect)="onSelect($event)" chooseLabel="選擇圖片">
-        </p-fileUpload>
+        <p-fileupload name="images[]" [customUpload]="true" (onSelect)="onSelect($event)" [auto]="false"
+          [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
+          [showUploadButton]="false">
+          <ng-template #empty>
+            <div>可將圖片拖曳進方框內上傳</div>
+          </ng-template>
+        </p-fileupload>
       </div>
 
       <div class="form-actions">
