@@ -151,6 +151,8 @@ export class Post implements OnInit {
   }
 
   onSubmit(form: any) {
+    this.new_userId = Number(this.sMember.getid());
+
     if (this.new_mainContent.trim()) {
       form.valid = true;
     } else {
