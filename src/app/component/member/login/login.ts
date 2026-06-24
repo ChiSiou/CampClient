@@ -25,19 +25,19 @@ export class Login {
     private memberService: MemberService,
     private routes: Router,
     private messageService: MessageService,
-  ) { }
+  ) {}
 
   GetloginApi(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.Token);
-        localStorage.setItem('roles', JSON.stringify(res.Roles));
-        localStorage.setItem('activeRole', res.ActiveRole);
-
-        const decoded: any = jwtDecode(res.Token);
-        console.log('decoded token:', decoded);
+        console.log(res);
+        console.log(res.token);
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('roles', JSON.stringify(res.roles));
+        localStorage.setItem('activeRole', res.activeRole);
         ///把後端回傳的 JWT token 存到瀏覽器的 localStorage 裡面
-
+        this.memberService.startTokenTimer();
+        ///token過期時間開始計時
         var name = this.memberService.getname();
         this.messageService.add({
           key: 'top-right',

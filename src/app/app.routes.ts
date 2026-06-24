@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './component/member/Service/authguard';
 
 export const routes: Routes = [
   {
@@ -21,7 +22,7 @@ export const routes: Routes = [
       },
       {
         path: 'forum',
-        loadComponent: () => import('./component/forum/forum/forum').then(m => m.Forum),
+        loadComponent: () => import('./component/forum/forum/forum').then((m) => m.Forum),
       },
       {
         path: 'post/:id',
@@ -33,6 +34,8 @@ export const routes: Routes = [
       },
       {
         path: 'member-center',
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
         loadComponent: () =>
           import('./component/member/memberCenter/member-center').then((m) => m.MemberCenter),
         children: [
@@ -51,6 +54,14 @@ export const routes: Routes = [
               import('./component/member/profile/profile').then((m) => m.Profile),
           },
         ],
+      },
+      {
+        path: 'ownerCenter',
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
+        loadComponent: () =>
+          import('./component/member/owner-center/owner-center').then((m) => m.OwnerCenter),
+        children: [],
       },
 
       {
@@ -73,9 +84,10 @@ export const routes: Routes = [
       },
       {
         path: 'camp/:id/rental',
-        loadComponent: () => import('./component/camping-rental/camping-rental').then(m => m.CampingRentalComponent)
-      }
-    ]
+        loadComponent: () =>
+          import('./component/camping-rental/camping-rental').then((m) => m.CampingRentalComponent),
+      },
+    ],
   },
   {
     path: '',
@@ -91,6 +103,7 @@ export const routes: Routes = [
       },
       {
         path: 'owner-register',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./component/member/register/owner-register').then((m) => m.OwnerRegister),
       },
