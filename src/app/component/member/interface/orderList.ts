@@ -14,5 +14,6 @@ export interface OrderDetail {
   totalAmount: number;
   checkinDate: string;
   checkoutDate: string;
+  accomType: string;
   campImageUrl: string;
 }
