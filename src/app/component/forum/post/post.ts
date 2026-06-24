@@ -19,6 +19,7 @@ import { SelectModule } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { Toast } from "primeng/toast";
 import { IReply } from '../interfaces/IReply';
+import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
   currentFiles: any;
@@ -53,10 +54,13 @@ interface UploadEvent {
 export class Post implements OnInit {
 
   post: IForum | null = null;
+  editPosts: IForum[] = [];
   postId!: number;
   postRoute?: string = '';
   postMainPic?: string;
   isReplyPost: boolean = false;
+  nowUserId?: number;
+  isEditPost: boolean = false;
 
   // 回覆
   replies: IReply[] = [];
@@ -72,12 +76,14 @@ export class Post implements OnInit {
     valid: false,
   };
 
-  constructor(private sforumService: Sforum, private route: ActivatedRoute, private router: Router) { }
+  constructor(private sforumService: Sforum, private route: ActivatedRoute, private router: Router, private primeng: PrimeNG, private sMember: MemberService) {
+    this.primeng.setTranslation({ pending: '等待上傳' });
+  }
 
   ngOnInit(): void {
+    this.nowUserId = Number(this.sMember.getid());
     this.postId = Number(this.route.snapshot.paramMap.get('id'));
     this.postRoute = window.location.href;
-
     this.sforumService.getPostById(this.postId).subscribe({
       next: (data) => {
         this.post = data;
@@ -106,6 +112,26 @@ export class Post implements OnInit {
   copyPostRoute(): void {
     if (this.postRoute) {
       navigator.clipboard.writeText(this.postRoute);
+    }
+  }
+
+  editPost(id: number) {
+    this.isEditPost = true;
+
+
+  }
+
+  deletePost(id: number) {
+    if (confirm('確定要刪除這則貼文嗎？')) {
+      this.sforumService.deletePost(id).subscribe({
+        next: () => {
+          this.editPosts = this.editPosts.filter(item => item.postId !== id);
+          this.router.navigate(['/forum']);
+        },
+        error: (err) => {
+          console.error('貼文刪除失敗', err);
+        }
+      });
     }
   }
 
