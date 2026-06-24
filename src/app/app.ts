@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
 import { ToastModule } from 'primeng/toast';
+import { MemberService } from './component/member/Service/member-service';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Toast, ToastModule],
@@ -12,4 +13,11 @@ import { ToastModule } from 'primeng/toast';
 })
 export class App {
   protected readonly title = signal('CampClient');
+
+  constructor(private memberservice: MemberService) {}
+  ngOnInit(): void {
+    if (this.memberservice.isAuthenticated()) {
+      this.memberservice.startTokenTimer();
+    }
+  }
 }

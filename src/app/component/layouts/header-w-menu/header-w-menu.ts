@@ -20,11 +20,13 @@ export class HeaderWMenu {
   ) {}
 
   username = '';
-  userRole = '';
+  userrole = '';
+  activeUserRole = '';
 
   ngOnInit() {
     this.username = this.memberservice.getname();
-    this.userRole = this.memberservice.getrole();
+    this.userrole = this.memberservice.getrole();
+    this.activeUserRole = this.memberservice.getActiveRole();
     const token = localStorage.getItem('token');
     if (token != null) {
       const decoded: any = jwtDecode(token);
@@ -48,18 +50,45 @@ export class HeaderWMenu {
     this.menu().toggle(event);
   }
 
-  memberislogin() {
-    const islogin = this.memberservice.islogin();
-    if (islogin) {
+  Center() {
+    if (this.activeUserRole === 'Owner') {
+      this.routes.navigate(['/ownerCenter']);
+    } else if (this.activeUserRole === 'User') {
       this.routes.navigate(['/member-center']);
+    } else {
+      this.routes.navigate(['/login']);
     }
   }
+  switchRole(roleName: string) {
+    this.memberservice.switchRole(roleName).subscribe({
+      next: (res) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('roles', JSON.stringify(res.roles));
+        localStorage.setItem('activeRole', res.activeRole);
 
-  ownerislogin(route: string) {
-    const islogin = this.memberservice.islogin();
-    if (islogin) {
-      this.routes.navigate(['/']);
-    }
-    this.routes.navigate(['/owner-register']);
+        // 重點：同步更新畫面變數
+        this.activeUserRole = res.activeRole;
+        this.userrole = res.roles;
+        localStorage.setItem('activeRole', res.activeRole);
+
+        if (res.activeRole === 'Owner') {
+          this.routes.navigate(['/ownerCenter']);
+        } else if (res.activeRole === 'User') {
+          this.routes.navigate(['/member-center']);
+        } else {
+          this.routes.navigate(['/']);
+        }
+      },
+      error: (err) => {
+        console.log(err);
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: `登入失敗`,
+          detail: '請先註冊成為營主',
+        });
+        this.routes.navigate(['owner-register']);
+      },
+    });
   }
 }
