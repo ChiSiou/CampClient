@@ -165,16 +165,61 @@
       @if (replies.length > 0) {
       <p-card class="reply-card">
         <h4>留言 ({{ replies.length }})</h4>
-        @for (r of replies; track r.replyContent) {
+        @for (r of replies; track r.replyId) {
         <div class="reply-item">
           <p-divider></p-divider>
           <span class="author-name">{{ r.sendUserName }} #{{ r.sendUserId }}</span>
           <span class="author-meta">
             <i class="pi pi-calendar"></i> {{ r.createdAt | date:'yyyy-MM-dd' }}
+            <!-- 刪修留言 -->
+            @if(nowUserId === r.sendUserId){
+            <p-button icon="pi pi-cog" text (onClick)="editReply(r)" size="small"></p-button>
+            <p-button icon="pi pi-trash" severity="secondary" text (onClick)="deleteReply(r.replyId!)"
+              size="small"></p-button>
+            }
           </span>
+
+          @if(editingReplyId !== r.replyId){
           <p>{{ r.replyContent }}</p>
           @for (img of r.moreImages; track img.imageUrl) {
           <img class="w-100 p-1" [src]="img.imageUrl" alt="附圖" />
+          }
+          } @else {
+          <div class="field">
+            <label for="edit_reply_content">留言 *</label>
+            <textarea id="edit_reply_content" pTextarea [(ngModel)]="edit_replyContent" name="edit_replyContent"
+              rows="4" class="w-full" placeholder="請輸入留言內容"></textarea>
+          </div>
+
+          <div class="field" *ngIf="edit_reply_moreImages.length > 0">
+            <label>現有附圖</label>
+            <div class="d-flex flex-wrap gap-2">
+              @for(p of edit_reply_moreImages; track p.imageUrl; let i = $index){
+              <div class="edit-image-item">
+                <img class="w-100 p-1" [src]="p.imageUrl" alt="附圖" />
+                <p-button icon="pi pi-times" severity="danger" text size="small"
+                  (onClick)="removeEditReplyImage(i)"></p-button>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <label>新增附圖</label>
+            <p-fileupload name="editReplyImages[]" [customUpload]="true" (onSelect)="onEditReplySelect($event)"
+              [auto]="false" [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced"
+              chooseLabel="選擇" cancelLabel="取消" [showUploadButton]="false">
+              <ng-template #empty>
+                <div>可將圖片拖曳進方框內上傳</div>
+              </ng-template>
+            </p-fileupload>
+          </div>
+
+          <div class="form-actions">
+            <p-button label="送出" icon="pi pi-send" (onClick)="submitEditReply()"></p-button>
+            <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true"
+              (onClick)="cancelEditReply()"></p-button>
+          </div>
           }
         </div>
         }

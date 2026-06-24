@@ -74,6 +74,12 @@ export class Post implements OnInit {
   private messageService = inject(MessageService);
   selectedFiles: File[] = [];
   uploadedImageUrls: string[] = [];
+  isEditReply: boolean = false;
+  editingReplyId: number | null = null;
+  edit_replyContent: string = '';
+  edit_reply_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
+  edit_reply_selectedFiles: File[] = [];
+
 
   postForm = {
     submitted: false,
@@ -296,6 +302,117 @@ export class Post implements OnInit {
         });
       },
     });
+  }
+
+  editReply(reply: IReply) {
+    if (!reply.replyId) return;
+    this.isEditReply = true;
+    this.editingReplyId = reply.replyId;
+    this.edit_replyContent = reply.replyContent;
+    this.edit_reply_moreImages = reply.moreImages ? [...reply.moreImages] : [];
+    this.edit_reply_selectedFiles = [];
+  }
+
+  cancelEditReply() {
+    this.isEditReply = false;
+    this.editingReplyId = null;
+    this.edit_reply_selectedFiles = [];
+  }
+
+  onEditReplySelect(event: UploadEvent) {
+    this.edit_reply_selectedFiles = event.currentFiles;
+  }
+
+  removeEditReplyImage(index: number) {
+    this.edit_reply_moreImages.splice(index, 1);
+  }
+
+  async submitEditReply() {
+    if (!this.editingReplyId) return;
+
+    const reply = this.replies.find(r => r.replyId === this.editingReplyId);
+    if (!reply) return;
+
+    if (!this.edit_replyContent.trim()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: '編輯失敗',
+        detail: '留言內容為必填欄位。',
+        life: 3000,
+      });
+      return;
+    }
+
+    let newImageUrls: string[] = [];
+    if (this.edit_reply_selectedFiles.length > 0) {
+      for (const file of this.edit_reply_selectedFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res: any = await this.sforumService.uploadImage(formData).toPromise();
+        newImageUrls.push(res.imageUrl);
+      }
+    }
+
+    const moreImages = [
+      ...this.edit_reply_moreImages,
+      ...newImageUrls.map((url) => ({ imageUrl: url })),
+    ];
+
+    const param: IReply = {
+      ...reply,
+      replyContent: this.edit_replyContent,
+      isHaveImgs: moreImages.length > 0,
+      moreImages: moreImages,
+    };
+
+    this.sforumService.putReply(this.editingReplyId, param).subscribe({
+      next: () => {
+        this.loadReplies();
+        this.isEditReply = false;
+        this.editingReplyId = null;
+        this.edit_reply_selectedFiles = [];
+        this.messageService.add({
+          severity: 'success',
+          summary: '編輯成功',
+          detail: '留言已更新。',
+          life: 3000,
+        });
+      },
+      error: (err) => {
+        console.error('留言編輯失敗', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: '編輯失敗',
+          detail: '請稍後再試。',
+          life: 3000,
+        });
+      },
+    });
+  }
+
+  deleteReply(id: number) {
+    if (confirm('確定要刪除這則留言嗎？')) {
+      this.sforumService.deleteReply(id).subscribe({
+        next: () => {
+          this.loadReplies();
+          this.messageService.add({
+            severity: 'success',
+            summary: '刪除成功',
+            detail: '留言已刪除。',
+            life: 3000,
+          });
+        },
+        error: (err) => {
+          console.error('留言刪除失敗', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: '刪除失敗',
+            detail: '請稍後再試。',
+            life: 3000,
+          });
+        }
+      });
+    }
   }
 
 }

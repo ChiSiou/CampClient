@@ -1,4 +1,5 @@
 export interface IReply {
+  replyId?: number;
   postId: number;
   sendUserId: number;
   sendUserName?: string | null;

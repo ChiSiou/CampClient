@@ -65,4 +65,12 @@ export class Sforum {
     return this.http.post<IReply[]>(this.apiReplyUrl, para);
   }
 
+  putReply(id: number, para: IReply) {
+    return this.http.put<IReply[]>(`${this.apiReplyUrl}/${id}`, para);
+  }
+
+  deleteReply(id: number) {
+    return this.http.delete<IReply[]>(`${this.apiReplyUrl}/${id}`);
+  }
+
 }
