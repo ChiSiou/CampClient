@@ -12,6 +12,7 @@ import { profilePhotoResponse } from '../interface/profilePhotoResponse';
 import { Memberedit } from '../memberedit/memberedit';
 import { MemberEdit } from '../interface/MemberEdit';
 import { switchRoleResponse } from '../interface/switchRoleResponse';
+import { OrderList } from '../interface/orderList';
 
 @Injectable({
   providedIn: 'root',
@@ -110,8 +111,7 @@ export class MemberService {
     } catch {
       this.logout();
     }
-  }
-
+  } //token計時器
   islogin() {
     const token = localStorage.getItem('token');
 
@@ -143,7 +143,6 @@ export class MemberService {
       roleName: roleName,
     });
   }
-
   memberregister(data: memberregisterData, file: File) {
     const formData = new FormData();
 
@@ -160,15 +159,42 @@ export class MemberService {
     return this.http.post<string>(`${this.apiUrl}/OwnerRegister`, data);
   }
   uploadOwnerProfilePhoto(file: File) {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('file', file, file.name);
     return this.http.post<profilePhotoResponse>(`${this.apiUrl}/UploadOwnerProfilePhoto`, formData);
+  }
+  getorder() {
+    return this.http.get<OrderList[]>(`${this.apiUrl}/GetOrder`);
   }
   getphoto() {
     const token = localStorage.getItem('token');
     var id = this.getid();
     return this.http.get<profilePhotoResponse>(`${this.apiUrl}/GetProfilePhoto/${id}`);
+  }
+  memberEdit(data: FormData) {
+    const token = localStorage.getItem('token');
+    return this.http.post<string>(`${this.apiUrl}/MemberEdit`, data);
+  }
+  getActiveRole() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return decoded['activeRole'];
+    }
+  }
+  getemail() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+    }
+  }
+  getphone() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
+    }
   }
   getid() {
     const token = localStorage.getItem('token');
@@ -192,30 +218,5 @@ export class MemberService {
       const decoded: any = jwtDecode(token);
       return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
-  }
-  getActiveRole() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['activeRole'];
-    }
-  }
-  getemail() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
-    }
-  }
-  getphone() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
-    }
-  }
-  memberEdit(data: FormData) {
-    const token = localStorage.getItem('token');
-    return this.http.post<string>(`${this.apiUrl}/MemberEdit`, data);
   }
 }

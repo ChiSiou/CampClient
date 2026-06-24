@@ -7,39 +7,56 @@
   </div>
 
   <div class="orders-tabs">
-    <button class="tab active">全部</button>
-    <button class="tab">待付款</button>
-    <button class="tab">已付款</button>
-    <button class="tab">已完成</button>
-    <button class="tab">已取消</button>
+    <button class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+      全部
+    </button>
+
+    <button class="tab" [class.active]="activeTab === 0" (click)="activeTab = 0">
+      待付款
+    </button>
+
+    <button class="tab" [class.active]="activeTab === 1" (click)="activeTab = 1">
+      已付款
+    </button>
+
+    <button class="tab" [class.active]="activeTab === 4" (click)="activeTab = 4">
+      已完成
+    </button>
+
+    <button class="tab" [class.active]="activeTab === 2" (click)="activeTab = 2">
+      已取消
+    </button>
   </div>
 
   <div class="orders-list">
     <!-- 訂單卡片 -->
+    @for(data of filteredOrders; track data.orderId){
     <div class="order-card">
       <div class="order-top">
         <div>
-          <span class="order-no">訂單編號：ORD20260622001</span>
-          <p class="order-date">下訂日期：2026/06/22</p>
+          <span class="order-no">訂單編號： {{data.orderNumber}}</span>
+          <p class="order-date">下訂日期：{{data.orderDate| date:'yyyy-MM-dd'}}</p>
         </div>
 
-        <span class="status paid">已付款</span>
+        <span class="status" [ngClass]="getOrderStatusClass(data.status)">
+          {{ getOrderStatusText(data.status) }}
+        </span>
       </div>
-
+      @for (detail of data.details; track detail.orderDetailId){
       <div class="order-content">
-        <img src="https://images.unsplash.com/photo-1504851149312-7a075b496cc7" alt="營地圖片" class="camp-img" />
+        <img [src]="detail.campImageUrl || ''" alt="營地圖片" class="camp-img" />
 
         <div class="order-info">
-          <h3>星空森林露營區</h3>
+          <h3>{{detail.campName}}</h3>
 
           <div class="info-row">
             <span>入住日期</span>
-            <strong>2026/07/01</strong>
+            <strong>{{detail.checkinDate}}</strong>
           </div>
 
           <div class="info-row">
             <span>退房日期</span>
-            <strong>2026/07/03</strong>
+            <strong>{{detail.checkoutDate}}</strong>
           </div>
 
           <div class="info-row">
@@ -52,12 +69,12 @@
             <strong>4 人</strong>
           </div>
         </div>
-      </div>
+      </div>}
 
       <div class="order-bottom">
         <div class="price">
           總金額
-          <strong>NT$ 3,600</strong>
+          <strong>NT{{data.totalAmount}}</strong>
         </div>
 
         <div class="actions">
@@ -66,56 +83,7 @@
         </div>
       </div>
     </div>
+    }
 
-    <div class="order-card">
-      <div class="order-top">
-        <div>
-          <span class="order-no">訂單編號：ORD20260618002</span>
-          <p class="order-date">下訂日期：2026/06/18</p>
-        </div>
-
-        <span class="status pending">待付款</span>
-      </div>
-
-      <div class="order-content">
-        <img src="https://images.unsplash.com/photo-1478131143081-80f7f84ca84d" alt="營地圖片" class="camp-img" />
-
-        <div class="order-info">
-          <h3>湖畔小屋露營區</h3>
-
-          <div class="info-row">
-            <span>入住日期</span>
-            <strong>2026/07/10</strong>
-          </div>
-
-          <div class="info-row">
-            <span>退房日期</span>
-            <strong>2026/07/12</strong>
-          </div>
-
-          <div class="info-row">
-            <span>營位類型</span>
-            <strong>木棧板營位</strong>
-          </div>
-
-          <div class="info-row">
-            <span>人數</span>
-            <strong>2 人</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="order-bottom">
-        <div class="price">
-          總金額
-          <strong>NT$ 2,400</strong>
-        </div>
-
-        <div class="actions">
-          <button class="btn danger">取消訂單</button>
-          <button class="btn primary">立即付款</button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

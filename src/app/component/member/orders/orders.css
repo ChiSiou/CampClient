@@ -95,7 +95,20 @@
   font-size: 14px;
   font-weight: 600;
 }
+.tab {
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background-color: #f1f3f0;
+  color: #555;
+  cursor: pointer;
+  font-weight: 600;
+}
 
+.tab.active {
+  background-color: #2f6f3e;
+  color: white;
+}
 .status.paid {
   background: #e5f5ea;
   color: #2f8f46;
