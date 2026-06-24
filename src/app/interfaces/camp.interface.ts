@@ -324,6 +324,76 @@ export interface CheckoutResultDto {
   unavailableItems: string[] | null;
 }
 
+// ===== Phase 5b：裝備加購 =====
+
+export interface EquipmentListItemDto {
+  productId: number;
+  name: string;
+  category: string;
+  mainImageUrl: string | null;
+  isVariantProduct: boolean | null;
+  variants: EquipmentVariantSummaryDto[];
+}
+
+export interface EquipmentVariantSummaryDto {
+  variantId: number;
+  variantName: string;
+  sku: string;
+  dailyRentalPrice: number;
+  availableStock: number;
+}
+
+export interface EquipmentDetailDto {
+  productId: number;
+  name: string;
+  category: string;
+  description: string;
+  mainImageUrl: string | null;
+  isVariantProduct: boolean | null;
+  variants: EquipmentVariantDetailDto[];
+}
+
+export interface EquipmentVariantDetailDto {
+  variantId: number;
+  variantName: string;
+  sku: string;
+  image: string | null;
+  dailyRentalPrice: number;
+  totalStock: number;
+  availableStock: number;
+}
+
+export interface ShippingMethodDto {
+  shippingMethodId: number;
+  methodName: string;
+  methodCode: string;
+  baseFee: number;
+  freeShippingThreshold: number | null;
+  description: string | null;
+}
+
+export interface EquipmentBreakdownRequestDto {
+  checkInDate: string;
+  checkOutDate: string;
+  selectedEquipments: EquipmentSelectionItem[];
+}
+
+export interface EquipmentBreakdownResultDto {
+  success: boolean;
+  items: EquipmentBreakdownItem[];
+  equipmentSubTotal: number;
+  unavailableItems: string[] | null;
+}
+
+// 加購頁確認後寫入 sessionStorage 的內容，欄位名稱對齊 CheckoutSubmitDto / CheckoutSummaryDto，
+// 結帳頁可直接讀取後分別塞進自己的 DTO。
+export interface StoredEquipmentSelection {
+  selectedEquipments: EquipmentSelectionItem[]; // -> CheckoutSubmitDto.selectedEquipments
+  shippingMethodId: number | null; // -> CheckoutSubmitDto.shippingMethodId
+  equipments: EquipmentBreakdownItem[]; // -> CheckoutSummaryDto.equipments
+  equipmentSubTotal: number; // -> CheckoutSummaryDto.equipmentSubTotal
+}
+
 // ===== Phase 6：付款/退款 =====
 
 export interface PaymentStatusDto {

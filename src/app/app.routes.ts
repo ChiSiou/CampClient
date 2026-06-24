@@ -84,10 +84,16 @@ export const routes: Routes = [
       },
       {
         path: 'camp/:id/rental',
-        loadComponent: () =>
-          import('./component/camping-rental/camping-rental').then((m) => m.CampingRentalComponent),
+        loadComponent: () => import('./component/camping-rental/camping-rental').then(m => m.CampingRentalComponent)
       },
-    ],
+      {
+        path: 'camp/:id/rental/equipment/:productId',
+        loadComponent: () =>
+          import('./component/camping-rental/equipment-detail/equipment-detail').then(
+            (m) => m.EquipmentDetailComponent,
+          ),
+      }
+    ]
   },
   {
     path: '',

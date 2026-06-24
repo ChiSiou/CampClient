@@ -1,0 +1,25 @@
+<div class="container">
+  <button class="back" (click)="backToList()">← 回加購清單</button>
+
+  <div *ngIf="loading()" class="loading">載入中...</div>
+  <div *ngIf="notFound()" class="error">找不到這個裝備商品。</div>
+
+  <div *ngIf="detail()" class="detail">
+    <img [src]="detail()!.mainImageUrl || 'assets/default-gear.png'" [alt]="detail()!.name" />
+    <h2>{{ detail()!.name }}</h2>
+    <p class="category">{{ detail()!.category }}</p>
+    <p class="description">{{ detail()!.description }}</p>
+
+    <div class="variant-row" *ngFor="let v of detail()!.variants">
+      <span class="variant-name">{{ v.variantName }}</span>
+      <span class="price">${{ v.dailyRentalPrice }} / 天</span>
+      <span class="stock" [class.out]="v.availableStock === 0">庫存 {{ v.availableStock }}</span>
+
+      <div class="qty-control">
+        <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">-</button>
+        <span>{{ getQuantity(v.variantId) }}</span>
+        <button (click)="changeQuantity(v.variantId, 1, v.availableStock)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+      </div>
+    </div>
+  </div>
+</div>
