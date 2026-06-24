@@ -10,6 +10,7 @@ import { SelectModule } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { Sforum } from '../service/sforum';
 import { IForum } from '../interfaces/Iforum';
+import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
   currentFiles: any;
@@ -65,7 +66,10 @@ export class AddPost {
     valid: false,
   };
 
-  constructor(private sforumService: Sforum, private router: Router) { }
+  constructor(private sforumService: Sforum, private router: Router, private primeng: PrimeNG) {
+    this.primeng.setTranslation({ pending: '等待上傳' });
+
+  }
 
   ngOnInit(): void {
     this.new_userId = this.sforumService.getUserId();

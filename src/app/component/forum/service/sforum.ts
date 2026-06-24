@@ -5,12 +5,14 @@ import { IForum } from '../interfaces/Iforum';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { IReply } from '../interfaces/IReply';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Sforum {
   private apiUrl = 'https://localhost:7011/api/APIPost';
+  private apiReplyUrl = 'https://localhost:7011/api/APIReply';
 
   constructor(
     private http: HttpClient,
@@ -23,6 +25,10 @@ export class Sforum {
       return Number(decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']);
     }
     return 0;
+  }
+
+  getUserName(post: IForum): string {
+    return post.userName ?? '';
   }
 
   getPosts(page: number = 1, size: number = 20): Observable<IForum[]> {
@@ -49,5 +55,14 @@ export class Sforum {
     return this.http.put<IForum[]>(`${this.apiUrl}/${id}`, para);
   }
 
+  // 回覆
+
+  getReplyByPostId(postId: number) {
+    return this.http.get<IReply[]>(`${this.apiReplyUrl}?postId=${postId}`);
+  }
+
+  postReply(para: IReply) {
+    return this.http.post<IReply[]>(this.apiReplyUrl, para);
+  }
 
 }

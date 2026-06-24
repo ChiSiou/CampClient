@@ -26,7 +26,7 @@
             size="large">
           </p-avatar>
           <div class="author-text">
-            <span class="author-name">{{postUserName}} #{{ post.userId }}</span>
+            <span class="author-name">{{post.userName}} #{{ post.userId }}</span>
             <span class="author-meta">
               <i class="pi pi-calendar"></i> {{ post.postDate | date:'yyyy-MM-dd' }}
             </span>
@@ -52,13 +52,16 @@
       <div class="post-footer">
         <div class="action-btns">
 
-          <p-button icon="pi pi-thumbs-up" [outlined]="true" severity="secondary" title="讚耶" size="small"></p-button>
+          <p-button icon="pi pi-heart" [outlined]="true" severity="secondary" title="愛心" size="small"></p-button>
 
           <p-button icon="pi pi-bookmark" [outlined]="true" severity="secondary" title="收藏文章" size="small"></p-button>
-          <!-- <p-button icon="pi pi-share-alt" [outlined]="true" severity="secondary" title="分享文章" size="small"></p-button> -->
 
           <p-button (click)="op.toggle($event); copyPostRoute()" icon="pi pi-share-alt" [outlined]="true" label="分享"
             size="small" />
+
+          <p-button (click)="isReplyPost = !isReplyPost;" icon="pi pi-comments" [outlined]="true" severity="secondary"
+            label="留言" size="small"></p-button>
+
           <p-popover #op>
             <div class="flex flex-col gap-4 w-[25rem]">
               <div>
@@ -69,7 +72,6 @@
               </div>
             </div>
           </p-popover>
-
         </div>
 
         <div class="tag-list" *ngIf="post.postTag">
@@ -81,5 +83,56 @@
       </div>
 
     </p-card>
+
+    @if(isReplyPost){
+    <p-card class="reply-card">
+      <!-- 留言區 -->
+      <p>寫下你的想法吧！</p>
+      <form #form="ngForm" (ngSubmit)="onSubmit(postForm)" class="add-post-form">
+        <div class="field">
+          <label for="content">內容 *</label>
+          <textarea id="content" pTextarea [(ngModel)]="new_mainContent" name="mainContent" rows="8" class="w-full"
+            placeholder="請輸入文章內容"></textarea>
+        </div>
+
+        <div class="field">
+          <label>附圖</label>
+          <p-fileupload name="images[]" [customUpload]="true" (onSelect)="onSelect($event)" [auto]="false"
+            [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
+            [showUploadButton]="false">
+            <ng-template #empty>
+              <div>可將圖片拖曳進方框內上傳</div>
+            </ng-template>
+          </p-fileupload>
+        </div>
+        <div class="form-actions">
+          <p-button label="送出" icon="pi pi-send" type="submit"></p-button>
+        </div>
+      </form>
+
+    </p-card>
+    }
+
+    @if (replies.length > 0) {
+    <p-card class="reply-list-card">
+      <h3>留言 ({{ replies.length }})</h3>
+      @for (r of replies; track r.replyContent) {
+      <div class="reply-item">
+        <p-divider></p-divider>
+        <span class="author-name">{{ r.sendUserName }} #{{ r.sendUserId }}</span>
+        <span class="author-meta">
+          <i class="pi pi-calendar"></i> {{ r.createdAt | date:'yyyy-MM-dd' }}
+        </span>
+        <p>{{ r.replyContent }}</p>
+        @for (img of r.moreImages; track img.imageUrl) {
+        <img class="w-100 p-4" [src]="img.imageUrl" alt="附圖" />
+        }
+      </div>
+      }
+    </p-card>
+    }
+
   </div>
 </div>
+
+<p-toast />
