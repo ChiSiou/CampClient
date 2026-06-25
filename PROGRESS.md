@@ -194,6 +194,14 @@
 ### ⬜ Phase F7：付款確認/退款 —— 待開始
 ### ⬜ Phase F8：營主後台 —— 待開始
 
+## JWT 認證機制（重要，換電腦/換對話容易搞混）
+
+- **JWT token 流程**：登入成功後端回傳 token → 前端存 `localStorage.setItem('token', ...)`（同仁 `login.ts` 寫的）→ 之後呼叫「需要登入」的 API 要在 Header 帶 `Authorization: Bearer <token>` → 後端 `[Authorize]` 檢查
+- **`[Authorize]` 是後端逐個 controller/method 標記的，不是整個網站開關**：沒標記的 API（首頁、搜尋、營區詳情）不用登入就能呼叫；標記了的 API（營主錢包、結帳）沒帶 token 或 token 失效會被擋下回 401
+- **HTTP Interceptor 曾經做過又刪掉**：原本想寫一個全域 interceptor（`src/app/interceptors/auth.interceptor.ts`，在 `app.config.ts` 用 `provideHttpClient(withInterceptors([authInterceptor]))` 註冊），讓所有 `HttpClient` 請求自動帶 token，不用每個 service 自己手動加 header
+  - **後來發現同仁已經寫好一個一樣的 interceptor，已經刪除我們這邊重複的版本**（commit `刪除JWT 因為有人做了`），**換電腦/開新對話不要再重新生成一次**，先確認同仁的 interceptor 實際檔名/邏輯再決定要不要調整
+  - 同仁 `member-service.ts` 裡有 3 處（`OwnerRegister`、頭像上傳、`MemberEdit`）手動加 `Authorization` header 寫法，跟 interceptor 並存不會壞（`setHeaders` 同名覆蓋），但理論上裝了 interceptor 之後是多餘的，**先不要動，等同仁自己決定要不要清掉**
+
 ## 與本次無關但同仁負責的功能（不要混淆）
 - `component/reviews/`：評論功能，已有 service 串 API（CRUD + 圖片上傳）
 - `component/forum/`：論壇功能，service 目前是空的
