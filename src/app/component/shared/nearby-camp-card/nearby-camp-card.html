@@ -1,0 +1,36 @@
+<!-- 共用附近營區卡片：camp-detail / attraction-detail 均使用 -->
+<a [routerLink]="['/camp', camp.id]" class="nearby-camp-card"
+   (mouseenter)="cardEnter.emit(camp.id)"
+   (mouseleave)="cardLeave.emit()">
+
+  <div class="nearby-camp-card__img-wrap">
+    @if (camp.coverImageUrl) {
+      <img [src]="camp.coverImageUrl" [alt]="camp.name" class="nearby-camp-card__img" />
+    } @else {
+      <div class="nearby-camp-card__no-img">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="m21 15-5-5L5 21"/>
+        </svg>
+      </div>
+    }
+    <span class="nearby-camp-card__dist">{{ camp.distanceKm.toFixed(1) }} km</span>
+    <!-- card-type-badge 樣式定義於 styles.css -->
+    <span class="card-type-badge card-type-badge--camp">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l4-8 3 5 2-3 4 6H3z"/><path d="M21 17V7"/>
+      </svg>
+      營區
+    </span>
+  </div>
+
+  <div class="nearby-camp-card__body">
+    <div class="nearby-camp-card__name">{{ camp.name }}</div>
+    <div class="nearby-camp-card__footer">
+      <span class="nearby-camp-card__rating">★ {{ camp.averageRating.toFixed(1) }}</span>
+      <span class="nearby-camp-card__price">起 NT${{ camp.basePrice | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+</a>

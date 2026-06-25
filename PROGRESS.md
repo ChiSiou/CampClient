@@ -1,10 +1,11 @@
 # CampClient 前端開發進度
 
 > 這份文件給「換電腦時的新 Claude Code 對話」或自己回顧用。
-> 開新對話時可以說：「前端進度在 PROGRESS.md，後端文件在 C:\Users\User\slnCampApi\slnCampApi\API_REFERENCE.md
-> 和 PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
+> 開新對話時說：
+> 「前端進度在 PROGRESS.md，後端文件在 C:\Users\User\SlnCampApi\CampApi\API_REFERENCE.md
+> 和 C:\Users\User\SlnCampApi\PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
 >
-> **注意：後端專案路徑是 `C:\Users\User\slnCampApi\slnCampApi\`（有兩層 slnCampApi）**
+> **注意：後端專案路徑是 `C:\Users\User\SlnCampApi\`，前端是 `C:\Users\User\CampClient\CampClient\`**
 
 ## 專案背景
 - C2C 露營訂位平台前端，Angular 21 + PrimeNG v21（Aura 主題，綠色系自訂 `CampPreset`）
@@ -24,15 +25,32 @@
 
 - `src/environments/environment.ts`：統一放 API base URL（`https://localhost:7011/api`）
 - `src/app/interfaces/camp.interface.ts`：Phase 1–7 所有後端 DTO 對應的 TypeScript interface（**已完整對齊後端**，詳見下方「Interface 對齊記錄」）
-- `src/app/services/`：對應後端七個 Phase 各一個 service
+- `src/app/services/`：
   - `exploration.service.ts`（首頁/探索）
   - `search.service.ts`（搜尋/地圖）含 `getOptions()` 撈 AccomType 選項
   - `camp-detail.service.ts`（營區詳細頁）
+  - `attraction.service.ts`（景點詳細頁）→ `getDetail(id)` 打 `GET /api/Exploration/attraction/{id}`
   - `calendar.service.ts`（甘特圖/選位）
   - `checkout.service.ts`（結帳，含 `redirectToPayment()` 自動建表單送綠界，已加 null check）
   - `payment.service.ts`（付款狀態/退款）
   - `owner-wallet.service.ts`（營主錢包）
-- `app.routes.ts`：已加上 `/search`、`/camp/:id`、`/checkout`、`/payment/result` 路由
+  - `equipment-rental.service.ts` / `equipment-cart.service.ts`（裝備出租，同仁負責）
+- `src/app/interfaces/attraction.interface.ts`：
+  ```typescript
+  export interface AttractionDetailDto {
+    id: number;
+    attractionName: string;
+    description: string;
+    ticketInfo: string | null;
+    estimatedMinutes: number | null;
+    address: string | null;
+    latitude: number;
+    longitude: number;
+    photoUrls: string[];
+    nearbyCamps: NearbyCampItem[]; // 從 camp.interface.ts import
+  }
+  ```
+- `app.routes.ts`：已加上 `/search`、`/camp/:id`、`/attraction/:id`、`/checkout`、`/payment/result`、`/camp/:id/rental`（同仁裝備出租頁）路由
 
 ## Interface 對齊記錄（重要，換電腦必讀）
 
@@ -53,8 +71,23 @@
 | `CheckoutResultDto` | 成功欄位非 null | 所有成功欄位改為 `\| null`，加 `unavailableItems: string[] \| null` |
 | `WithdrawalResultDto` | `feeCharged?/actualAmount?` | 改為必填（`feeCharged: number`, `actualAmount: number`）|
 | 新增 `CampSearchOption` | 無 | `{ id: number; itemName: string; category: number }` |
+| `NearbyAttractionItem` | 無 `coverImageUrl` | 加上 `coverImageUrl: string \| null`（2026-06-25，後端 ExplorationService 同步更新）|
 
 ## 共用元件
+
+- `src/app/component/shared/nearby-camp-card/`：附近營區卡片（`app-nearby-camp-card`）**（2026-06-25 新增）**
+  - `@Input() camp: NearbyCampItem`
+  - `@Output() cardEnter: EventEmitter<number>`（hover 進入發出 campId，父層控制地圖 popup）
+  - `@Output() cardLeave: EventEmitter<void>`
+  - 包含 `card-type-badge--camp` 徽章（「營區」文字 + SVG icon，樣式在 `styles.css`）
+  - 使用場景：`camp-detail` 附近其他營區、`attraction-detail` 順遊推薦
+
+- `src/app/component/shared/lightbox/`：全螢幕照片瀏覽（`app-lightbox`）**（2026-06-25 新增）**
+  - `@Input() images: string[]`
+  - `[(visible)]` 雙向綁定（控制顯示/隱藏）
+  - `[(activeIndex)]` 雙向綁定（目前第幾張）
+  - **Why 自製**：PrimeNG 21 Galleria fullscreen portal 在 Angular zone 外渲染，prev/next click 無法觸發 change detection，**永久棄用 p-galleria**
+  - 使用場景：`camp-detail`、`attraction-detail` 照片格宮
 
 - `src/app/component/shared/camp-card/`：營區卡片元件（`app-camp-card`）
   - `@Input() camp!: CampSearchResultDto`（非空斷言，父元件一定傳）
@@ -188,8 +221,108 @@
 - Marker 數量上限 200（後端 `MapMarkerMaxCount`），超過直接截斷不分群（`IsClustered` 永遠回 `false`），跟前端 `leaflet.markercluster` 是兩個獨立機制——前端的群聚只是「畫面呈現」，不是「後端真的把資料庫筆數合併」
 - 目前地圖只有「營區」一種標記，景點（Attraction）標記還沒做，圖示寫法已經設計成可以直接複製套用的架構
 
-### ⬜ Phase F4：營區詳細頁 —— 待開始
+### ✅ Phase F4：營區詳細頁（camp-detail）—— 完成
+檔案：`src/app/component/camp-detail/`
+
+**頁面結構（由上到下）**：
+1. 照片格宮（Airbnb 風格：左大圖 3fr + 右 2×2 小圖 2fr，height 480px，click 開 lightbox）
+2. 基本資訊（名稱、海拔、地址+導航、電話、官網、特色 tags）
+3. 雙欄（左=關於營區+highlights+description；右=分區類型卡片+注意事項）
+4. 甘特圖選位（**placeholder 虛線框，尚未實作**）← 下一個主要任務
+5. 周邊探索 Leaflet 地圖（10km 圈）
+6. 附近自然景點橫向卡片列（`attraction-card`）
+7. 附近其他營區橫向卡片列（`app-nearby-camp-card` 共用元件）
+8. 評論區（`app-review`，同仁元件）
+
+**API 串接**：`forkJoin` 同時打 4 支 API：
+- `GET /api/CampDetail/{id}`
+- `GET /api/CampDetail/{id}/location`
+- `GET /api/CampDetail/{id}/zones`
+- `GET /api/Exploration/campground/{id}`（附近景點/營區）
+
+**Lightbox（自製，替代 PrimeNG Galleria）**：
+- PrimeNG 21 Galleria fullscreen portal 在 Angular zone 外渲染，prev/next click 無法觸發 change detection，無法修復，**全面棄用**
+- 改用 `app-lightbox` 共用元件（`src/app/component/shared/lightbox/`）
+- `[(visible)]` + `[(activeIndex)]` 雙向綁定，prev/next 邏輯在元件內部
+- `styles.css` 裡舊的 `.p-galleria-*` CSS 可以清掉（已棄用但還沒刪）
+
+**地圖互動（Leaflet，`updateMapMarkers()`）**：
+- 本營區：深綠大標籤 `.map-pin--main`
+- 附近營區：白底價格標籤 `.map-pin--price`，popup 含封面圖
+- 附近景點：薄荷綠圓形圖釘 `.map-pin--attraction`，popup 含封面圖 + 「查看景點 →」連結
+- popup 連結跳頁：`data-attr-id` + `popupopen` 事件 + `setTimeout(0)` + `querySelector` + `addEventListener`
+- Hover 卡片 → `campMarkers.get(id)?.openPopup()` / `attractionMarkers.get(id)?.openPopup()`
+
+**景點封面圖**：
+- DB：`CampMedia` 表，`ReferenceType=4`（`MediaReferenceType.Attraction = 4`）
+- 後端 `ExplorationService` 撈封面圖塞進 `NearbyAttractionItem.CoverImageUrl`（`CampApi/Service/Exploration/ExplorationService.cs`）
+- 前端 `NearbyAttractionItem` 已加 `coverImageUrl: string | null`
+
+**卡片類型徽章（Type Badge）**：
+- 目的：讓使用者區分「營區」和「景點」卡片，不用 emoji，文字 + SVG icon
+- 樣式在 `styles.css`（全域）：
+  - `.card-type-badge--camp`：暖黃底 `#fef3c7`，咖啡字 `#92400e`
+  - `.card-type-badge--attraction`：薄荷綠底 `#d1fae5`，深綠字 `#065f46`
+
+---
+
+### ✅ Phase F4b：景點詳細頁（attraction-detail）—— 完成
+檔案：`src/app/component/attraction-detail/`
+
+**API**：`GET /api/Exploration/attraction/{id}` → `AttractionDetailDto`
+
+**頁面結構**：
+1. 標題 + 地址導航連結（不是 hero banner，使用者要求「部落客景點介紹感覺」）
+2. 照片格宮（1.6fr + 1fr + 2×2 右側，height 420px，click 開 lightbox）
+3. `<hr>` 分隔
+4. 雙欄（左=景點介紹；右=資訊側邊卡：門票/停留時間/地址/「在地圖上開啟導航」按鈕）
+5. 順遊推薦營區橫向卡片列（`app-nearby-camp-card` 共用元件）
+6. 景點位置 Leaflet 地圖
+
+**地圖**：景點主標記（`.map-pin--attraction-main`，深綠大標籤）+ 附近營區白底價格標籤
+- popup「查看營區 →」連結：同樣用 `data-camp-id` + `popupopen` + `setTimeout(0)` 跳頁
+
+---
+
+### 共用元件（2026-06-25 新增）
+
+**`src/app/component/shared/nearby-camp-card/`**（`app-nearby-camp-card`）：
+- `@Input() camp: NearbyCampItem`
+- `@Output() cardEnter: EventEmitter<number>`（發出 campId）
+- `@Output() cardLeave: EventEmitter<void>`
+- 包含 `card-type-badge--camp` 徽章
+- `:host { flex: 0 0 200px; scroll-snap-align: start; display: block }` 直接接 `nearby-row` flex 佈局
+- **使用場景**：camp-detail 附近營區、attraction-detail 順遊推薦
+
+**`src/app/component/shared/lightbox/`**（`app-lightbox`）：
+- `@Input() images: string[]`
+- `[(visible)]`、`[(activeIndex)]` 雙向綁定
+- **使用場景**：camp-detail 照片格宮、attraction-detail 照片格宮
+
+---
+
+### 全域樣式搬移（2026-06-25，styles.css）
+
+以下 class **不要再寫進 component CSS**，已統一在 `src/styles.css`：
+- `.container`（max-width 1200px）
+- `.divider`（`<hr>` 線）
+- `.section-title`（20px bold）、`.section-subtitle`（14px gray）
+- `.nav-badge`（綠色小 pill「導航」）
+- `.meta-link`（綠色連結）
+- `.card-type-badge`、`.card-type-badge--camp`、`.card-type-badge--attraction`
+- `.nearby-row`（橫向滑動 flex 列，`scroll-snap-type: x mandatory`）
+- Leaflet：`.map-pin`、`.map-pin--main`、`.map-pin--price`、`.map-pin--attraction`、`.map-pin--attraction-main`
+- Leaflet popup：`.mp-popup`、`.mp-popup__img`、`.mp-popup__name`、`.mp-popup__meta`、`.mp-popup__price`、`.mp-popup__link`、`.leaflet-popup-content-wrapper`、`.leaflet-popup-content`
+- （Leaflet 樣式改全域後不再需要 `::ng-deep`）
+
+---
+
 ### ⬜ Phase F5：日曆選位 —— 待開始（最複雜）
+
+**下一步**：camp-detail 頁面的甘特圖 placeholder 要實作（見後端 PROGRESS.md Phase 4 細節）
+
+---
+
 ### ⬜ Phase F6：結帳流程 —— 待開始
 ### ⬜ Phase F7：付款確認/退款 —— 待開始
 ### ⬜ Phase F8：營主後台 —— 待開始
@@ -202,11 +335,14 @@
   - **後來發現同仁已經寫好一個一樣的 interceptor，已經刪除我們這邊重複的版本**（commit `刪除JWT 因為有人做了`），**換電腦/開新對話不要再重新生成一次**，先確認同仁的 interceptor 實際檔名/邏輯再決定要不要調整
   - 同仁 `member-service.ts` 裡有 3 處（`OwnerRegister`、頭像上傳、`MemberEdit`）手動加 `Authorization` header 寫法，跟 interceptor 並存不會壞（`setHeaders` 同名覆蓋），但理論上裝了 interceptor 之後是多餘的，**先不要動，等同仁自己決定要不要清掉**
 
-## 與本次無關但同仁負責的功能（不要混淆）
-- `component/reviews/`：評論功能，已有 service 串 API（CRUD + 圖片上傳）
-- `component/forum/`：論壇功能，service 目前是空的
-- `component/member/`：會員登入/註冊，已完成，`MemberService` 處理 JWT
+## 同仁負責的功能（不要亂動）
+- `component/reviews/`：評論功能（已有 service，`app-review` 元件在 camp-detail 頁底部直接使用）
+- `component/forum/`：論壇功能
+- `component/member/`：會員登入/註冊/會員中心，`MemberService` 處理 JWT
   - 注意 `islogin()` 目前會自動 `navigate()`，當判斷邏輯用容易有副作用
+  - HTTP Interceptor 同仁已寫好，**不要重複建立**（見「JWT 認證機制」章節）
+- `component/camping-rental/`：裝備出租頁（`/camp/:id/rental`），同仁負責
+  - `equipment-rental.service.ts`、`equipment-cart.service.ts` 是對應的 service
 
 ## 測試資料
 - 資料庫已手動建立 3 個測試營區（Id 1-3）+ 對應 Zone/Campsite/Pricing/Tags/Facilities/CampMedia

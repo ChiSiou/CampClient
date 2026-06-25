@@ -1,0 +1,449 @@
+/* ===== 頁面容器（.container 已移至 styles.css） ===== */
+.detail-page {
+  background: #f9fafb;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ===== Error ===== */
+.error-state {
+  padding: 80px 24px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* ===== 照片格宮（Airbnb 風格） ===== */
+.photo-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  height: 480px;
+  gap: 6px;
+  margin-top: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-cover,
+.photo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+}
+
+.photo-small {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.photo-grid:hover .photo-small img,
+.photo-grid:hover .photo-cover img {
+  transform: scale(1.02);
+}
+
+.view-all-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: white;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s;
+  z-index: 2;
+}
+
+.view-all-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Lightbox 已移至 shared/lightbox/lightbox.css */
+
+/* ===== 基本資訊 ===== */
+.camp-info {
+  margin-top: 32px;
+}
+
+.camp-info__name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px;
+}
+
+.camp-info__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #6b7280;
+}
+
+.meta-item--link {
+  color: #2d6a4f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.meta-item--link:hover {
+  text-decoration: underline;
+}
+
+.meta-item--address {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .nav-badge 已移至 styles.css */
+
+/* 特色圖示列 */
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 20px;
+}
+
+.feature-tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.feature-tag__icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.feature-tag__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2d6a4f;
+  flex-shrink: 0;
+}
+
+.feature-tag__label {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* .divider 已移至 styles.css */
+
+.section-sub-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px;
+}
+
+.highlight-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.highlight-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.highlight-list__item::before {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  background: #2d6a4f;
+  border-radius: 50%;
+  margin-top: 5px;
+}
+
+.camp-description__text {
+  color: #4b5563;
+  line-height: 1.75;
+  font-size: 15px;
+  white-space: pre-line;
+  margin: 0;
+}
+
+/* ===== 雙欄佈局 ===== */
+.detail-columns {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: start;
+}
+
+.detail-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 分區類型卡片 */
+.zone-summary-card,
+.rules-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+
+.zone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.zone-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zone-item__icon {
+  width: 40px;
+  height: 40px;
+  background: #d1fae5;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.zone-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.zone-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 3px;
+}
+
+.zone-item__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.zone-item__price {
+  font-weight: 700;
+  color: #2d6a4f;
+  font-size: 14px;
+}
+
+.zone-item__unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+/* 注意事項 */
+.rules-card {
+  margin-top: 0;
+}
+
+.rules-list {
+  margin: 14px 0 0;
+  padding: 0 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules-list__item {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rules-text {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.75;
+  margin: 14px 0 0;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .detail-columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ===== 甘特圖預留 ===== */
+.gantt-placeholder {
+  margin: 40px 0;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 48px;
+  text-align: center;
+  background: #f3f4f6;
+}
+
+.gantt-placeholder__label {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* ===== 周邊探索 ===== */
+.explore-section {
+  margin-top: 48px;
+}
+
+/* .section-title / .section-subtitle 已移至 styles.css */
+
+/* Leaflet 地圖容器 */
+.explore-map {
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* 附近區塊 */
+.nearby-section {
+  margin-top: 32px;
+}
+
+.nearby-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 14px;
+}
+
+/* .nearby-row 已移至 styles.css */
+
+/* 景點卡片 */
+.attraction-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  display: block;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.attraction-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.attraction-card__img-wrap {
+  position: relative;
+  height: 130px;
+  background: #f0fdf4;
+}
+
+.attraction-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.attraction-card__no-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attraction-card__dist-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.attraction-card__body {
+  padding: 10px 12px 12px;
+}
+
+.attraction-card__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.attraction-card__info {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* .nearby-camp-card* 已移至 shared/nearby-camp-card/nearby-camp-card.css */
+/* .card-type-badge* 已移至 styles.css */
+
+/* ===== 評論區 ===== */
+.reviews-section {
+  margin-top: 48px;
+}
+
+/* Leaflet map-pin / mp-popup / leaflet-popup* 已移至 styles.css（全域，無需 ::ng-deep） */

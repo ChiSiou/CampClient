@@ -1,0 +1,18 @@
+@if (visible) {
+  <!-- 點擊遮罩關閉 -->
+  <div class="lightbox-overlay" (click)="close()">
+    <div class="lightbox-box" (click)="$event.stopPropagation()">
+
+      <button class="lightbox-close" (click)="close()">✕</button>
+
+      <button class="lightbox-nav lightbox-nav--prev" (click)="prev()">&#8249;</button>
+
+      <img [src]="images[activeIndex]" class="lightbox-img" alt="照片" />
+
+      <button class="lightbox-nav lightbox-nav--next" (click)="next()">&#8250;</button>
+
+      <div class="lightbox-counter">{{ activeIndex + 1 }} / {{ images.length }}</div>
+
+    </div>
+  </div>
+}

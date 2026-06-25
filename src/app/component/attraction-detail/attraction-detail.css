@@ -1,0 +1,271 @@
+.attraction-page {
+  background: #f9fafb;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 32px;
+  padding-bottom: 60px;
+}
+
+/* .container 已移至 styles.css */
+
+.error-state {
+  padding: 80px 24px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* 標題區塊 */
+.attraction-header {
+  margin-bottom: 20px;
+}
+
+/* 照片格宮 */
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 6px;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.photo-cover {
+  height: 100%;
+  overflow: hidden;
+}
+
+.photo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.photo-cover:hover img {
+  transform: scale(1.03);
+}
+
+.photo-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+}
+
+.photo-small {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.photo-small:hover img {
+  transform: scale(1.03);
+}
+
+.photo-small--last::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+}
+
+.view-all-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 1;
+  background: white;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.view-all-btn:hover {
+  background: #f9fafb;
+}
+
+/* Lightbox 已移至 shared/lightbox/lightbox.css */
+
+/* 雙欄內容 */
+.detail-columns {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+  align-items: start;
+}
+
+.detail-col-main .description-text {
+  color: #4b5563;
+  line-height: 1.8;
+  font-size: 15px;
+  white-space: pre-line;
+  margin: 0;
+}
+
+/* 資訊側邊卡 */
+.info-sidebar {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.info-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:first-child {
+  padding-top: 0;
+}
+
+.info-row:last-of-type {
+  border-bottom: none;
+}
+
+.info-row__icon {
+  width: 36px;
+  height: 36px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-row__label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 3px;
+}
+
+.info-row__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.nav-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background: #1b4332;
+  color: white;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.nav-cta-btn:hover {
+  background: #2d6a4f;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px;
+}
+
+/* .meta-link / .nav-badge 已移至 styles.css */
+
+/* 基本資訊 */
+.info-section {
+  margin-top: 32px;
+}
+
+.info-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 180px;
+}
+
+.info-card__label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.info-card__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* .divider / .section-title / .section-subtitle 已移至 styles.css */
+
+.description-section {
+  margin-bottom: 8px;
+}
+
+.description-text {
+  color: #4b5563;
+  line-height: 1.75;
+  font-size: 15px;
+  white-space: pre-line;
+  margin: 0;
+}
+
+/* 地圖 */
+.map-section {
+  margin-top: 48px;
+}
+
+.map-section--hidden {
+  display: none;
+}
+
+.attraction-map {
+  width: 100%;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  margin-top: 16px;
+}
+
+/* Leaflet map-pin / mp-popup / leaflet-popup* 已移至 styles.css（全域，無需 ::ng-deep） */
+
+/* .nearby-row / .nearby-camp-card* 已移至 styles.css / shared/nearby-camp-card */
+
+/* 附近營區區塊間距 */
+.nearby-section {
+  margin-top: 48px;
+}

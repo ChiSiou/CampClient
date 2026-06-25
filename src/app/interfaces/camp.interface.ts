@@ -117,6 +117,7 @@ export interface CampDetailDto {
   description: string;
   rules: string;
   imageUrls: string[];
+  highlights: string[];
   tags: CampDetailTagItem[];
 }
 
@@ -137,6 +138,7 @@ export interface CampMapZoneDto {
   zoneName: string;
   zoneDescription: string;
   geoJson: string;
+  zoneType: number; // 1=Generic草地, 2=UniqueUnit小木屋
   weekdayPrice: number;
   weekendPrice: number;
   totalSites: number;
@@ -147,6 +149,35 @@ export interface CampMapZoneDto {
 export interface ZoneFacilityItem {
   facilityName: string;
   iconUrl: string;
+}
+
+// ===== Phase 3b：周邊探索 =====
+
+export interface CampExplorationDto {
+  nearbyAttractions: NearbyAttractionItem[];
+  nearbyCamps: NearbyCampItem[];
+}
+
+export interface NearbyAttractionItem {
+  id: number;
+  attractionName: string;
+  ticketInfo: string;
+  estimatedMinutes: number | null;
+  latitude: number;
+  longitude: number;
+  distanceKm: number;
+  coverImageUrl: string | null;
+}
+
+export interface NearbyCampItem {
+  id: number;
+  name: string;
+  basePrice: number;
+  coverImageUrl: string | null;
+  distanceKm: number;
+  averageRating: number;
+  latitude: number;
+  longitude: number;
 }
 
 // ===== Phase 4：日曆/選位 =====

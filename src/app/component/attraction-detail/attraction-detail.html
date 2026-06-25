@@ -1,0 +1,156 @@
+<div class="attraction-page">
+
+  @if (loading) {
+    <div class="container">
+      <p-skeleton height="28px" width="40%" styleClass="mb-2" />
+      <p-skeleton height="16px" width="25%" styleClass="mb-3" />
+      <p-skeleton height="420px" styleClass="mb-3" />
+    </div>
+  }
+
+  @if (error) {
+    <div class="container error-state">
+      <p>找不到此景點，請確認網址或稍後再試。</p>
+    </div>
+  }
+
+  @if (!loading && !error && detail) {
+
+    <div class="container">
+
+      <!-- 標題 -->
+      <div class="attraction-header">
+        <h1 class="page-title">{{ detail.attractionName }}</h1>
+        @if (detail.address) {
+          <a [href]="googleMapsNavUrl" target="_blank" rel="noopener noreferrer" class="meta-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ detail.address }}
+            <span class="nav-badge">導航</span>
+          </a>
+        }
+      </div>
+
+      <!-- 照片格宮 -->
+      @if (detail.photoUrls.length) {
+        <div class="photo-grid">
+          <div class="photo-cover" (click)="openLightbox(0)">
+            <img [src]="detail.photoUrls[0]" [alt]="detail.attractionName" />
+          </div>
+          <div class="photo-right">
+            @for (url of detail.photoUrls.slice(1, 5); track url; let i = $index; let last = $last) {
+              <div class="photo-small" [class.photo-small--last]="last" (click)="openLightbox(i + 1)">
+                <img [src]="url" [alt]="detail.attractionName" />
+                @if (last) {
+                  <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 1)">
+                    查看全部 {{ detail.photoUrls.length }} 張
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- 共用 Lightbox 元件（定義於 shared/lightbox） -->
+        <app-lightbox
+          [images]="detail.photoUrls"
+          [(visible)]="showLightbox"
+          [(activeIndex)]="lightboxIndex" />
+      }
+
+      <hr class="divider" />
+
+      <!-- 雙欄：左=景點介紹，右=資訊側邊卡 -->
+      <div class="detail-columns">
+
+        <div class="detail-col-main">
+          <h2 class="section-title">景點介紹</h2>
+          <p class="description-text">{{ detail.description }}</p>
+        </div>
+
+        <div class="detail-col-side">
+          <div class="info-sidebar">
+
+            @if (detail.ticketInfo) {
+              <div class="info-row">
+                <div class="info-row__icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="info-row__label">門票資訊</div>
+                  <div class="info-row__value">{{ detail.ticketInfo }}</div>
+                </div>
+              </div>
+            }
+
+            @if (detail.estimatedMinutes) {
+              <div class="info-row">
+                <div class="info-row__icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="info-row__label">建議停留時間</div>
+                  <div class="info-row__value">約 {{ detail.estimatedMinutes }} 分鐘</div>
+                </div>
+              </div>
+            }
+
+            @if (detail.address) {
+              <div class="info-row">
+                <div class="info-row__icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="info-row__label">導航地址</div>
+                  <div class="info-row__value">{{ detail.address }}</div>
+                </div>
+              </div>
+
+              <a [href]="googleMapsNavUrl" target="_blank" rel="noopener noreferrer" class="nav-cta-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                在地圖上開啟導航
+              </a>
+            }
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 附近可訂營區 -->
+    @if (nearbyCamps.length) {
+      <div class="container nearby-section">
+        <h2 class="section-title">順遊推薦營區</h2>
+        <p class="section-subtitle">這個景點附近可以訂的營區</p>
+        <!-- 共用 NearbyCampCard 元件（定義於 shared/nearby-camp-card） -->
+        <div class="nearby-row">
+          @for (camp of nearbyCamps; track camp.id) {
+            <app-nearby-camp-card
+              [camp]="camp"
+              (cardEnter)="onCampCardEnter($event)"
+              (cardLeave)="onCampCardLeave()" />
+          }
+        </div>
+      </div>
+    }
+
+  }
+
+  <!-- 地圖：不放進 @if，確保 ngAfterViewInit 時 DOM 已存在 -->
+  <div class="container map-section" [class.map-section--hidden]="loading || error">
+    <h2 class="section-title">景點位置</h2>
+    <div #attractionMap class="attraction-map"></div>
+  </div>
+
+</div>
