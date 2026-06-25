@@ -1,0 +1,11 @@
+<div class="verify-page">
+  <div class="verify-card">
+    <h2>信箱驗證</h2>
+
+    <p [class.success]="success" [class.error]="!success">
+      {{ message }}
+    </p>
+
+    <a routerLink="/login">前往登入</a>
+  </div>
+</div>

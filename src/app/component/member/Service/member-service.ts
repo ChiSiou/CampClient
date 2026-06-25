@@ -28,7 +28,7 @@ export class MemberService {
     private http: HttpClient,
     private routes: Router,
     private messageService: MessageService,
-  ) {}
+  ) { }
 
   login(data: loginData) {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
@@ -174,6 +174,9 @@ export class MemberService {
   memberEdit(data: FormData) {
     const token = localStorage.getItem('token');
     return this.http.post<string>(`${this.apiUrl}/MemberEdit`, data);
+  }
+  verifyEmail(data: { userId: number; token: string }) {
+    return this.http.post<any>(`${this.apiUrl}/VerifyEmail`, data)
   }
   getActiveRole() {
     const token = localStorage.getItem('token');
