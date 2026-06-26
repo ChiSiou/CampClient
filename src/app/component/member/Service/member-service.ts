@@ -1,6 +1,5 @@
 import { Message } from 'primeng/message';
 import { MessageService } from 'primeng/api';
-import { LoginResponse } from '../interface/loginResponse';
 import { loginData } from '../interface/loginData';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +12,7 @@ import { Memberedit } from '../memberedit/memberedit';
 import { MemberEdit } from '../interface/MemberEdit';
 import { switchRoleResponse } from '../interface/switchRoleResponse';
 import { OrderList } from '../interface/orderList';
+import { ServiceResult } from '../interface/ServiceResult';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,7 @@ export class MemberService {
   ) { }
 
   login(data: loginData) {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
+    return this.http.post<ServiceResult>(`${this.apiUrl}/login`, data);
   }
   clearLoginData(): void {
     localStorage.removeItem('token');
@@ -177,6 +177,12 @@ export class MemberService {
   }
   verifyEmail(data: { userId: number; token: string }) {
     return this.http.post<any>(`${this.apiUrl}/VerifyEmail`, data)
+  }
+  forgotPassword(data:{email:string}){
+    return this.http.post<any>(`${this.apiUrl}/ForgetPassword`,data)
+  }
+  resetPassword(data:{userId:number,token:string,newPassword:string}){
+    return this.http.post<any>(`${this.apiUrl}/ResetPassword`,data)
   }
   getActiveRole() {
     const token = localStorage.getItem('token');

@@ -116,6 +116,16 @@ export const routes: Routes = [
         import('./component/member/login/login').then((m) => m.Login),
     },
     {
+      path: 'forgot-password',
+      loadComponent: () =>
+        import('./component/member/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+    },
+    {
+      path:'reset-password',
+      loadComponent: () =>
+      import('./component/member/reset-password/reset-password').then((m) => m.ResetPassword),
+    },
+    {
       path: 'owner-register',
       canActivate: [authGuard],
       loadComponent: () =>
