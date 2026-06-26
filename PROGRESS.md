@@ -2,10 +2,10 @@
 
 > 這份文件給「換電腦時的新 Claude Code 對話」或自己回顧用。
 > 開新對話時說：
-> 「前端進度在 PROGRESS.md，後端文件在 C:\Users\User\SlnCampApi\CampApi\API_REFERENCE.md
-> 和 C:\Users\User\SlnCampApi\PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
+> 「前端進度在 C:\Users\User\Desktop\CampClient\CampClient\PROGRESS.md，後端文件在
+> C:\Users\User\slnCampApi\slnCampApi\API_REFERENCE.md 和 PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
 >
-> **注意：後端專案路徑是 `C:\Users\User\SlnCampApi\`，前端是 `C:\Users\User\CampClient\CampClient\`**
+> **注意：後端專案路徑是 `C:\Users\User\slnCampApi\slnCampApi\`（有兩層 slnCampApi），前端是 `C:\Users\User\Desktop\CampClient\CampClient\`**
 
 ## 專案背景
 - C2C 露營訂位平台前端，Angular 21 + PrimeNG v21（Aura 主題，綠色系自訂 `CampPreset`）
