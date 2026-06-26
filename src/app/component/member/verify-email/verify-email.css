@@ -1,0 +1,43 @@
+.verify-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f7f3;
+}
+
+.verify-card {
+  width: 420px;
+  padding: 32px;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(50, 70, 45, 0.12);
+}
+
+.verify-card h2 {
+  margin-bottom: 16px;
+  color: #2f3e2f;
+}
+
+.verify-card p {
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+
+.success {
+  color: #2e7d32;
+}
+
+.error {
+  color: #c62828;
+}
+
+.verify-card a {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #4f6f52;
+  color: white;
+  text-decoration: none;
+}

@@ -106,23 +106,42 @@ export const routes: Routes = [
     ]
   },
   {
-    path: '',
-    loadComponent: () => import('./component/member/member').then((m) => m.Member),
-    children: [
-      {
-        path: 'register',
-        loadComponent: () => import('./component/member/register/register').then((m) => m.Register),
-      },
-      {
-        path: 'login',
-        loadComponent: () => import('./component/member/login/login').then((m) => m.Login),
-      },
-      {
-        path: 'owner-register',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./component/member/register/owner-register').then((m) => m.OwnerRegister),
-      },
-    ],
-  },
+  path: '',
+  loadComponent: () => import('./component/member/member').then((m) => m.Member),
+  children: [
+    {
+      path: 'register',
+      loadComponent: () =>
+        import('./component/member/register/register').then((m) => m.Register),
+    },
+    {
+      path: 'verify-email',
+      loadComponent: () =>
+        import('./component/member/verify-email/verify-email')
+          .then((m) => m.VerifyEmail),
+    },
+    {
+      path: 'login',
+      loadComponent: () =>
+        import('./component/member/login/login').then((m) => m.Login),
+    },
+    {
+      path: 'forgot-password',
+      loadComponent: () =>
+        import('./component/member/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+    },
+    {
+      path:'reset-password',
+      loadComponent: () =>
+      import('./component/member/reset-password/reset-password').then((m) => m.ResetPassword),
+    },
+    {
+      path: 'owner-register',
+      canActivate: [authGuard],
+      loadComponent: () =>
+        import('./component/member/register/owner-register')
+          .then((m) => m.OwnerRegister),
+    },
+  ],
+}
 ];

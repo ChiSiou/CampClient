@@ -58,10 +58,10 @@ export class Register {
         this.messageService.add({
           key: 'top-right',
           severity: 'success',
-          summary: '註冊成功',
-          detail: '會員資料與照片都上傳成功',
+          summary: '註冊成功',  
+          detail: '註冊成功，請到信箱完成驗證後再登入',
         });
-        this.router.navigate(['login']);
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         console.log(err);
