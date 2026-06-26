@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EquipmentRentalService } from '../../../services/equipment-rental.service';
@@ -22,9 +22,22 @@ export class EquipmentDetailComponent implements OnInit {
   loading = signal(true);
   notFound = signal(false);
   private campgroundId = 0;
+  private checkInDate = '';
+  private checkOutDate = '';
+
+  nights = computed(() => {
+    if (!this.checkInDate || !this.checkOutDate) return 1;
+    const diff = Math.round(
+      (new Date(this.checkOutDate).getTime() - new Date(this.checkInDate).getTime()) / 86400000,
+    );
+    return diff > 0 ? diff : 1;
+  });
 
   ngOnInit(): void {
     this.campgroundId = Number(this.route.snapshot.paramMap.get('id')) || 0;
+    const qp = this.route.snapshot.queryParamMap;
+    this.checkInDate = qp.get('checkIn') ?? '';
+    this.checkOutDate = qp.get('checkOut') ?? '';
     const productId = Number(this.route.snapshot.paramMap.get('productId'));
     this.equipmentRentalService.getEquipmentDetail(productId).subscribe({
       next: (d) => {
@@ -45,6 +58,20 @@ export class EquipmentDetailComponent implements OnInit {
   changeQuantity(variantId: number, delta: number, maxStock: number): void {
     const next = this.getQuantity(variantId) + delta;
     this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock));
+  }
+
+  lineSubTotal(dailyPrice: number, variantId: number): number {
+    return dailyPrice * this.nights() * this.getQuantity(variantId);
+  }
+
+  // 沒有商品/款式照片時，依分類顯示對應的 Emoji 圖示，避免用隨機圖庫圖片混充內容
+  categoryIcon(category: string): string {
+    const icons: Record<string, string> = {
+      帳篷: '🏕️',
+      寢具: '🛏️',
+      炊具: '🔥',
+    };
+    return icons[category] ?? '🎒';
   }
 
   backToList(): void {
