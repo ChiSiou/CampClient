@@ -1,66 +1,250 @@
-.container {
-  max-width: 720px;
+.detail-page {
+  max-width: 960px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 24px 16px 60px;
 }
 
 .back {
   background: none;
   border: none;
   color: #2e7d32;
+  font-weight: 600;
   cursor: pointer;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   padding: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 0;
+  color: #666;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #2e7d32;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
   color: #c0392b;
   background: #fdecea;
-  border-radius: 6px;
-  padding: 12px;
-}
-
-.detail img {
-  width: 100%;
-  max-height: 320px;
-  object-fit: cover;
   border-radius: 8px;
+  padding: 14px;
 }
 
-.category {
-  color: #888;
+/* ===== 上方主圖 banner ===== */
+.product-banner {
+  position: relative;
+  height: 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.product-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.icon-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eafaea, #d6efd9);
+}
+
+.icon-placeholder .icon {
+  font-size: 4em;
+}
+
+.icon-placeholder.small .icon {
+  font-size: 2.4em;
+}
+
+.banner-overlay {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
+  color: #fff;
+}
+
+.banner-overlay h2 {
+  margin: 4px 0 0;
+  font-size: 1.6em;
+}
+
+.product-tag {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8em;
 }
 
 .description {
+  color: #555;
   white-space: pre-line;
-  margin: 12px 0;
+  margin: 0 0 24px;
+  line-height: 1.6;
 }
 
-.variant-row {
+.section-title {
+  margin-bottom: 14px;
+  font-size: 1.1em;
+}
+
+/* ===== 款式卡片網格 ===== */
+.variant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.variant-card {
+  border: 2px solid #ececec;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.variant-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.variant-card.selected {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+}
+
+.variant-card.out {
+  opacity: 0.55;
+}
+
+.variant-image {
+  position: relative;
+  height: 140px;
+}
+
+.variant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sku-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.selected-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #2e7d32;
+  color: #fff;
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.variant-body {
+  padding: 12px 14px 14px;
+}
+
+.variant-body h4 {
+  margin: 0 0 8px;
+  font-size: 1.02em;
+}
+
+.variant-meta {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 8px 0;
-  border-top: 1px solid #f0f0f0;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
 }
 
-.variant-name {
-  flex: 1;
-  font-weight: 500;
+.price {
+  color: #d35400;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.price small {
+  font-weight: 400;
+  font-size: 0.7em;
+  color: #999;
+}
+
+.stock {
+  font-size: 0.8em;
+  color: #555;
 }
 
 .stock.out {
   color: #c0392b;
 }
 
+.qty-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
 .qty-control button {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1em;
+  line-height: 1;
+}
+
+.qty-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-value {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.line-subtotal {
+  font-weight: 700;
+  color: #2e7d32;
 }
