@@ -17,6 +17,7 @@ import { ExplorationService } from '../../services/exploration.service';
 import { Review } from '../reviews/review/review';
 import { NearbyCampCard } from '../shared/nearby-camp-card/nearby-camp-card';
 import { Lightbox } from '../shared/lightbox/lightbox';
+import { GanttCalendar } from './gantt-calendar/gantt-calendar';
 import {
   CampDetailDto,
   CampLocationDto,
@@ -28,7 +29,7 @@ import {
 
 @Component({
   selector: 'app-camp-detail',
-  imports: [RouterLink, DecimalPipe, Skeleton, Review, NearbyCampCard, Lightbox],
+  imports: [RouterLink, DecimalPipe, Skeleton, Review, NearbyCampCard, Lightbox, GanttCalendar],
   templateUrl: './camp-detail.html',
   styleUrl: './camp-detail.css',
 })

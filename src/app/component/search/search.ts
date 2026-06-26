@@ -9,6 +9,7 @@ import { CampCard } from '../shared/camp-card/camp-card';
 import { SearchBar, SearchBarInitial } from '../shared/search-bar/search-bar';
 import { SearchFilters } from '../shared/search-filters/search-filters';
 import { SearchService } from '../../services/search.service';
+import { TENT_ICON_SVG } from '../../shared/map-icons';
 import {
   CampSearchRequest,
   CampSearchResultDto,
@@ -133,19 +134,12 @@ export class Search implements OnInit, AfterViewInit {
     });
   }
 
-  // 帳篷 SVG path 取自 Tabler Icons（MIT 授權，https://github.com/tabler/tabler-icons），免費商用不需標註來源
-  private static readonly TENT_SVG = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M11 14l4 6h6l-9 -16l-9 16h6l4 -6" />
-    </svg>
-  `;
-
   // 營區圖示：綠色圓底 + 帳篷 icon。之後加景點標記時，複製這個寫法換顏色/換 SVG 即可
   // className 留空交給 Leaflet 控制定位用的外層元素，旋轉/造型全部包在內層 .camp-marker-pin，
   // 避免我們的 CSS transform 跟 Leaflet 用來定位圖示的 inline transform 互相覆蓋
   private campIcon = L.divIcon({
     className: 'camp-marker-icon',
-    html: `<div class="camp-marker-pin">${Search.TENT_SVG}</div>`,
+    html: `<div class="camp-marker-pin">${TENT_ICON_SVG}</div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 32], // 圖示底部尖角對齊實際座標點
     popupAnchor: [0, -32],

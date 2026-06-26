@@ -1,0 +1,134 @@
+<div class="gantt">
+
+  <div class="gantt__toolbar">
+    <button class="gantt__nav-btn" (click)="prevWindow()">‹ 上 10 天</button>
+    <span class="gantt__range-label">
+      {{ matrixDates[0] }} ~ {{ matrixDates[matrixDates.length - 1] }}
+    </span>
+    <button class="gantt__nav-btn" (click)="nextWindow()">下 10 天 ›</button>
+  </div>
+
+  @if (loading) {
+    <div class="gantt__loading">載入中...</div>
+  } @else {
+
+    <div class="gantt__layout">
+
+      <!-- 左側：甘特圖表格 -->
+      <div class="gantt__table-wrap">
+        <table class="gantt__table">
+          <thead>
+            <tr>
+              <th class="gantt__row-label-cell">營位</th>
+              @for (date of matrixDates; track date) {
+                <th class="gantt__date-cell">{{ date.slice(5) }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of ganttRows; track row.campsiteId; let rowIndex = $index) {
+              <tr>
+                <td class="gantt__row-label-cell">
+                  {{ rowLabel(row) }}
+                  <button class="gantt__info-btn" (click)="openInfo(row)" title="查看照片與說明">ⓘ</button>
+                </td>
+                @for (date of matrixDates; track date; let dateIndex = $index) {
+                  <td
+                    class="gantt__cell"
+                    [ngClass]="{
+                      'gantt__cell--unavailable': cellStatus(row, dateIndex) === 'U',
+                      'gantt__cell--selected': isSelected(row, dateIndex),
+                      'gantt__cell--dragging': isDragging(rowIndex, dateIndex)
+                    }"
+                    (mousedown)="onCellMouseDown(rowIndex, dateIndex, row)"
+                    (mouseenter)="onCellMouseEnter(rowIndex, dateIndex, row)"
+                  ></td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 右側：選位摘要 -->
+      <div class="gantt__summary">
+        <h3 class="gantt__summary-title">已選清單</h3>
+
+        @if (selections.length === 0) {
+          <div class="gantt__summary-empty">尚未選擇任何營位</div>
+        } @else {
+          @for (entry of selections; track $index) {
+            <div class="gantt__summary-item">
+              <div class="gantt__summary-item-info">
+                <span class="gantt__summary-item-name">{{ entry.displayName }}</span>
+                <span class="gantt__summary-item-date">{{ entry.checkInDate }} ~ {{ entry.checkOutDate }}</span>
+              </div>
+              <button class="gantt__summary-remove" (click)="removeSelection(entry)">×</button>
+            </div>
+          }
+
+          <button class="gantt__calc-btn" (click)="calculateTotal()" [disabled]="calculating">
+            {{ calculating ? '計算中...' : '計算金額' }}
+          </button>
+
+          @if (orderSummary) {
+            <div class="gantt__total">總金額：NT$ {{ orderSummary.campSubTotal }}</div>
+          }
+        }
+      </div>
+
+    </div>
+  }
+
+  <!-- Zone 互動地圖：點色塊進入 Zone 詳細頁，即時顯示各 Zone 已選幾格+日期 -->
+  <div class="gantt__zone-map-section">
+    <h3 class="gantt__summary-title">分區地圖</h3>
+    <div #zoneMapEl class="gantt__zone-map"></div>
+  </div>
+
+  <!-- INFO 彈窗：照片＋簡介＋價格，只看大概，不能在這裡選位 -->
+  <p-dialog [(visible)]="infoVisible" [modal]="true" [style]="{ width: '480px' }" [draggable]="false">
+    @if (infoLoading) {
+      <div class="gantt__info-loading">載入中...</div>
+    } @else if (infoDetail) {
+      <h3 class="gantt__info-title">{{ infoDetail.zoneName }}</h3>
+
+      @if (infoDetail.photoUrls.length) {
+        <div class="gantt__info-photos">
+          @for (url of infoDetail.photoUrls; track url; let i = $index) {
+            <img [src]="url" class="gantt__info-photo" (click)="openLightbox(i)" />
+          }
+        </div>
+      }
+
+      @if (infoDetail.zoneDescription) {
+        <p class="gantt__info-desc">{{ infoDetail.zoneDescription }}</p>
+      }
+
+      @if (infoDetail.capacityPeoplePerSite) {
+        <div class="gantt__info-row">每帳可容納 {{ infoDetail.capacityPeoplePerSite }} 人</div>
+      }
+
+      @if (infoDetail.facilities.length) {
+        <div class="gantt__info-facilities">
+          @for (f of infoDetail.facilities; track f.facilityId) {
+            <span class="gantt__info-facility-tag">{{ f.facilityName }}</span>
+          }
+        </div>
+      }
+
+      @if (infoPricing) {
+        <div class="gantt__info-price">
+          平日 NT$ {{ infoPricing.weekdayPrice }} ／ 假日 NT$ {{ infoPricing.weekendPrice }}
+        </div>
+      }
+    } @else {
+      <div class="gantt__info-loading">找不到這個分區的資訊</div>
+    }
+  </p-dialog>
+
+  @if (infoDetail) {
+    <app-lightbox [images]="infoDetail.photoUrls" [(visible)]="showLightbox" [(activeIndex)]="lightboxIndex" />
+  }
+
+</div>

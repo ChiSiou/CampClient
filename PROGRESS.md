@@ -319,7 +319,9 @@
 
 ### ⬜ Phase F5：日曆選位 —— 待開始（最複雜）
 
-**下一步**：camp-detail 頁面的甘特圖 placeholder 要實作（見後端 PROGRESS.md Phase 4 細節）
+**⚠️ 重要：這不是獨立的新頁面/新路由！** 甘特圖選位是 **`camp-detail.html` 裡的一個區塊**（`Section 2`，目前是 `gantt-placeholder` 虛線框，第 180 行附近），跟 F4 共用同一個元件 `src/app/component/camp-detail/camp-detail.ts`。實作時是在現有的 `camp-detail.ts`/`camp-detail.html` 裡擴充這個區塊，**不是 `ng generate component` 生一個新頁面**。
+
+**下一步**：把 `gantt-placeholder` 換成真正的甘特圖（左側日曆表 + 右側 Zone 地圖即時連動，見後端 PROGRESS.md Phase 4 細節，API 都已實作完成：`/Calendar/{campgroundId}/gantt`、`/Calendar/zone/{zoneId}/detail`、`/Calendar/zone/{zoneId}/calendar`、`/Calendar/zone/summary`、`/Calendar/summary`）
 
 ---
 

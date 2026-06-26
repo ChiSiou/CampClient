@@ -1,0 +1,334 @@
+.gantt {
+  user-select: none; /* 拖拉選格時避免選到文字 */
+}
+
+.gantt__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gantt__nav-btn {
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gantt__nav-btn:hover {
+  border-color: #222;
+}
+
+.gantt__range-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+.gantt__loading {
+  text-align: center;
+  color: #717171;
+  padding: 40px 0;
+}
+
+.gantt__layout {
+  display: flex;
+  gap: 24px;
+}
+
+.gantt__table-wrap {
+  flex: 1;
+  overflow-x: auto;
+}
+
+.gantt__table {
+  border-collapse: collapse;
+  /* 不設 width:100%，不然表格會被撐滿容器寬度，
+     但日期格有固定 width、只有營位欄沒有，多出來的空間全部跑去營位欄，導致左側比例異常寬 */
+  table-layout: fixed;
+}
+
+.gantt__table th,
+.gantt__table td {
+  border: 1px solid #ebebeb;
+}
+
+.gantt__row-label-cell {
+  position: sticky;
+  left: 0;
+  width: 110px;
+  background: #fff;
+  padding: 6px 10px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: left;
+  z-index: 1;
+}
+
+.gantt__info-btn {
+  border: none;
+  background: none;
+  color: #717171;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 4px;
+  padding: 0;
+}
+
+.gantt__info-btn:hover {
+  color: #222;
+}
+
+.gantt__date-cell {
+  width: 56px;
+  padding: 6px 4px;
+  font-size: 12px;
+  color: #717171;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.gantt__cell {
+  width: 56px;
+  height: 32px;
+  cursor: pointer;
+  background: #f4f7ec;
+}
+
+.gantt__cell--unavailable {
+  background: #ebebeb;
+  cursor: not-allowed;
+}
+
+.gantt__cell--selected {
+  background: #8fae54;
+}
+
+.gantt__cell--dragging {
+  background: #c0d694;
+}
+
+/* ===== 右側摘要清單 ===== */
+.gantt__summary {
+  width: 260px;
+  flex-shrink: 0;
+  border-left: 1px solid #ebebeb;
+  padding-left: 20px;
+}
+
+.gantt__summary-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.gantt__summary-empty {
+  font-size: 13px;
+  color: #717171;
+}
+
+.gantt__summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.gantt__summary-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gantt__summary-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+.gantt__summary-item-date {
+  font-size: 12px;
+  color: #717171;
+}
+
+.gantt__summary-remove {
+  border: none;
+  background: none;
+  color: #717171;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.gantt__summary-remove:hover {
+  color: #e8534a;
+}
+
+.gantt__calc-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gantt__calc-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.gantt__total {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8fae54;
+  text-align: right;
+}
+
+/* ===== Zone 互動地圖 ===== */
+.gantt__zone-map-section {
+  margin-top: 32px;
+}
+
+.gantt__zone-map {
+  width: 100%;
+  height: 360px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Zone 外框：hover 時用 drop-shadow 發光，模擬遊戲地圖滑鼠移上去會反應的感覺
+   注意：不能用 transform/scale（跟 search 頁地圖踩過的坑一樣，Leaflet 用 transform 控制 SVG 圖層位置） */
+:host ::ng-deep .zone-shape {
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+:host ::ng-deep .zone-shape--hover {
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.9));
+}
+
+/* HUD 風格標籤：深色玻璃感卡片，取代 Leaflet 預設的白色方塊 tooltip */
+:host ::ng-deep .zone-tooltip {
+  background: rgba(17, 24, 39, 0.82);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.4;
+}
+
+:host ::ng-deep .zone-tooltip::before {
+  display: none; /* 拿掉 Leaflet 預設 tooltip 的小箭頭，置中標籤不需要 */
+}
+
+:host ::ng-deep .zone-tooltip__name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+:host ::ng-deep .zone-tooltip__icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+}
+
+:host ::ng-deep .zone-tooltip__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+:host ::ng-deep .zone-tooltip__count {
+  font-size: 12px;
+  color: #facc15;
+  font-weight: 600;
+}
+
+:host ::ng-deep .zone-tooltip__date {
+  font-size: 11px;
+  color: #d1d5db;
+}
+
+/* ===== INFO 彈窗 ===== */
+.gantt__info-loading {
+  text-align: center;
+  color: #717171;
+  padding: 30px 0;
+}
+
+.gantt__info-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.gantt__info-photos {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.gantt__info-photo {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.gantt__info-desc {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.gantt__info-row {
+  font-size: 13px;
+  color: #717171;
+  margin-bottom: 8px;
+}
+
+.gantt__info-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.gantt__info-facility-tag {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #f4f7ec;
+  color: #647e30;
+  border: 1px solid #cfe0ae;
+}
+
+.gantt__info-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8fae54;
+}

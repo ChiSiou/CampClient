@@ -79,6 +79,11 @@ export const routes: Routes = [
           import('./component/camp-detail/camp-detail').then((m) => m.CampDetail),
       },
       {
+        path: 'camp/:id/zone/:zoneId',
+        loadComponent: () =>
+          import('./component/camp-detail/zone-detail/zone-detail').then((m) => m.ZoneDetail),
+      },
+      {
         path: 'checkout',
         loadComponent: () => import('./component/checkout/checkout').then((m) => m.Checkout),
       },

@@ -1,0 +1,14 @@
+<div class="container">
+  <button class="zone-detail__back" (click)="back()">‹ 返回</button>
+
+  @if (loading) {
+    <div class="zone-detail__loading">載入中...</div>
+  } @else if (calendar) {
+    <h2 class="section-title">{{ calendar.zoneName }}</h2>
+    <p class="zone-detail__placeholder">
+      （骨架階段：{{ calendar.zoneType === 1 ? 'Generic 月曆+數量選擇' : 'UniqueUnit 卡片多選' }} 待實作）
+    </p>
+  } @else {
+    <div class="zone-detail__loading">找不到這個分區</div>
+  }
+</div>

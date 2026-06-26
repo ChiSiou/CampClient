@@ -1,0 +1,19 @@
+.zone-detail__back {
+  border: none;
+  background: none;
+  color: #717171;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 16px 0;
+  padding: 0;
+}
+
+.zone-detail__back:hover {
+  color: #222;
+}
+
+.zone-detail__loading,
+.zone-detail__placeholder {
+  color: #717171;
+  padding: 20px 0;
+}
