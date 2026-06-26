@@ -53,12 +53,37 @@
         </div>
       } @else {
         <header class="chat-header">
+          <div class="header-avatar">
+            @if (!avatarErrorIds.has(activeConversation.otherUserId)) {
+              <img
+                [src]="avatarUrl(activeConversation.otherUserId)"
+                (error)="onAvatarError(activeConversation.otherUserId)"
+                alt=""
+              />
+            } @else {
+              <span class="avatar-fallback">{{ initialOf(activeConversation.otherUserName) }}</span>
+            }
+          </div>
           <span>{{ activeConversation.otherUserName }}</span>
         </header>
 
         <div class="chat-messages">
-          @for (msg of messages; track msg.messageId) {
+          @for (msg of messages; track msg.messageId; let i = $index) {
+            @if (showDateDivider(i)) {
+              <div class="date-divider">{{ formatDateDivider(msg.sendTime) }}</div>
+            }
+
             <div class="message-row" [class.mine]="msg.sendUserId === myUserId">
+              @if (msg.sendUserId !== myUserId) {
+                <div class="row-avatar">
+                  @if (!avatarErrorIds.has(msg.sendUserId)) {
+                    <img [src]="avatarUrl(msg.sendUserId)" (error)="onAvatarError(msg.sendUserId)" alt="" />
+                  } @else {
+                    <span class="avatar-fallback">{{ initialOf(activeConversation.otherUserName) }}</span>
+                  }
+                </div>
+              }
+
               <div class="message-bubble">
                 @if (msg.isHaveImgs && msg.moreImages.length > 0) {
                   <div class="message-images">
@@ -70,8 +95,13 @@
                 @if (msg.contents) {
                   <p>{{ msg.contents }}</p>
                 }
+                <span class="message-time">{{ formatTime(msg.sendTime) }}</span>
               </div>
             </div>
+
+            @if (isLastReadMine(i)) {
+              <div class="read-receipt">已讀</div>
+            }
           }
         </div>
 

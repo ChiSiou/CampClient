@@ -65,6 +65,12 @@ export class ChatWidget implements OnInit, OnDestroy {
         }
       }),
     );
+
+    this.subs.push(
+      this.chatService.onOpenChatRequest().subscribe(({ otherUserId, otherUserName }) => {
+        this.openChatWithUser(otherUserId, otherUserName);
+      }),
+    );
   }
 
   ngOnDestroy(): void {
@@ -98,15 +104,22 @@ export class ChatWidget implements OnInit, OnDestroy {
 
   // 找客服：沒有現成對話就先開一個空白視窗，第一則訊息送出後 conversations 清單會自動補上
   startSupportChat() {
-    const existing = this.conversations.find((c) => c.otherUserId === SUPPORT_USER_ID);
+    this.openChatWithUser(SUPPORT_USER_ID, '平台客服');
+  }
+
+  // 通用版本：其他元件（聯絡營主按鈕、聯絡客人按鈕）透過 ChatService.openChatWith() 呼叫到這裡
+  openChatWithUser(otherUserId: number, otherUserName: string) {
+    this.isOpen = true;
+
+    const existing = this.conversations.find((c) => c.otherUserId === otherUserId);
     if (existing) {
       this.openConversation(existing);
       return;
     }
 
     this.activeConversation = {
-      otherUserId: SUPPORT_USER_ID,
-      otherUserName: '平台客服',
+      otherUserId,
+      otherUserName,
       lastMessage: '',
       lastMessageTime: '',
       unreadCount: 0,
@@ -237,5 +250,30 @@ export class ChatWidget implements OnInit, OnDestroy {
 
   initialOf(name: string) {
     return name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
+  }
+
+  formatTime(sendTime: string) {
+    const d = new Date(sendTime);
+    return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // 同一天的訊息只在第一則上面顯示日期分隔線，避免每則都印一次日期
+  showDateDivider(index: number) {
+    if (index === 0) return true;
+    const prevDate = new Date(this.messages[index - 1].sendTime).toDateString();
+    const curDate = new Date(this.messages[index].sendTime).toDateString();
+    return prevDate !== curDate;
+  }
+
+  formatDateDivider(sendTime: string) {
+    const d = new Date(sendTime);
+    return d.toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
+  }
+
+  // 已讀只標在「我發出的最後一則訊息」上，符合一般聊天 App 的習慣，不用每則都標
+  isLastReadMine(index: number) {
+    if (index !== this.messages.length - 1) return false;
+    const msg = this.messages[index];
+    return msg.sendUserId === this.myUserId && msg.isRead === true;
   }
 }

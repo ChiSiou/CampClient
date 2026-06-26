@@ -22,6 +22,7 @@ export class ChatService {
 
   private messageReceived$ = new Subject<ChatMessageDto>();
   private messagesRead$ = new Subject<{ readerId: number }>();
+  private openChatRequest$ = new Subject<{ otherUserId: number; otherUserName: string }>();
 
   onReceiveMessage() {
     return this.messageReceived$.asObservable();
@@ -29,6 +30,16 @@ export class ChatService {
 
   onMessagesRead() {
     return this.messagesRead$.asObservable();
+  }
+
+  onOpenChatRequest() {
+    return this.openChatRequest$.asObservable();
+  }
+
+  // 給其他元件呼叫的入口（例如營區頁的「聯絡營主」按鈕、營主後台的「聯絡客人」按鈕）
+  // ChatWidget 掛在 app root，跟呼叫端不是父子關係，所以用這個 Subject 跨元件溝通
+  openChatWith(otherUserId: number, otherUserName: string) {
+    this.openChatRequest$.next({ otherUserId, otherUserName });
   }
 
   constructor(private http: HttpClient) {}
