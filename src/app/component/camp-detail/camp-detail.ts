@@ -27,6 +27,8 @@ import {
   NearbyAttractionItem,
 } from '../../interfaces/camp.interface';
 
+import { ChatService } from '../../services/chat.service';
+
 @Component({
   selector: 'app-camp-detail',
   imports: [RouterLink, DecimalPipe, Skeleton, Review, NearbyCampCard, Lightbox, GanttCalendar],
@@ -58,7 +60,8 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private campDetailService: CampDetailService,
     private explorationService: ExplorationService,
-  ) {}
+    private chatService: ChatService,
+  ) { }
 
   ngOnInit() {
     this.routeSub = this.route.paramMap.subscribe(params => {
@@ -252,5 +255,10 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
         .addTo(this.map!);
       this.attractionMarkers.set(attr.id, marker);
     });
+  }
+
+  // TODO: 這頁的 API 還沒接，等 CampDetailDto 補上營主 OwnerUserId/OwnerName 後改成真實資料
+  contactOwner() {
+    this.chatService.openChatWith(99946, '營主');
   }
 }

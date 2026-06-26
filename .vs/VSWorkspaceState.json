@@ -1,0 +1,18 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.angular",
+    "\\.angular\\cache",
+    "\\.angular\\cache\\21.2.15",
+    "\\.angular\\cache\\21.2.15\\CampClient",
+    "\\.angular\\cache\\21.2.15\\CampClient\\vite",
+    "\\.angular\\cache\\21.2.15\\CampClient\\vite\\deps",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\component",
+    "\\src\\app\\component\\forum",
+    "\\src\\app\\component\\forum\\add-post"
+  ],
+  "SelectedNode": "\\package.json",
+  "PreviewInSolutionExplorer": false
+}
