@@ -4,9 +4,10 @@ import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
 import { ToastModule } from 'primeng/toast';
 import { MemberService } from './component/member/Service/member-service';
+import { ChatWidget } from './component/shared/chat-widget/chat-widget';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Toast, ToastModule],
+  imports: [RouterOutlet, Toast, ToastModule, ChatWidget],
   providers: [MessageService],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -14,7 +15,7 @@ import { MemberService } from './component/member/Service/member-service';
 export class App {
   protected readonly title = signal('CampClient');
 
-  constructor(private memberservice: MemberService) {}
+  constructor(public memberservice: MemberService) {}
   ngOnInit(): void {
     if (this.memberservice.isAuthenticated()) {
       this.memberservice.startTokenTimer();

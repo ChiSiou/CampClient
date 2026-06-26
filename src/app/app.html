@@ -1,2 +1,5 @@
 <p-toast position="top-right" key="top-right" />
 <router-outlet></router-outlet>
+@if (memberservice.isAuthenticated()) {
+  <app-chat-widget></app-chat-widget>
+}

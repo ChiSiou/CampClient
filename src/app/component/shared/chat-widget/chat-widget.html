@@ -1,0 +1,113 @@
+<button type="button" class="chat-fab" (click)="togglePanel()">
+  @if (!isOpen) {
+    <i class="pi pi-comments"></i>
+    @if (totalUnread > 0) {
+      <span class="chat-fab-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</span>
+    }
+  } @else {
+    <i class="pi pi-times"></i>
+  }
+</button>
+
+@if (isOpen) {
+  <div class="chat-panel">
+    <aside class="chat-sidebar">
+      <button type="button" class="support-entry" (click)="startSupportChat()" title="聯絡平台客服">
+        <i class="pi pi-headphones"></i>
+      </button>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="conversation-list">
+        @for (conv of conversations; track conv.otherUserId) {
+          <button
+            type="button"
+            class="avatar-btn"
+            [class.active]="activeConversation?.otherUserId === conv.otherUserId"
+            (click)="openConversation(conv)"
+            [title]="conv.otherUserName"
+          >
+            @if (!avatarErrorIds.has(conv.otherUserId)) {
+              <img
+                [src]="avatarUrl(conv.otherUserId)"
+                (error)="onAvatarError(conv.otherUserId)"
+                alt=""
+              />
+            } @else {
+              <span class="avatar-fallback">{{ initialOf(conv.otherUserName) }}</span>
+            }
+
+            @if (conv.unreadCount > 0) {
+              <span class="avatar-unread-dot">{{ conv.unreadCount > 9 ? '9+' : conv.unreadCount }}</span>
+            }
+          </button>
+        }
+      </div>
+    </aside>
+
+    <section class="chat-main">
+      @if (!activeConversation) {
+        <div class="chat-empty">
+          <i class="pi pi-comment"></i>
+          <p>選擇左側的對話開始聊天</p>
+        </div>
+      } @else {
+        <header class="chat-header">
+          <span>{{ activeConversation.otherUserName }}</span>
+        </header>
+
+        <div class="chat-messages">
+          @for (msg of messages; track msg.messageId) {
+            <div class="message-row" [class.mine]="msg.sendUserId === myUserId">
+              <div class="message-bubble">
+                @if (msg.isHaveImgs && msg.moreImages.length > 0) {
+                  <div class="message-images">
+                    @for (img of msg.moreImages; track img.picId) {
+                      <img [src]="img.imageUrl" alt="" />
+                    }
+                  </div>
+                }
+                @if (msg.contents) {
+                  <p>{{ msg.contents }}</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (pendingImages.length > 0) {
+          <div class="pending-images">
+            @for (img of pendingImages; track img.previewUrl; let i = $index) {
+              <div class="pending-image">
+                <img [src]="img.previewUrl" alt="" />
+                <button type="button" class="remove-btn" (click)="removePendingImage(i)">
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="chat-input-row">
+          <label class="attach-btn">
+            <i class="pi pi-image"></i>
+            <input type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
+          </label>
+          <input
+            type="text"
+            placeholder="輸入訊息..."
+            [(ngModel)]="newMessageText"
+            (keydown.enter)="send()"
+          />
+          <button
+            type="button"
+            (click)="send()"
+            [disabled]="isSending || (!newMessageText.trim() && pendingImages.length === 0)"
+          >
+            <i class="pi pi-send"></i>
+          </button>
+        </div>
+      }
+    </section>
+  </div>
+}
