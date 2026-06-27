@@ -44,19 +44,19 @@
 /* Logo */
 .logo {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
   color: var(--brand-dark);
   text-decoration: none;
   font-weight: 700;
-  font-size: 22px;
+  font-size: 18px;
   flex: 0 0 auto;
 }
 
 .logo__icon {
-  width: 30px;
-  height: 30px;
-  color: var(--brand);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .logo__text {
