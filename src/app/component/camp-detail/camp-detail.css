@@ -131,6 +131,15 @@
   text-decoration: underline;
 }
 
+.contact-owner-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .meta-item--address {
   max-width: 280px;
   white-space: nowrap;

@@ -1,49 +1,72 @@
-<div class="container">
-  <h2>🎒 加購露營裝備</h2>
-  <p class="hint">不需要裝備也可以直接結帳。</p>
+<div class="rental-page">
+  <div class="hero">
+    <h2>🎒 加購露營裝備</h2>
+    <p class="hint">挑選你需要的裝備款式，不需要也可以直接跳過結帳。</p>
+  </div>
 
-  <div *ngIf="loading()" class="loading">裝備清單載入中...</div>
+  <div *ngIf="loading()" class="loading">
+    <div class="spinner"></div>
+    裝備清單載入中...
+  </div>
   <div *ngIf="errorMessage()" class="error">{{ errorMessage() }}</div>
 
-  <div *ngIf="!loading()" class="gear-grid">
-    <div class="gear-card" *ngFor="let product of equipmentList()">
-      <img [src]="product.mainImageUrl || 'assets/default-gear.png'" alt="{{ product.name }}" />
-      <h3>{{ product.name }}</h3>
-      <a [routerLink]="['equipment', product.productId]" queryParamsHandling="preserve">查看詳情</a>
-
-      <div class="variant-row" *ngFor="let v of product.variants">
-        <span class="variant-name">{{ v.variantName }}</span>
-        <span class="price">${{ v.dailyRentalPrice }} / 天</span>
-        <span class="stock" [class.out]="v.availableStock === 0">庫存 {{ v.availableStock }}</span>
-
-        <div class="qty-control">
-          <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">-</button>
-          <span>{{ getQuantity(v.variantId) }}</span>
-          <button (click)="changeQuantity(v.variantId, 1, v.availableStock)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+  <div *ngIf="!loading()" class="category-grid">
+    <a
+      class="category-card"
+      *ngFor="let product of equipmentList()"
+      [routerLink]="['equipment', product.productId]"
+      queryParamsHandling="preserve"
+    >
+      <div class="category-image">
+        <img *ngIf="product.mainImageUrl" [src]="product.mainImageUrl" [alt]="product.name" />
+        <div class="icon-placeholder" *ngIf="!product.mainImageUrl">
+          <span class="icon">{{ categoryIcon(product.category) }}</span>
         </div>
-
-        <span class="line-subtotal" *ngIf="getQuantity(v.variantId) > 0">
-          小計 ${{ lineSubTotal(v.dailyRentalPrice, v.variantId) }}
+        <span class="variant-count-badge">{{ product.variants.length }} 種款式</span>
+        <span class="selected-badge" *ngIf="productSelectedQuantity(product) > 0">
+          已選 {{ productSelectedQuantity(product) }}
         </span>
       </div>
-    </div>
+
+      <div class="category-body">
+        <h3>{{ product.name }}</h3>
+        <p class="category-tag">{{ product.category }}</p>
+
+        <div class="category-meta">
+          <span class="price-from">${{ productMinPrice(product) }} 起 / 天</span>
+          <span class="stock-total" [class.out]="productTotalStock(product) === 0">
+            共 {{ productTotalStock(product) }} 件可租
+          </span>
+        </div>
+
+        <span class="cta-btn">查看所有款式 →</span>
+      </div>
+    </a>
   </div>
 
   <div class="shipping-section" *ngIf="shippingMethods().length > 0">
-    <h3>運送方式</h3>
-    <label class="shipping-option" *ngFor="let m of shippingMethods()">
-      <input
-        type="radio"
-        name="shippingMethod"
-        [checked]="cart.shippingMethodId() === m.shippingMethodId"
-        (change)="selectShippingMethod(m.shippingMethodId)"
-      />
-      {{ m.methodName }}（運費 ${{ m.baseFee }}）
-    </label>
+    <h3>🚚 運送方式</h3>
+    <div class="shipping-options">
+      <label
+        class="shipping-card"
+        *ngFor="let m of shippingMethods()"
+        [class.active]="cart.shippingMethodId() === m.shippingMethodId"
+      >
+        <input
+          type="radio"
+          name="shippingMethod"
+          [checked]="cart.shippingMethodId() === m.shippingMethodId"
+          (change)="selectShippingMethod(m.shippingMethodId)"
+        />
+        <span class="shipping-name">{{ m.methodName }}</span>
+        <span class="shipping-fee">${{ m.baseFee }}</span>
+        <span class="shipping-desc" *ngIf="m.description">{{ m.description }}</span>
+      </label>
+    </div>
   </div>
 
   <div class="summary-bar">
-    <span>裝備小計（{{ nights() }} 晚）：${{ cartTotal() }}</span>
+    <span class="summary-total">裝備小計（{{ nights() }} 晚）：<strong>${{ cartTotal() }}</strong></span>
     <div class="actions">
       <button class="btn-skip" (click)="skip()" [disabled]="submitting()">不需要裝備</button>
       <button class="btn-confirm" (click)="confirm()" [disabled]="submitting()">

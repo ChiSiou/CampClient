@@ -100,6 +100,32 @@ export class CampingRentalComponent implements OnInit {
     return total;
   }
 
+  // 商品卡片用：該商品款式中最低的每日租金，當作「最低 $xx/天」標示
+  productMinPrice(product: EquipmentListItemDto): number {
+    if (product.variants.length === 0) return 0;
+    return Math.min(...product.variants.map((v) => v.dailyRentalPrice));
+  }
+
+  // 商品卡片用：該商品總可選庫存（所有款式加總）
+  productTotalStock(product: EquipmentListItemDto): number {
+    return product.variants.reduce((sum, v) => sum + v.availableStock, 0);
+  }
+
+  // 商品卡片用：使用者目前已選了這個商品底下多少數量（跨款式加總），顯示已選徽章
+  productSelectedQuantity(product: EquipmentListItemDto): number {
+    return product.variants.reduce((sum, v) => sum + this.getQuantity(v.variantId), 0);
+  }
+
+  // 沒有商品照片時，依分類顯示對應的 Emoji 圖示卡，避免用隨機圖庫圖片混充內容
+  categoryIcon(category: string): string {
+    const icons: Record<string, string> = {
+      帳篷: '🏕️',
+      寢具: '🛏️',
+      炊具: '🔥',
+    };
+    return icons[category] ?? '🎒';
+  }
+
   // 使用者不需要裝備，直接進結帳
   skip(): void {
     sessionStorage.removeItem(EquipmentCartService.STORAGE_KEY);

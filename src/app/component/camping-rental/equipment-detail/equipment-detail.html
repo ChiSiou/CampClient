@@ -1,24 +1,64 @@
-<div class="container">
+<div class="detail-page">
   <button class="back" (click)="backToList()">← 回加購清單</button>
 
-  <div *ngIf="loading()" class="loading">載入中...</div>
+  <div *ngIf="loading()" class="loading">
+    <div class="spinner"></div>
+    載入中...
+  </div>
   <div *ngIf="notFound()" class="error">找不到這個裝備商品。</div>
 
   <div *ngIf="detail()" class="detail">
-    <img [src]="detail()!.mainImageUrl || 'assets/default-gear.png'" [alt]="detail()!.name" />
-    <h2>{{ detail()!.name }}</h2>
-    <p class="category">{{ detail()!.category }}</p>
+    <div class="product-banner">
+      <img *ngIf="detail()!.mainImageUrl" [src]="detail()!.mainImageUrl" [alt]="detail()!.name" />
+      <div class="icon-placeholder" *ngIf="!detail()!.mainImageUrl">
+        <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
+      </div>
+      <div class="banner-overlay">
+        <span class="product-tag">{{ detail()!.category }}</span>
+        <h2>{{ detail()!.name }}</h2>
+      </div>
+    </div>
+
     <p class="description">{{ detail()!.description }}</p>
 
-    <div class="variant-row" *ngFor="let v of detail()!.variants">
-      <span class="variant-name">{{ v.variantName }}</span>
-      <span class="price">${{ v.dailyRentalPrice }} / 天</span>
-      <span class="stock" [class.out]="v.availableStock === 0">庫存 {{ v.availableStock }}</span>
+    <h3 class="section-title">選擇款式（共 {{ detail()!.variants.length }} 種）</h3>
 
-      <div class="qty-control">
-        <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">-</button>
-        <span>{{ getQuantity(v.variantId) }}</span>
-        <button (click)="changeQuantity(v.variantId, 1, v.availableStock)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+    <div class="variant-grid">
+      <div
+        class="variant-card"
+        *ngFor="let v of detail()!.variants"
+        [class.selected]="getQuantity(v.variantId) > 0"
+        [class.out]="v.availableStock === 0"
+      >
+        <div class="variant-image">
+          <img *ngIf="v.image || detail()!.mainImageUrl" [src]="v.image || detail()!.mainImageUrl" [alt]="v.variantName" />
+          <div class="icon-placeholder small" *ngIf="!v.image && !detail()!.mainImageUrl">
+            <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
+          </div>
+          <span class="sku-badge">{{ v.sku }}</span>
+          <span class="selected-check" *ngIf="getQuantity(v.variantId) > 0">✓ 已選 {{ getQuantity(v.variantId) }}</span>
+        </div>
+
+        <div class="variant-body">
+          <h4>{{ v.variantName }}</h4>
+          <div class="variant-meta">
+            <span class="price">${{ v.dailyRentalPrice }} <small>/ 天</small></span>
+            <span class="stock" [class.out]="v.availableStock === 0">
+              {{ v.availableStock === 0 ? '已無庫存' : '庫存 ' + v.availableStock }}
+            </span>
+          </div>
+
+          <div class="qty-row">
+            <div class="qty-control">
+              <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">−</button>
+              <span class="qty-value">{{ getQuantity(v.variantId) }}</span>
+              <button (click)="changeQuantity(v.variantId, 1, v.availableStock)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+            </div>
+            <span class="line-subtotal" *ngIf="getQuantity(v.variantId) > 0">
+              ${{ lineSubTotal(v.dailyRentalPrice, v.variantId) }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
