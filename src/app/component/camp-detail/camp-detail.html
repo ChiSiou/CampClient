@@ -28,13 +28,29 @@
           <img [src]="gridImages[0]" alt="營區封面" />
         </div>
         <div class="photo-right">
-          @for (img of smallImages; track img; let i = $index) {
-            <div class="photo-small" [class.photo-small--last]="i === smallImages.length - 1">
-              <img [src]="img" [alt]="'營區照片 ' + (i + 2)" />
-              @if (i === smallImages.length - 1) {
-                <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 1)">
-                  查看全部 {{ detail.imageUrls.length }} 張
-                </button>
+          <div class="photo-right-row">
+            @for (img of smallImages.slice(0, 2); track img; let i = $index) {
+              <div class="photo-small" [class.photo-small--last]="smallImages.length <= 2 && i === smallImages.slice(0, 2).length - 1">
+                <img [src]="img" [alt]="'營區照片 ' + (i + 2)" />
+                @if (smallImages.length <= 2 && i === smallImages.slice(0, 2).length - 1) {
+                  <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 1)">
+                    查看全部 {{ detail.imageUrls.length }} 張
+                  </button>
+                }
+              </div>
+            }
+          </div>
+          @if (smallImages.length > 2) {
+            <div class="photo-right-row">
+              @for (img of smallImages.slice(2, 4); track img; let i = $index) {
+                <div class="photo-small" [class.photo-small--last]="i === smallImages.slice(2, 4).length - 1">
+                  <img [src]="img" [alt]="'營區照片 ' + (i + 4)" />
+                  @if (i === smallImages.slice(2, 4).length - 1) {
+                    <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 3)">
+                      查看全部 {{ detail.imageUrls.length }} 張
+                    </button>
+                  }
+                </div>
               }
             </div>
           }

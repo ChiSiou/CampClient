@@ -44,7 +44,7 @@
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"
           aria-label="開啟選單" (click)="toggleMenu($event)"></button>
-        <p-menu #menu [model]="menuItems" [popup]="true" />
+        <p-menu #menu [model]="menuItems" [popup]="true" [appendTo]="'body'" />
       </div>
     </div>
   </header>

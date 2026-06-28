@@ -14,6 +14,7 @@ import * as L from 'leaflet';
 import { Skeleton } from 'primeng/skeleton';
 import { CampDetailService } from '../../services/camp-detail.service';
 import { ExplorationService } from '../../services/exploration.service';
+import { CampSelectionService } from '../../services/camp-selection.service';
 import { Review } from '../reviews/review/review';
 import { NearbyCampCard } from '../shared/nearby-camp-card/nearby-camp-card';
 import { Lightbox } from '../shared/lightbox/lightbox';
@@ -58,11 +59,13 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private campDetailService: CampDetailService,
     private explorationService: ExplorationService,
+    private campSelectionService: CampSelectionService,
   ) {}
 
   ngOnInit() {
     this.routeSub = this.route.paramMap.subscribe(params => {
       this.campId = Number(params.get('id'));
+      this.campSelectionService.setCampground(this.campId);
       this.resetState();
       this.loadData();
       if (this.mapReady) this.resetMap();

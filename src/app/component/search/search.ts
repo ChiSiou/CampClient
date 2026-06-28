@@ -131,6 +131,7 @@ export class Search implements OnInit, AfterViewInit {
         pageNumber: 1,
       },
       queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
   }
 
@@ -245,6 +246,7 @@ export class Search implements OnInit, AfterViewInit {
       relativeTo: this.route,
       queryParams: { sortBy: this.sortBy, pageNumber: 1 },
       queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
   }
 
@@ -254,6 +256,7 @@ export class Search implements OnInit, AfterViewInit {
       relativeTo: this.route,
       queryParams: { pageNumber },
       queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
   }
 }

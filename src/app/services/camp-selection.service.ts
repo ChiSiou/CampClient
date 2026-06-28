@@ -26,8 +26,19 @@ export class CampSelectionService {
   private selections$ = new BehaviorSubject<CampSelectionEntry[]>([]);
   readonly selections = this.selections$.asObservable();
 
+  // 記錄目前選位是哪個營區的，換到別的營區時自動清空舊選位，避免殘留
+  private currentCampgroundId: number | null = null;
+
   get current(): CampSelectionEntry[] {
     return this.selections$.value;
+  }
+
+  // 進入 camp-detail 頁面時呼叫：如果跟上次是不同營區，先清空舊選位
+  setCampground(campgroundId: number) {
+    if (this.currentCampgroundId !== null && this.currentCampgroundId !== campgroundId) {
+      this.clear();
+    }
+    this.currentCampgroundId = campgroundId;
   }
 
   add(entry: CampSelectionEntry) {
