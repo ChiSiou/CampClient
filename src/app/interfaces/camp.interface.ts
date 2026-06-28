@@ -119,6 +119,7 @@ export interface CampDetailDto {
   imageUrls: string[];
   highlights: string[];
   tags: CampDetailTagItem[];
+  facilities: FacilityItem[];
 }
 
 export interface CampDetailTagItem {
@@ -457,6 +458,18 @@ export interface RefundItemResult {
   typhoonDate: string | null;
   isRefundable: boolean;
   refundAmount: number;
+}
+
+export interface RefundPolicyDto {
+  enableTyphoonOverride: boolean;
+  tiers: RefundTierItem[];
+}
+
+export interface RefundTierItem {
+  tierName: string;
+  minDaysBeforeCheckIn: number;
+  maxDaysBeforeCheckIn: number | null;
+  refundPercentage: number;
 }
 
 // ===== Phase 7：營主錢包 =====

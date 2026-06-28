@@ -1,14 +1,214 @@
-<div class="container">
-  <button class="zone-detail__back" (click)="back()">‹ 返回</button>
+<div class="container zone-detail">
+  <button class="zone-detail__back" (click)="back()">‹ 返回營區頁</button>
 
   @if (loading) {
-    <div class="zone-detail__loading">載入中...</div>
+  <div class="zone-detail__loading">載入中...</div>
   } @else if (calendar) {
-    <h2 class="section-title">{{ calendar.zoneName }}</h2>
-    <p class="zone-detail__placeholder">
-      （骨架階段：{{ calendar.zoneType === 1 ? 'Generic 月曆+數量選擇' : 'UniqueUnit 卡片多選' }} 待實作）
-    </p>
-  } @else {
-    <div class="zone-detail__loading">找不到這個分區</div>
+  <h2 class="section-title">{{ calendar.zoneName }}</h2>
+  <p class="section-subtitle">
+    {{ calendar.zoneType === 1 ? '選擇日期與帳數，系統將自動分配營位' : '選擇日期後挑選想要的房型' }}
+  </p>
+
+  <!-- Zone 介紹：照片 + 描述 + 設施 -->
+  @if (zoneDetail) {
+  <div class="zone-intro">
+
+    @if (zoneDetail.photoUrls?.length) {
+    <div class="zone-intro__photos">
+      @for (img of zoneDetail.photoUrls.slice(0, 4); track img; let i = $index) {
+      <div class="zone-intro__photo" (click)="openZoneLightbox(i)">
+        <img [src]="img" [alt]="zoneDetail.zoneName" />
+        @if (i === 3 && zoneDetail.photoUrls.length > 4) {
+        <button class="zone-intro__view-all-btn" (click)="$event.stopPropagation(); openZoneLightbox(3)">
+          查看全部 {{ zoneDetail.photoUrls.length }} 張
+        </button>
+        }
+      </div>
+      }
+    </div>
+    <app-lightbox [images]="zoneDetail.photoUrls" [(visible)]="showZoneLightbox" [(activeIndex)]="zoneLightboxIndex" />
+    }
+
+    @if (zoneDetail.zoneDescription) {
+    <h3 class="section-sub-title">關於這區</h3>
+    <p class="zone-intro__description">{{ zoneDetail.zoneDescription }}</p>
+    }
+
+    @if (zoneDetail.facilities?.length) {
+    <div class="zone-intro__facilities">
+      @for (f of zoneDetail.facilities; track f.facilityId) {
+      <span class="zone-intro__facility">
+        @if (f.iconUrl) {
+        <img [src]="f.iconUrl" class="zone-intro__facility-icon" alt="" />
+        } @else {
+        <i class="pi pi-check-circle zone-intro__facility-icon-fallback"></i>
+        }
+        {{ f.facilityName }}
+      </span>
+      }
+    </div>
+    }
+  </div>
   }
+
+  <hr class="divider" />
+
+  <!-- 日期選擇 -->
+  <div class="zone-detail__date-row">
+    <label class="zone-detail__date-label">入住/退房日期</label>
+    <p-datepicker [(ngModel)]="dateRange" (ngModelChange)="onDateRangeChange()" selectionMode="range"
+      [readonlyInput]="true" placeholder="選擇日期" dateFormat="mm/dd" [minDate]="today" />
+  </div>
+
+  @if (!hasDateRange) {
+  <div class="zone-detail__hint">請先選擇日期，才能查看可訂狀況與價格。</div>
+  } @else {
+
+  <!-- ZoneType 1：Generic 數量選擇 -->
+  @if (calendar.zoneType === 1) {
+  <div class="generic-picker">
+    @if (maxAvailableQuantity === 0) {
+    <div class="zone-detail__hint">這段日期已無可訂帳位，請更換日期。</div>
+    } @else {
+    <div class="generic-picker__row">
+      <span class="generic-picker__label">數量（最多 {{ maxAvailableQuantity }} 帳）</span>
+      <div class="generic-picker__counter">
+        <button class="counter-btn" (click)="adjustQuantity(-1)" [disabled]="quantity <= 1">
+          <i class="pi pi-minus"></i>
+        </button>
+        <span class="counter-value">{{ quantity }}</span>
+        <button class="counter-btn" (click)="adjustQuantity(1)" [disabled]="quantity >= maxAvailableQuantity">
+          <i class="pi pi-plus"></i>
+        </button>
+      </div>
+    </div>
+
+    <ul class="daily-price-list">
+      @for (d of calendar.dailySummaries; track d.date) {
+      <li class="daily-price-list__item">
+        <span>{{ d.date }}</span>
+        <span>NT$ {{ d.dailyPrice | number }}</span>
+        <span [ngClass]="d.remainingSites > 0 ? 'is-available' : 'is-full'">
+          剩 {{ d.remainingSites }} 帳
+        </span>
+      </li>
+      }
+    </ul>
+    }
+  </div>
+  }
+
+  <!-- ZoneType 2：UniqueUnit 卡片多選 -->
+  @if (calendar.zoneType === 2) {
+  <div class="unit-grid">
+    @for (unit of calendar.units; track unit.campsiteId) {
+    <div class="unit-card" [class.unit-card--selected]="isUnitSelected(unit)"
+      [class.unit-card--disabled]="!unit.isAvailable" (click)="toggleUnit(unit)">
+      <div class="unit-card__img-wrap">
+        @if (unit.photoUrls?.[0]) {
+        <img [src]="unit.photoUrls[0]" [alt]="unit.siteNumber" class="unit-card__img" />
+        } @else {
+        <div class="unit-card__no-img"></div>
+        }
+        @if (!unit.isAvailable) {
+        <span class="unit-card__badge">已被預訂</span>
+        }
+        @if (isUnitSelected(unit)) {
+        <span class="unit-card__check"><i class="pi pi-check"></i></span>
+        }
+        <button class="unit-card__detail-btn" (click)="openUnitDetail(unit, $event)">
+          <i class="pi pi-images"></i> 查看詳情
+        </button>
+      </div>
+      <div class="unit-card__body">
+        <div class="unit-card__name">{{ unit.siteNumber }}</div>
+        <div class="unit-card__meta">
+          <span>可住 {{ unit.capacityPeople }} 人</span>
+          @if (hasBathroom(unit)) {
+            <span class="unit-card__bathroom-badge">
+              <i class="pi pi-check-circle"></i> 附衛浴
+            </span>
+          }
+        </div>
+        @if (unit.pricePerNight) {
+        <div class="unit-card__price">NT$ {{ unit.pricePerNight | number }} 起</div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  @if (errorMessage) {
+  <div class="zone-detail__error">{{ errorMessage }}</div>
+  }
+
+  <!-- 確認按鈕 -->
+  <div class="zone-detail__footer">
+    <button class="confirm-btn" [disabled]="!canConfirm || submitting" (click)="confirm()">
+      {{ submitting ? '送出中...' : '確認選位，返回營區頁面' }}
+    </button>
+  </div>
+  }
+
+  } @else {
+  <div class="zone-detail__loading">找不到這個分區</div>
+  }
+
+  <!-- 小木屋詳情彈窗 -->
+  <p-dialog [(visible)]="detailVisible" [modal]="true" [dismissableMask]="true" [style]="{ width: '560px' }"
+    [header]="detailUnit?.siteNumber ?? ''">
+    @if (detailUnit) {
+    <div class="unit-detail">
+
+      @if (detailUnit.photoUrls?.length) {
+      <div class="unit-detail__photos">
+        @for (img of detailUnit.photoUrls; track img; let i = $index) {
+        <div class="unit-detail__photo" (click)="openUnitLightbox(i)">
+          <img [src]="img" [alt]="detailUnit.siteNumber" />
+        </div>
+        }
+      </div>
+      <app-lightbox [images]="detailUnit.photoUrls" [(visible)]="showUnitLightbox"
+        [(activeIndex)]="unitLightboxIndex" />
+      } @else {
+      <div class="unit-detail__no-img">尚無照片</div>
+      }
+
+      <div class="unit-detail__meta">
+        <span>可住 {{ detailUnit.capacityPeople }} 人</span>
+        @if (detailUnit.pricePerNight) {
+        <span class="unit-detail__price">NT$ {{ detailUnit.pricePerNight | number }} 起</span>
+        }
+      </div>
+
+      @if (detailUnit.description) {
+      <p class="unit-detail__description">{{ detailUnit.description }}</p>
+      }
+
+      @if (detailUnit.facilities?.length) {
+      <div class="unit-detail__facilities">
+        @for (f of detailUnit.facilities; track f.facilityId) {
+        <span class="zone-intro__facility">
+          @if (f.iconUrl) {
+          <img [src]="f.iconUrl" class="zone-intro__facility-icon" alt="" />
+          } @else {
+          <i class="pi pi-check-circle zone-intro__facility-icon-fallback"></i>
+          }
+          {{ f.facilityName }}
+        </span>
+        }
+      </div>
+      }
+
+      @if (!detailUnit.isAvailable) {
+      <div class="zone-detail__hint">這段日期已被預訂，無法選擇。</div>
+      } @else {
+      <button class="confirm-btn unit-detail__select-btn" (click)="toggleDetailUnit()">
+        {{ isUnitSelected(detailUnit) ? '取消選擇' : '選擇這間' }}
+      </button>
+      }
+    </div>
+    }
+  </p-dialog>
 </div>

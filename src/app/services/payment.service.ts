@@ -5,6 +5,7 @@ import {
   PaymentStatusDto,
   RefundRequestDto,
   RefundResultDto,
+  RefundPolicyDto,
 } from '../interfaces/camp.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +16,10 @@ export class PaymentService {
 
   getStatus(orderNumber: string) {
     return this.http.get<PaymentStatusDto>(`${this.base}/Payment/status/${orderNumber}`);
+  }
+
+  getRefundPolicy() {
+    return this.http.get<RefundPolicyDto>(`${this.base}/Payment/refund-policy`);
   }
 
   calculateRefund(body: RefundRequestDto) {

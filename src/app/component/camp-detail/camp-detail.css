@@ -149,12 +149,25 @@
 
 /* .nav-badge 已移至 styles.css */
 
-/* 特色圖示列 */
+/* 特色標籤分組（環境特色 / 政策規則） */
+.feature-tag-group {
+  margin-top: 18px;
+}
+
+.feature-tag-group__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
 .feature-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 20px;
-  margin-top: 20px;
 }
 
 .feature-tag {
@@ -183,6 +196,38 @@
   color: #374151;
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* 營區設施 */
+.facility-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px 16px;
+  margin-top: 18px;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.facility-item__icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.facility-item__icon-fallback {
+  color: #2d6a4f;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.facility-item__label {
+  font-size: 14px;
+  color: #374151;
 }
 
 /* .divider 已移至 styles.css */
@@ -228,6 +273,32 @@
   font-size: 15px;
   white-space: pre-line;
   margin: 0;
+}
+
+/* 取消政策：跟「關於這個營區」同一欄，純文字段落，不用卡片外框 */
+.policy-section {
+  margin-top: 24px;
+}
+
+.policy-section .rules-list {
+  margin: 14px 0 0;
+  padding: 0 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.policy-section .rules-list__item {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.policy-section .rules-text {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.75;
+  margin: 14px 0 0;
 }
 
 /* ===== 雙欄佈局 ===== */

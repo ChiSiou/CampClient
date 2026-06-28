@@ -109,17 +109,54 @@
         </div>
       </div>
 
-      <!-- 特色圖示列 -->
-      @if (detail.tags.length) {
-        <div class="feature-tags">
-          @for (tag of detail.tags; track tag.tagName) {
-            <div class="feature-tag">
-              @if (tag.iconUrl) {
-                <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
+      <!-- 特色標籤：依分類分組顯示，環境特色／政策規則不要混在一起 -->
+      @if (environmentTags.length) {
+        <div class="feature-tag-group">
+          <span class="feature-tag-group__label">環境特色</span>
+          <div class="feature-tags">
+            @for (tag of environmentTags; track tag.tagName) {
+              <div class="feature-tag">
+                @if (tag.iconUrl) {
+                  <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
+                } @else {
+                  <span class="feature-tag__dot"></span>
+                }
+                <span class="feature-tag__label">{{ tag.tagName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (policyTags.length) {
+        <div class="feature-tag-group">
+          <span class="feature-tag-group__label">政策規則</span>
+          <div class="feature-tags">
+            @for (tag of policyTags; track tag.tagName) {
+              <div class="feature-tag">
+                @if (tag.iconUrl) {
+                  <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
+                } @else {
+                  <span class="feature-tag__dot"></span>
+                }
+                <span class="feature-tag__label">{{ tag.tagName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- 營區設施 -->
+      @if (detail.facilities?.length) {
+        <div class="facility-list">
+          @for (f of detail.facilities; track f.facilityId) {
+            <div class="facility-item">
+              @if (f.iconUrl) {
+                <img [src]="f.iconUrl" class="facility-item__icon" alt="" />
               } @else {
-                <span class="feature-tag__dot"></span>
+                <i class="pi pi-check-circle facility-item__icon-fallback"></i>
               }
-              <span class="feature-tag__label">{{ tag.tagName }}</span>
+              <span class="facility-item__label">{{ f.facilityName }}</span>
             </div>
           }
         </div>
@@ -141,6 +178,23 @@
             </ul>
           }
           <p class="camp-description__text">{{ detail.description }}</p>
+
+          @if (detail.rules) {
+            <div class="policy-section">
+              <h3 class="section-sub-title">注意事項</h3>
+              @if (detail.rules.includes('\n')) {
+                <ul class="rules-list">
+                  @for (rule of detail.rules.split('\n'); track rule) {
+                    @if (rule.trim()) {
+                      <li class="rules-list__item">{{ rule.trim() }}</li>
+                    }
+                  }
+                </ul>
+              } @else {
+                <p class="rules-text">{{ detail.rules }}</p>
+              }
+            </div>
+          }
         </div>
 
         <!-- 右欄：分區類型 + 注意事項 -->
@@ -176,19 +230,18 @@
             </div>
           }
 
-          @if (detail.rules) {
+          @if (refundPolicy?.tiers?.length) {
             <div class="rules-card">
-              <h3 class="section-sub-title">注意事項</h3>
-              @if (detail.rules.includes('\n')) {
-                <ul class="rules-list">
-                  @for (rule of detail.rules.split('\n'); track rule) {
-                    @if (rule.trim()) {
-                      <li class="rules-list__item">{{ rule.trim() }}</li>
-                    }
-                  }
-                </ul>
-              } @else {
-                <p class="rules-text">{{ detail.rules }}</p>
+              <h3 class="section-sub-title">取消政策</h3>
+              <ul class="rules-list">
+                @for (tier of refundPolicy!.tiers; track tier.tierName) {
+                  <li class="rules-list__item">
+                    {{ tierRangeLabel(tier) }}申請取消：退還 {{ tier.refundPercentage * 100 }}%（{{ tier.tierName }}）
+                  </li>
+                }
+              </ul>
+              @if (refundPolicy!.enableTyphoonOverride) {
+                <p class="rules-text">如入住日遇政府公告颱風假，不受上述限制，可全額退款。</p>
               }
             </div>
           }

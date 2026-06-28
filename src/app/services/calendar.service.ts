@@ -7,6 +7,7 @@ import {
   CampZoneCalendarDto,
   CampSelectionRequestDto,
   CampOrderSummaryDto,
+  ZoneOrderSummaryDto,
 } from '../interfaces/camp.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -34,8 +35,12 @@ export class CalendarService {
     return this.http.get<CampZoneCalendarDto>(url);
   }
 
-  getZoneSummary(type: 'generic' | 'unit', body: object) {
-    return this.http.post<any>(`${this.base}/Calendar/zone/summary?type=${type}`, body);
+  getGenericZoneSummary(body: { zoneId: number; quantity: number; checkInDate: string; checkOutDate: string }) {
+    return this.http.post<ZoneOrderSummaryDto>(`${this.base}/Calendar/zone/summary?type=generic`, body);
+  }
+
+  getUnitZoneSummary(body: { campsiteId: number; checkInDate: string; checkOutDate: string }) {
+    return this.http.post<ZoneOrderSummaryDto>(`${this.base}/Calendar/zone/summary?type=unit`, body);
   }
 
   getSummary(body: CampSelectionRequestDto) {

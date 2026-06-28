@@ -67,13 +67,44 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     private router: Router,
   ) {}
 
+  // Generic 選位來自 Zone 細節頁時沒有具體帳位（displayRowCampsiteId=0），
+  // 這裡幫忙「挑」同 Zone 底下的格子來視覺示意選了幾個、選了哪幾天，純粹畫面用，不影響送出給後端的資料
+  private genericHighlightRanges = new Map<number, { checkIn: string; checkOut: string }[]>();
+
   ngOnInit() {
     this.campSelectionService.selections.subscribe(entries => {
       this.selections = entries;
       this.orderSummary = null; // 選位變了，舊的金額計算結果失效，要重新按「計算金額」
+      this.recomputeGenericHighlights();
       if (this.zoneMapReady) this.updateZoneLayers();
     });
     this.loadGantt();
+  }
+
+  // 把所有「沒有具體帳位」的 Generic 選位，依 Zone+日期區間分組，
+  // 各分組挑出該 Zone 底下前 N 個帳位列（N=該分組的選位數量），讓甘特圖左側也能反白示意
+  private recomputeGenericHighlights() {
+    this.genericHighlightRanges.clear();
+
+    const groups = new Map<string, { zoneId: number; checkIn: string; checkOut: string; count: number }>();
+    this.selections
+      .filter(s => s.displayRowCampsiteId === 0 && s.zoneType === 1 && s.zoneId !== null)
+      .forEach(s => {
+        const zoneId = s.zoneId as number;
+        const key = `${zoneId}|${s.checkInDate}|${s.checkOutDate}`;
+        const g = groups.get(key);
+        if (g) g.count++;
+        else groups.set(key, { zoneId, checkIn: s.checkInDate, checkOut: s.checkOutDate, count: 1 });
+      });
+
+    groups.forEach(({ zoneId, checkIn, checkOut, count }) => {
+      const rowsInZone = this.ganttRows.filter(r => r.zoneType === 1 && r.zoneId === zoneId);
+      rowsInZone.slice(0, count).forEach(row => {
+        const ranges = this.genericHighlightRanges.get(row.campsiteId) ?? [];
+        ranges.push({ checkIn, checkOut });
+        this.genericHighlightRanges.set(row.campsiteId, ranges);
+      });
+    });
   }
 
   ngAfterViewInit() {
@@ -96,6 +127,7 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
         this.matrixDates = res.matrixDates;
         this.ganttRows = res.ganttRows;
         this.loading = false;
+        this.recomputeGenericHighlights();
       },
       error: () => {
         this.loading = false;
@@ -158,9 +190,15 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
   isSelected(row: GanttRowItem, dateIndex: number): boolean {
     const date = this.matrixDates[dateIndex];
-    return this.selections.some(
+
+    const direct = this.selections.some(
       s => s.displayRowCampsiteId === row.campsiteId && date >= s.checkInDate && date < s.checkOutDate
     );
+    if (direct) return true;
+
+    // Generic 選位視覺示意：這格被挑來代表某筆「沒有具體帳位」的選位
+    const ranges = this.genericHighlightRanges.get(row.campsiteId);
+    return ranges?.some(r => date >= r.checkIn && date < r.checkOut) ?? false;
   }
 
   isDragging(rowIndex: number, dateIndex: number): boolean {

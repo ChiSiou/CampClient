@@ -15,6 +15,7 @@ import { Skeleton } from 'primeng/skeleton';
 import { CampDetailService } from '../../services/camp-detail.service';
 import { ExplorationService } from '../../services/exploration.service';
 import { CampSelectionService } from '../../services/camp-selection.service';
+import { PaymentService } from '../../services/payment.service';
 import { Review } from '../reviews/review/review';
 import { NearbyCampCard } from '../shared/nearby-camp-card/nearby-camp-card';
 import { Lightbox } from '../shared/lightbox/lightbox';
@@ -26,6 +27,8 @@ import {
   CampMapZoneDto,
   NearbyCampItem,
   NearbyAttractionItem,
+  RefundPolicyDto,
+  RefundTierItem,
 } from '../../interfaces/camp.interface';
 
 import { ChatService } from '../../services/chat.service';
@@ -44,6 +47,7 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
   location: CampLocationDto | null = null;
   explore: CampExplorationDto | null = null;
   zones: CampMapZoneDto[] = [];
+  refundPolicy: RefundPolicyDto | null = null;
   loading = true;
   error = false;
 
@@ -62,7 +66,8 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     private campDetailService: CampDetailService,
     private explorationService: ExplorationService,
     private campSelectionService: CampSelectionService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private paymentService: PaymentService,
   ) { }
 
 
@@ -74,6 +79,12 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
       if (this.mapReady) this.resetMap();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // 取消政策是全平台共用的設定，跟營區無關，只要載入一次
+    this.paymentService.getRefundPolicy().subscribe({
+      next: res => (this.refundPolicy = res),
+      error: () => {},
     });
   }
 
@@ -128,6 +139,15 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // 標籤依 Category 分組顯示（環境特色 vs 政策規則），不要混在一起
+  get environmentTags() {
+    return this.detail?.tags.filter(t => t.category === 'Environment') ?? [];
+  }
+
+  get policyTags() {
+    return this.detail?.tags.filter(t => t.category === 'Policy') ?? [];
+  }
+
   // 封面大圖：最多取前 5 張（index 0 = 大圖，1-4 = 右側小圖）
   get gridImages(): string[] {
     return this.detail?.imageUrls.slice(0, 5) ?? [];
@@ -160,6 +180,15 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
 
   onCardLeave() {
     this.map?.closePopup();
+  }
+
+  // 把 minDaysBeforeCheckIn/maxDaysBeforeCheckIn 轉成「入住前 X~Y 天」之類的文字，
+  // 不然光看退款比例完全看不出來這個級距是什麼時候適用的
+  tierRangeLabel(tier: RefundTierItem): string {
+    const { minDaysBeforeCheckIn: min, maxDaysBeforeCheckIn: max } = tier;
+    if (max === null) return `入住前 ${min} 天以上`;
+    if (min === 0) return `入住前 ${max} 天內`;
+    return `入住前 ${min}~${max} 天`;
   }
 
   get googleMapsNavUrl(): string {
