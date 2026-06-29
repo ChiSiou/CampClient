@@ -119,10 +119,31 @@ export class ZoneDetail implements OnInit {
     return unit.facilities?.some(f => f.facilityName.includes('衛浴')) ?? false;
   }
 
-  // Generic：日期區間內每天剩餘帳位數的最小值，才是整段住宿期間都能訂的真實上限
+  // Generic：逐天比對「後端剩餘量」扣掉「同一天已經在選位清單裡的數量」，取整段期間最小值
+  // 不能只比對「日期完全相同」——兩次選位日期重疊但不完全一樣（例如 6/30~7/3 跟 6/30~7/2）
+  // 還是會搶到同一批實體帳位，要逐天檢查才能真正擋住重疊的情況
   get maxAvailableQuantity(): number {
     if (!this.calendar?.dailySummaries?.length) return 0;
-    return Math.min(...this.calendar.dailySummaries.map(d => d.remainingSites));
+    return Math.min(
+      ...this.calendar.dailySummaries.map(d => Math.max(0, d.remainingSites - this.alreadySelectedCountOnDate(d.date)))
+    );
+  }
+
+  // 這段日期範圍裡，衝突最嚴重的那一天已經選了多少帳（純前端累積中、還沒送出訂單）
+  get alreadySelectedQuantity(): number {
+    if (!this.calendar?.dailySummaries?.length) return 0;
+    return Math.max(0, ...this.calendar.dailySummaries.map(d => this.alreadySelectedCountOnDate(d.date)));
+  }
+
+  private alreadySelectedCountOnDate(date: string): number {
+    return this.campSelectionService.current.filter(
+      s => s.zoneId === this.zoneId && s.zoneType === 1 && date >= s.checkInDate && date < s.checkOutDate
+    ).length;
+  }
+
+  // 每日清單顯示的「剩餘量」也要扣掉已選數量，不然會跟上面「最多還能再訂 X 帳」的提示對不起來
+  adjustedRemaining(date: string, rawRemaining: number): number {
+    return Math.max(0, rawRemaining - this.alreadySelectedCountOnDate(date));
   }
 
   adjustQuantity(delta: 1 | -1) {
@@ -131,8 +152,23 @@ export class ZoneDetail implements OnInit {
     this.quantity = next;
   }
 
+  // unit.isAvailable 只看後端資料庫真實庫存，不知道使用者已經在甘特圖「直接拖曳」或這個 Zone 頁面
+  // 其他小木屋選過、還沒送出訂單的同一個 campsiteId——要自己比對前端選位清單，日期重疊就不能再選
+  isAlreadyBookedElsewhere(unit: UnitCard): boolean {
+    if (!this.hasDateRange) return false;
+    const checkInDate = this.formatDate(this.dateRange[0]);
+    const checkOutDate = this.formatDate(this.dateRange[1]);
+    return this.campSelectionService.current.some(
+      s =>
+        s.campsiteId === unit.campsiteId &&
+        s.checkInDate < checkOutDate &&
+        checkInDate < s.checkOutDate
+    );
+  }
+
   toggleUnit(unit: UnitCard) {
     if (!unit.isAvailable) return;
+    if (this.isAlreadyBookedElsewhere(unit)) return;
     if (this.selectedUnitIds.has(unit.campsiteId)) {
       this.selectedUnitIds.delete(unit.campsiteId);
     } else {
@@ -227,7 +263,13 @@ export class ZoneDetail implements OnInit {
     this.router.navigate(['/camp', this.campgroundId]);
   }
 
+  // 不能用 date.toISOString()——p-datepicker 給的是「本地時間」午夜的 Date，
+  // toISOString() 會轉成 UTC（台灣 UTC+8，等於減 8 小時），可能跨到前一天，
+  // 必須直接讀本地的年/月/日，不要經過時區轉換
   private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

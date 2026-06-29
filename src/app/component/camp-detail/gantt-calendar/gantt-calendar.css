@@ -43,10 +43,14 @@
 .gantt__table-wrap {
   flex: 1;
   overflow-x: auto;
+  padding: 16px;
+  border: 1px solid #ebebeb;
+  border-radius: 16px;
 }
 
 .gantt__table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   /* 不設 width:100%，不然表格會被撐滿容器寬度，
      但日期格有固定 width、只有營位欄沒有，多出來的空間全部跑去營位欄，導致左側比例異常寬 */
   table-layout: fixed;
@@ -84,7 +88,7 @@
 }
 
 .gantt__date-cell {
-  width: 56px;
+  width: 72px;
   padding: 6px 4px;
   font-size: 12px;
   color: #717171;
@@ -92,11 +96,25 @@
   white-space: nowrap;
 }
 
+.gantt__date-cell__day {
+  font-weight: 600;
+}
+
+.gantt__date-cell__weekday {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 1px;
+}
+
 .gantt__cell {
-  width: 56px;
+  position: relative;
+  width: 72px;
   height: 32px;
   cursor: pointer;
   background: #f4f7ec;
+  text-align: center;
+  vertical-align: middle;
+  transition: background 0.1s;
 }
 
 .gantt__cell--unavailable {
@@ -104,12 +122,71 @@
   cursor: not-allowed;
 }
 
+.gantt__cell-label {
+  font-size: 10px;
+  color: #9ca3af;
+  user-select: none;
+}
+
+/* 選取範圍要連成一條膠囊狀色塊，頭尾淺、中間深，才有「一個區間」的感覺：
+   入住日（range-start）跟退房日（checkout）都用淺色當端蓋，中間真正住的那幾晚用深色 */
 .gantt__cell--selected {
-  background: #8fae54;
+  background: #6b9342;
+  border-color: #6b9342;
+  border-right-width: 0;
+  border-radius: 0;
+}
+
+.gantt__cell--selected:not(.gantt__cell--range-start) {
+  border-left-width: 0;
+}
+
+.gantt__cell--range-start {
+  background: #c0d694;
+  border-color: #c0d694;
+  border-radius: 16px 0 0 16px;
+}
+
+/* 退房日＝拖曳放開滑鼠的那一格，不算住的那幾晚，所以不會套用 .gantt__cell--selected，
+   這裡單獨給它淺色端蓋樣式，並把左邊框去掉跟前一格（深色）無縫接在一起 */
+.gantt__cell--checkout {
+  background: #c0d694;
+  border-color: #c0d694;
+  border-left-width: 0;
+  border-radius: 0 16px 16px 0;
 }
 
 .gantt__cell--dragging {
   background: #c0d694;
+  border-color: #c0d694;
+}
+
+.gantt__cell-check {
+  color: #fff;
+  font-size: 13px;
+}
+
+.gantt__cell-remove {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #e8534a;
+  color: #fff;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.gantt__cell-remove:hover {
+  background: #c94040;
 }
 
 /* ===== 右側摘要清單 ===== */
@@ -188,12 +265,63 @@
   cursor: default;
 }
 
+.gantt__breakdown-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 10px;
+}
+
+.gantt__breakdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.gantt__breakdown-item-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.gantt__breakdown-item-meta {
+  color: #717171;
+  font-size: 12px;
+}
+
+.gantt__breakdown-item-price {
+  align-self: flex-end;
+  font-weight: 600;
+  color: #374151;
+}
+
 .gantt__total {
   margin-top: 12px;
   font-size: 15px;
   font-weight: 700;
   color: #8fae54;
   text-align: right;
+}
+
+.gantt__checkout-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  background: #8fae54;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gantt__checkout-btn:hover {
+  background: #647e30;
 }
 
 /* ===== Zone 互動地圖 ===== */

@@ -83,7 +83,13 @@ export class SearchBar implements OnInit {
     this.router.navigate(['/search'], { queryParams: params, queryParamsHandling: 'merge' });
   }
 
+  // 不能用 date.toISOString()——p-datepicker 給的是「本地時間」午夜的 Date，
+  // toISOString() 會轉成 UTC（台灣 UTC+8，等於減 8 小時），可能跨到前一天，
+  // 必須直接讀本地的年/月/日，不要經過時區轉換
   private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

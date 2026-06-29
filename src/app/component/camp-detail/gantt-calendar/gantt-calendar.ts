@@ -9,7 +9,7 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { NgClass, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import * as L from 'leaflet';
@@ -27,7 +27,7 @@ interface DragState {
 
 @Component({
   selector: 'app-gantt-calendar',
-  imports: [NgClass, DialogModule, Lightbox],
+  imports: [NgClass, DecimalPipe, DialogModule, Lightbox],
   templateUrl: './gantt-calendar.html',
   styleUrl: './gantt-calendar.css',
 })
@@ -81,27 +81,52 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     this.loadGantt();
   }
 
-  // 把所有「沒有具體帳位」的 Generic 選位，依 Zone+日期區間分組，
-  // 各分組挑出該 Zone 底下前 N 個帳位列（N=該分組的選位數量），讓甘特圖左側也能反白示意
+  // 把所有「沒有具體帳位」的 Generic 選位逐筆分配到該 Zone 底下的帳位列，讓甘特圖左側也能反白示意。
+  // 不能按「日期區間」分組各自獨立計算（舊寫法的 bug）：那樣會讓不同批次的選位都各自從第一列開始算，
+  // 完全不知道其他批次已經佔用哪些列，導致重疊堆疊在前面幾列、後面的列永遠用不到。
+  // 正確做法是逐筆檢查「這一列在這天有沒有被佔用」，同一列只要日期不重疊就可以重複使用（這是正常的），
+  // 日期重疊時才需要換一列。
   private recomputeGenericHighlights() {
     this.genericHighlightRanges.clear();
 
-    const groups = new Map<string, { zoneId: number; checkIn: string; checkOut: string; count: number }>();
-    this.selections
-      .filter(s => s.displayRowCampsiteId === 0 && s.zoneType === 1 && s.zoneId !== null)
-      .forEach(s => {
-        const zoneId = s.zoneId as number;
-        const key = `${zoneId}|${s.checkInDate}|${s.checkOutDate}`;
-        const g = groups.get(key);
-        if (g) g.count++;
-        else groups.set(key, { zoneId, checkIn: s.checkInDate, checkOut: s.checkOutDate, count: 1 });
+    const genericEntries = this.selections.filter(
+      s => s.displayRowCampsiteId === 0 && s.zoneType === 1 && s.zoneId !== null
+    );
+
+    const byZone = new Map<number, CampSelectionEntry[]>();
+    genericEntries.forEach(s => {
+      const zoneId = s.zoneId as number;
+      const list = byZone.get(zoneId) ?? [];
+      list.push(s);
+      byZone.set(zoneId, list);
+    });
+
+    byZone.forEach((entries, zoneId) => {
+      const rowsInZone = this.ganttRows.filter(r => r.zoneType === 1 && r.zoneId === zoneId);
+
+      // 記錄每一列目前已經分配了哪些日期區間——先把「直接拖曳在這一列」的選位也算進已佔用範圍，
+      // 不然 Generic 從 Zone 細節頁選的可能會誤判這列是空的，跟直接選位搶同一列同一天，
+      // 導致實際上明明有 3 筆選位，畫面卻只反白 2 列（第三列被浪費掉沒用到）
+      const rowAssignments = new Map<number, { checkIn: string; checkOut: string }[]>();
+      rowsInZone.forEach(r => {
+        const directOnThisRow = this.selections
+          .filter(s => s.displayRowCampsiteId === r.campsiteId && s.zoneType === 1)
+          .map(s => ({ checkIn: s.checkInDate, checkOut: s.checkOutDate }));
+        rowAssignments.set(r.campsiteId, directOnThisRow);
       });
 
-    groups.forEach(({ zoneId, checkIn, checkOut, count }) => {
-      const rowsInZone = this.ganttRows.filter(r => r.zoneType === 1 && r.zoneId === zoneId);
-      rowsInZone.slice(0, count).forEach(row => {
+      entries.forEach(entry => {
+        // 找一列「目前還沒有跟這筆選位日期重疊」的，不重疊就可以共用同一列
+        const row = rowsInZone.find(r => {
+          const assigned = rowAssignments.get(r.campsiteId) ?? [];
+          return !assigned.some(a => a.checkIn < entry.checkOutDate && entry.checkInDate < a.checkOut);
+        });
+        if (!row) return; // 沒有空列了（正常情況下 maxAvailableQuantity 已經會擋掉，不該發生）
+
+        rowAssignments.get(row.campsiteId)!.push({ checkIn: entry.checkInDate, checkOut: entry.checkOutDate });
+
         const ranges = this.genericHighlightRanges.get(row.campsiteId) ?? [];
-        ranges.push({ checkIn, checkOut });
+        ranges.push({ checkIn: entry.checkInDate, checkOut: entry.checkOutDate });
         this.genericHighlightRanges.set(row.campsiteId, ranges);
       });
     });
@@ -161,6 +186,15 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     return row.zoneType === 1 ? row.groupName : row.siteDisplayName;
   }
 
+  private static readonly WEEKDAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+
+  // 日期表頭多顯示星期幾，方便對照日期
+  // 不特別標色週六週日：平日/假日價格其實是依「週六日 或 國定假日」決定（見後端 PriceHelper），
+  // 只標週六日顏色會誤導使用者以為國定假日（可能落在平日）不算假日價
+  dayOfWeek(dateStr: string): string {
+    return GanttCalendar.WEEKDAY_LABELS[new Date(dateStr).getDay()];
+  }
+
   openInfo(row: GanttRowItem) {
     this.infoVisible = true;
     this.infoLoading = true;
@@ -207,6 +241,56 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     return dateIndex >= from && dateIndex <= to;
   }
 
+  // 入住日（範圍最前面那一格）：保留圓角+打勾，但用淺色——跟中間「真正住的那幾晚」的深色做區隔，
+  // 頭尾淺、中間深，才會有「一個區間」的視覺感覺
+  isRangeStart(row: GanttRowItem, dateIndex: number): boolean {
+    return this.isSelected(row, dateIndex) && !this.isSelected(row, dateIndex - 1);
+  }
+
+  // 退房日：拖曳放開滑鼠的那一格直接就是退房日，不額外多畫一格。
+  // 因為 checkOutDate 現在等於拖曳放開那天，isSelected() 的 [checkIn, checkOut) 判斷會自動排除這一格，
+  // 不會被誤判成「住的那一晚」
+  isCheckoutDay(row: GanttRowItem, dateIndex: number): boolean {
+    const date = this.matrixDates[dateIndex];
+
+    const direct = this.selections.some(s => s.displayRowCampsiteId === row.campsiteId && date === s.checkOutDate);
+    if (direct) return true;
+
+    const ranges = this.genericHighlightRanges.get(row.campsiteId);
+    return ranges?.some(r => date === r.checkOut) ?? false;
+  }
+
+  // 取消按鈕放在退房格——現在退房格就是使用者拖曳放開滑鼠的那一格，鬆開在哪、按鈕就在哪。
+  // 也要支援 Generic 從 Zone 細節頁選的那些（displayRowCampsiteId=0，靠 genericHighlightRanges
+  // 反推這一列、這一天對應到哪一筆選位），不能只看「直接對應到真實列」的選位
+  canRemoveAtCheckout(row: GanttRowItem, dateIndex: number): boolean {
+    const date = this.matrixDates[dateIndex];
+    const direct = this.selections.some(s => s.displayRowCampsiteId === row.campsiteId && date === s.checkOutDate);
+    if (direct) return true;
+
+    const ranges = this.genericHighlightRanges.get(row.campsiteId);
+    return ranges?.some(r => date === r.checkOut) ?? false;
+  }
+
+  removeAtCheckout(row: GanttRowItem, dateIndex: number, event: Event) {
+    event.stopPropagation();
+    const date = this.matrixDates[dateIndex];
+
+    const directEntry = this.selections.find(s => s.displayRowCampsiteId === row.campsiteId && date === s.checkOutDate);
+    if (directEntry) {
+      this.removeSelection(directEntry);
+      return;
+    }
+
+    // Generic：genericHighlightRanges 只存日期，沒有保留是哪一筆選位，
+    // 但 Generic 選位的 displayRowCampsiteId 固定是 0，靠 checkIn/checkOut 就能請 service 移除一筆相符的
+    const ranges = this.genericHighlightRanges.get(row.campsiteId);
+    const range = ranges?.find(r => date === r.checkOut);
+    if (range) {
+      this.campSelectionService.remove(0, range.checkIn, range.checkOut);
+    }
+  }
+
   onCellMouseDown(rowIndex: number, dateIndex: number, row: GanttRowItem) {
     if (this.cellStatus(row, dateIndex) !== 'A') return;
     if (this.isSelected(row, dateIndex)) return; // 已選的格子不能拖，要先點掉移除
@@ -228,11 +312,13 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     const [fromIdx, toIdx] = [this.drag.startDateIndex, this.drag.endDateIndex].sort((a, b) => a - b);
     this.drag = null;
 
-    // 退房日是區間結束後一天（checkOutDate 是「不含」的那一天，跟後端日期區間慣例一致）
+    // 退房日 = 拖曳放開滑鼠的那一格，不額外往後加一天：使用者拖到哪天，那天就是退房日，
+    // 跟 isSelected() 的 [checkInDate, checkOutDate) 慣例完全相容——退房日本身不會被算進已選的晚數
+    // 至少要拖 2 格（1 晚）才算有效選位，只點 1 格（入住=退房，0 晚）視為無效操作直接忽略
+    if (toIdx <= fromIdx) return;
+
     const checkInDate = this.matrixDates[fromIdx];
-    const lastNightDate = new Date(this.matrixDates[toIdx]);
-    lastNightDate.setDate(lastNightDate.getDate() + 1);
-    const checkOutDate = this.formatDate(lastNightDate);
+    const checkOutDate = this.matrixDates[toIdx];
 
     const entry: CampSelectionEntry = {
       campsiteId: row.zoneType === 1 ? 0 : row.campsiteId, // Generic 一律送 0，UniqueUnit 送真實 id
@@ -290,8 +376,19 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
+  // F6 結帳頁尚未實作（目前是空殼），先把選位資料留在 CampSelectionService（root 服務，跨頁不會清空）
+  // 等結帳頁做好後直接從那邊讀取即可，這裡先把入口接上
+  goToCheckout() {
+    this.router.navigate(['/checkout']);
+  }
+
+  // 不能用 date.toISOString()——會轉成 UTC（台灣 UTC+8，等於減 8 小時）可能跨到前一天，
+  // 必須直接讀本地的年/月/日，不要經過時區轉換
   private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   private initZoneMap() {

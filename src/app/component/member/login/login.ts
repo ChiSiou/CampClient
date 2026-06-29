@@ -30,9 +30,9 @@ export class Login {
   GetloginApi(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.loginResponse.token);
-        localStorage.setItem('roles', JSON.stringify(res.loginResponse.roles));
-        localStorage.setItem('activeRole', res.loginResponse.activeRole);
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('roles', JSON.stringify(res.roles));
+        localStorage.setItem('activeRole', res.activeRole);
         ///把後端回傳的 JWT token 存到瀏覽器的 localStorage 裡面
         this.memberService.startTokenTimer();
         ///token過期時間開始計時

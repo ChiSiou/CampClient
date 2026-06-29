@@ -50,16 +50,21 @@ export class CampSelectionService {
   }
 
   // 用顯示列 id + 日期區間移除一筆（甘特圖點掉已選格子、或摘要清單按刪除時用）
+  // 只刪「第一筆」符合的，不要用 filter 整批刪掉——Generic 選位常常會有好幾筆
+  // displayRowCampsiteId（=0）+ 日期完全相同（同一次在 Zone 細節頁選了多帳），
+  // 摘要清單按掉其中一筆時不該把同樣條件的其他筆也一起清掉
   remove(displayRowCampsiteId: number, checkInDate: string, checkOutDate: string) {
-    this.selections$.next(
-      this.current.filter(
-        s => !(
-          s.displayRowCampsiteId === displayRowCampsiteId &&
-          s.checkInDate === checkInDate &&
-          s.checkOutDate === checkOutDate
-        )
-      )
+    const index = this.current.findIndex(
+      s =>
+        s.displayRowCampsiteId === displayRowCampsiteId &&
+        s.checkInDate === checkInDate &&
+        s.checkOutDate === checkOutDate
     );
+    if (index === -1) return;
+
+    const next = [...this.current];
+    next.splice(index, 1);
+    this.selections$.next(next);
   }
 
   clear() {

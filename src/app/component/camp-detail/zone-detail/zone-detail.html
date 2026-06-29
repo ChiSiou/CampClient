@@ -68,8 +68,13 @@
   @if (calendar.zoneType === 1) {
   <div class="generic-picker">
     @if (maxAvailableQuantity === 0) {
-    <div class="zone-detail__hint">這段日期已無可訂帳位，請更換日期。</div>
+    <div class="zone-detail__hint">
+      {{ alreadySelectedQuantity > 0 ? '這段日期可訂帳位已經被你選滿了。' : '這段日期已無可訂帳位，請更換日期。' }}
+    </div>
     } @else {
+    @if (alreadySelectedQuantity > 0) {
+      <div class="zone-detail__hint">你已經選了 {{ alreadySelectedQuantity }} 帳，最多還能再訂 {{ maxAvailableQuantity }} 帳。</div>
+    }
     <div class="generic-picker__row">
       <span class="generic-picker__label">數量（最多 {{ maxAvailableQuantity }} 帳）</span>
       <div class="generic-picker__counter">
@@ -88,8 +93,8 @@
       <li class="daily-price-list__item">
         <span>{{ d.date }}</span>
         <span>NT$ {{ d.dailyPrice | number }}</span>
-        <span [ngClass]="d.remainingSites > 0 ? 'is-available' : 'is-full'">
-          剩 {{ d.remainingSites }} 帳
+        <span [ngClass]="adjustedRemaining(d.date, d.remainingSites) > 0 ? 'is-available' : 'is-full'">
+          剩 {{ adjustedRemaining(d.date, d.remainingSites) }} 帳
         </span>
       </li>
       }
@@ -103,7 +108,7 @@
   <div class="unit-grid">
     @for (unit of calendar.units; track unit.campsiteId) {
     <div class="unit-card" [class.unit-card--selected]="isUnitSelected(unit)"
-      [class.unit-card--disabled]="!unit.isAvailable" (click)="toggleUnit(unit)">
+      [class.unit-card--disabled]="!unit.isAvailable || isAlreadyBookedElsewhere(unit)" (click)="toggleUnit(unit)">
       <div class="unit-card__img-wrap">
         @if (unit.photoUrls?.[0]) {
         <img [src]="unit.photoUrls[0]" [alt]="unit.siteNumber" class="unit-card__img" />
@@ -112,6 +117,8 @@
         }
         @if (!unit.isAvailable) {
         <span class="unit-card__badge">已被預訂</span>
+        } @else if (isAlreadyBookedElsewhere(unit)) {
+        <span class="unit-card__badge">你已選過</span>
         }
         @if (isUnitSelected(unit)) {
         <span class="unit-card__check"><i class="pi pi-check"></i></span>

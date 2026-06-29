@@ -21,7 +21,10 @@
             <tr>
               <th class="gantt__row-label-cell">營位</th>
               @for (date of matrixDates; track date) {
-                <th class="gantt__date-cell">{{ date.slice(5) }}</th>
+                <th class="gantt__date-cell">
+                  <div class="gantt__date-cell__day">{{ date.slice(5) }}</div>
+                  <div class="gantt__date-cell__weekday">{{ dayOfWeek(date) }}</div>
+                </th>
               }
             </tr>
           </thead>
@@ -38,11 +41,25 @@
                     [ngClass]="{
                       'gantt__cell--unavailable': cellStatus(row, dateIndex) === 'U',
                       'gantt__cell--selected': isSelected(row, dateIndex),
-                      'gantt__cell--dragging': isDragging(rowIndex, dateIndex)
+                      'gantt__cell--dragging': isDragging(rowIndex, dateIndex),
+                      'gantt__cell--range-start': isRangeStart(row, dateIndex),
+                      'gantt__cell--checkout': isCheckoutDay(row, dateIndex)
                     }"
                     (mousedown)="onCellMouseDown(rowIndex, dateIndex, row)"
                     (mouseenter)="onCellMouseEnter(rowIndex, dateIndex, row)"
-                  ></td>
+                  >
+                    @if (cellStatus(row, dateIndex) === 'U') {
+                      <span class="gantt__cell-label">已訂</span>
+                    }
+                    @if (isRangeStart(row, dateIndex) || isCheckoutDay(row, dateIndex)) {
+                      <i class="pi pi-check gantt__cell-check"></i>
+                    }
+                    @if (isCheckoutDay(row, dateIndex) && canRemoveAtCheckout(row, dateIndex)) {
+                      <button class="gantt__cell-remove" (click)="removeAtCheckout(row, dateIndex, $event)">
+                        <i class="pi pi-times"></i>
+                      </button>
+                    }
+                  </td>
                 }
               </tr>
             }
@@ -72,7 +89,21 @@
           </button>
 
           @if (orderSummary) {
-            <div class="gantt__total">總金額：NT$ {{ orderSummary.campSubTotal }}</div>
+            <ul class="gantt__breakdown-list">
+              @for (item of orderSummary.campsites; track $index) {
+                <li class="gantt__breakdown-item">
+                  <div class="gantt__breakdown-item-name">
+                    {{ item.zoneName }}{{ item.siteNumber ? '（' + item.siteNumber + '）' : '' }}
+                  </div>
+                  <div class="gantt__breakdown-item-meta">
+                    {{ item.checkInDate }} ~ {{ item.checkOutDate }}（{{ item.nights }} 晚）
+                  </div>
+                  <div class="gantt__breakdown-item-price">NT$ {{ item.itemSubTotal | number }}</div>
+                </li>
+              }
+            </ul>
+            <div class="gantt__total">總金額：NT$ {{ orderSummary.campSubTotal | number }}</div>
+            <button class="gantt__checkout-btn" (click)="goToCheckout()">前往結帳</button>
           }
         }
       </div>
