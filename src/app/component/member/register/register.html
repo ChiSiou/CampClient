@@ -23,22 +23,31 @@
 
         <div class="form-group">
           <label for="name">姓名</label>
-          <input [(ngModel)]="memberData.Name" name="name" type="text" placeholder="請輸入姓名" />
+          <input [(ngModel)]="memberData.Name" name="name" type="text" placeholder="請輸入姓名" required />
         </div>
 
         <div class="form-group">
           <label for="phone">電話</label>
-          <input [(ngModel)]="memberData.Phone" name="phone" type="tel" placeholder="請輸入電話" />
+          <input
+            [(ngModel)]="memberData.Phone"
+            name="phone"
+            type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            pattern="^09[0-9]{8}$"
+            placeholder="請輸入 09 開頭手機號碼"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="email">MAIL</label>
-          <input [(ngModel)]="memberData.Email" name="email" type="email" placeholder="請輸入 Email" />
+          <input [(ngModel)]="memberData.Email" name="email" type="email" placeholder="請輸入 Email" required />
         </div>
 
         <div class="form-group">
           <label for="password">密碼</label>
-          <input [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼" />
+          <input [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼" required />
         </div>
         <div class="form-group photo-upload">
           <label class="register-btn">
