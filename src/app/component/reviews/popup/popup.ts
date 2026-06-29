@@ -1,4 +1,4 @@
-import { Member } from './../../member/member';
+import { Member } from '../../layouts/member/member';
 import { Component, inject, NgModule } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';

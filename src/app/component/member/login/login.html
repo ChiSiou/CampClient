@@ -37,9 +37,17 @@
 
         <a routerLink="/forgot-password">忘記密碼？</a>
       </div>
-      <button class="" (click)="GetloginApi({email,password})" class="login-btn">
+      <button class="" (click)="login({email,password})" class="login-btn">
         登入
       </button>
+      @if (emailconfirmed) {
+  <div class="verify-box">
+    <p>尚未完成信箱驗證</p>
+    <button type="button" class="resend-btn" (click)="Resendpage()">
+      重新寄送驗證信
+    </button>
+  </div>
+}
       <div class="divider">
         <span>或</span>
       </div>

@@ -69,7 +69,6 @@ export class HeaderWMenu {
         // 重點：同步更新畫面變數
         this.activeUserRole = res.activeRole;
         this.userrole = res.roles;
-        localStorage.setItem('activeRole', res.activeRole);
 
         if (res.activeRole === 'Owner') {
           this.routes.navigate(['/ownerCenter']);

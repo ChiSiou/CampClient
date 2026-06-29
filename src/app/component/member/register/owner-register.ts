@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MemberService } from '../Service/member-service';
 import { MessageService } from 'primeng/api';
@@ -9,25 +9,25 @@ import { MessageService } from 'primeng/api';
   templateUrl: './owner-register.html',
   styleUrl: './owner-register.css',
 })
-export class OwnerRegister {
+export class OwnerRegister implements OnInit {
   constructor(
     private memberService: MemberService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.ownerData.Name = this.memberService.getname();
-  }
   ownerData = {
-    Name: '',
-    IdNumber: '',
-    Address: '',
-    ProfilePicture: '',
+    realName: '',
+    idNumber: '',
+    address: '',
   };
+
   selectedFile: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
+  loading = false;
+
+  ngOnInit(): void {
+    this.ownerData.realName = this.memberService.getname();
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -38,62 +38,78 @@ export class OwnerRegister {
 
     this.selectedFile = input.files[0];
 
-    // 預覽圖片
     const reader = new FileReader();
     reader.onload = () => {
       this.previewUrl = reader.result;
     };
+
     reader.readAsDataURL(this.selectedFile);
   }
 
   submitowner() {
-    if (!this.selectedFile) {
-      alert('請先選擇照片');
+    if (!this.ownerData.realName.trim()) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'warn',
+        summary: '資料不完整',
+        detail: '請輸入真實姓名',
+      });
       return;
     }
 
-    // 第一步：先送營主資訊
-    this.memberService.ownerregister(this.ownerData).subscribe({
+    if (!this.ownerData.idNumber.trim()) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'warn',
+        summary: '資料不完整',
+        detail: '請輸入身分證字號或統一編號',
+      });
+      return;
+    }
+
+    if (!this.ownerData.address.trim()) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'warn',
+        summary: '資料不完整',
+        detail: '請輸入地址',
+      });
+      return;
+    }
+
+    if (!this.selectedFile) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'warn',
+        summary: '資料不完整',
+        detail: '請先選擇照片',
+      });
+      return;
+    }
+
+    this.loading = true;
+
+    this.memberService.ownerregister(this.ownerData, this.selectedFile).subscribe({
       next: (res) => {
-        console.log('營主資訊上傳成功', res);
+        this.loading = false;
 
-        // 第二步：營主資訊成功後，再上傳照片
-
-        this.memberService.uploadOwnerProfilePhoto(this.selectedFile!).subscribe({
-          next: (photoRes) => {
-            console.log('照片上傳成功', photoRes);
-            this.messageService.add({
-              key: 'top-right',
-              severity: 'success',
-              summary: '註冊成功',
-              detail: '營主資料與照片都上傳成功',
-            });
-            // alert('營主資料與照片都上傳成功');
-          },
-          error: (err) => {
-            console.log('照片上傳失敗', err);
-            this.messageService.add({
-              key: 'top-right',
-              severity: 'error',
-              summary: `註冊失敗`,
-              detail: '營主資料成功，但照片上傳失敗',
-            });
-            // alert('營主資料成功，但照片上傳失敗');
-          },
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'success',
+          summary: '申請成功',
+          detail: res.message || '申請成功，等待審核',
         });
       },
       error: (err) => {
-        console.log('營主資訊上傳失敗', err);
-        console.log('照片上傳失敗', err);
+        this.loading = false;
+
         this.messageService.add({
           key: 'top-right',
           severity: 'error',
-          summary: `註冊失敗`,
-          detail: '營主資訊上傳失敗',
+          summary: '申請失敗',
+          detail: err.error?.message || '營主申請失敗',
         });
-        // alert('營主資訊上傳失敗');
       },
     });
   }
-  GetRegistApi() {}
 }

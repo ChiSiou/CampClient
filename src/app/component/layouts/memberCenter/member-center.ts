@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { MemberService } from '../Service/member-service';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { MemberService } from '../../member/Service/member-service';
 
 @Component({
   selector: 'member-center',
@@ -14,7 +14,7 @@ export class MemberCenter {
   constructor(private memberservice: MemberService) {}
   ngOnInit(): void {
     this.name = this.memberservice.getname();
-    this.memberservice.getphoto().subscribe({
+    this.memberservice.Usergetphoto().subscribe({
       next: (res) => {
         console.log(res.url);
         this.profilePhotoUrl = res.url;

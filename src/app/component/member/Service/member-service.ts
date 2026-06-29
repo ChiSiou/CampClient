@@ -12,7 +12,7 @@ import { Memberedit } from '../memberedit/memberedit';
 import { MemberEdit } from '../interface/MemberEdit';
 import { switchRoleResponse } from '../interface/switchRoleResponse';
 import { OrderList } from '../interface/orderList';
-import { ServiceResult } from '../interface/ServiceResult';
+import { LoginServiceResult, ServiceResult } from '../interface/ServiceResult';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,7 @@ export class MemberService {
   ) { }
 
   login(data: loginData) {
-    return this.http.post<ServiceResult>(`${this.apiUrl}/login`, data);
+    return this.http.post<LoginServiceResult>(`${this.apiUrl}/login`, data);
   }
   clearLoginData(): void {
     localStorage.removeItem('token');
@@ -154,10 +154,20 @@ export class MemberService {
     formData.append('file', file, file.name);
     return this.http.post<{ Message: string }>(`${this.apiUrl}/MemberRegister`, formData);
   }
-  ownerregister(data: ownerregisterData) {
-    const token = localStorage.getItem('token');
-    return this.http.post<string>(`${this.apiUrl}/OwnerRegister`, data);
-  }
+ ownerregister(data: ownerregisterData, file: File) {
+  const formData = new FormData();
+
+  formData.append('idNumber', data.idNumber);
+  formData.append('realname', data.realName);
+  formData.append('address', data.address);
+  formData.append('file', file);
+
+  return this.http.post<ServiceResult>(
+    `${this.apiUrl}/OwnerRegister`,
+    formData
+  );
+}
+
   uploadOwnerProfilePhoto(file: File) {
     const formData = new FormData();
     formData.append('file', file, file.name);
@@ -166,10 +176,16 @@ export class MemberService {
   getorder() {
     return this.http.get<OrderList[]>(`${this.apiUrl}/GetOrder`);
   }
-  getphoto() {
-    const token = localStorage.getItem('token');
+getProfile() {
+  return this.http.get<any>(`${this.apiUrl}/GetProfile`);
+}
+  Usergetphoto() {
     var id = this.getid();
-    return this.http.get<profilePhotoResponse>(`${this.apiUrl}/GetProfilePhoto/${id}`);
+    return this.http.get<profilePhotoResponse>(`${this.apiUrl}/UserGetProfilePhoto/${id}`);
+  }
+  OwnerGetPhoto(){
+    var id = this.getid();
+    return this.http.get<profilePhotoResponse>(`${this.apiUrl}/OwnerGetProfilePhoto/${id}`)
   }
   memberEdit(data: FormData) {
     const token = localStorage.getItem('token');
@@ -180,6 +196,9 @@ export class MemberService {
   }
   forgotPassword(data:{email:string}){
     return this.http.post<any>(`${this.apiUrl}/ForgetPassword`,data)
+  }
+  reSendConfirmedEmail(data:{email:string}){
+    return this.http.post<any>(`${this.apiUrl}/ReSendConfirmedEmail`,data)
   }
   resetPassword(data:{userId:number,token:string,newPassword:string}){
     return this.http.post<any>(`${this.apiUrl}/ResetPassword`,data)

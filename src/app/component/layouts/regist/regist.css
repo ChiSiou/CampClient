@@ -1,0 +1,8 @@
+.regist {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(34, 49, 34, 0.65), rgba(34, 49, 34, 0.65)),
+    url('https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+}

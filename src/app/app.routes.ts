@@ -37,7 +37,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         canActivateChild: [authGuard],
         loadComponent: () =>
-          import('./component/member/memberCenter/member-center').then((m) => m.MemberCenter),
+          import('./component/layouts/memberCenter/member-center').then((m) => m.MemberCenter),
         children: [
           {
             path: 'orders',
@@ -49,7 +49,7 @@ export const routes: Routes = [
               import('./component/member/memberedit/memberedit').then((m) => m.Memberedit),
           },
           {
-            path: '',
+            path: '**',
             loadComponent: () =>
               import('./component/member/profile/profile').then((m) => m.Profile),
           },
@@ -60,8 +60,15 @@ export const routes: Routes = [
         canActivate: [authGuard],
         canActivateChild: [authGuard],
         loadComponent: () =>
-          import('./component/member/owner-center/owner-center').then((m) => m.OwnerCenter),
-        children: [],
+          import('./component/layouts/owner-center/owner-center').then((m) => m.OwnerCenter),
+        children: [
+         
+          {
+            path: '**',
+            loadComponent: () =>
+              import('./component/member/profile/owner-profile').then((m)=>m.OwnerProfile)
+          },
+        ],
       },
 
       {
@@ -107,7 +114,7 @@ export const routes: Routes = [
   },
   {
   path: '',
-  loadComponent: () => import('./component/member/member').then((m) => m.Member),
+  loadComponent: () => import('./component/layouts/member/member').then((m) => m.Member),
   children: [
     {
       path: 'register',
@@ -117,8 +124,12 @@ export const routes: Routes = [
     {
       path: 'verify-email',
       loadComponent: () =>
-        import('./component/member/verify-email/verify-email')
-          .then((m) => m.VerifyEmail),
+        import('./component/member/verify-email/verify-email').then((m) => m.VerifyEmail),
+    },
+    {
+      path: 'resend-verify-email',
+      loadComponent: () =>
+        import('./component/member/verify-email/resend-verification-email').then((m) => m.ResendVerificationEmail),
     },
     {
       path: 'login',

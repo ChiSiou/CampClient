@@ -1,4 +1,4 @@
-import { Member } from './../../member/member';
+import { Member } from '../../layouts/member/member';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { SReview } from '../service/sreview';
 import { IReview } from '../interfaces/IReview';

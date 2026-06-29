@@ -7,5 +7,13 @@ export interface LoginResponse {
 export interface ServiceResult {
   success: boolean;
   message: string;
+    uploadOwnerProfilePhoto?: UploadOwnerProfilePhoto;
+}
+
+export interface LoginServiceResult extends ServiceResult {
   loginResponse: LoginResponse;
+}
+export interface UploadOwnerProfilePhoto {
+  imageUrl: string;
+  mediaId: number;
 }

@@ -1,6 +1,6 @@
 export interface ownerregisterData {
 
-  Name: string,
-  Address: string,
-  IdNumber: string,
+  address: string,
+  realName: string,
+  idNumber: string
 }
