@@ -462,3 +462,50 @@
   font-weight: 700;
   color: #8fae54;
 }
+
+/* ===== 加購裝備確認彈窗 ===== */
+.gantt__addon-prompt {
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.gantt__addon-prompt-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 20px;
+}
+
+.gantt__addon-prompt-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.gantt__addon-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gantt__addon-btn--secondary {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #222;
+}
+
+.gantt__addon-btn--secondary:hover {
+  border-color: #222;
+}
+
+.gantt__addon-btn--primary {
+  border: none;
+  background: #8fae54;
+  color: #fff;
+}
+
+.gantt__addon-btn--primary:hover {
+  background: #647e30;
+}

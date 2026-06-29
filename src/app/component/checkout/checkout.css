@@ -1,0 +1,200 @@
+.checkout {
+  padding: 32px 0 60px;
+}
+
+.checkout__loading,
+.checkout__empty {
+  text-align: center;
+  color: #717171;
+  padding: 80px 0;
+}
+
+.checkout__empty-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 20px;
+  background: #8fae54;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.checkout__empty-btn:hover {
+  background: #647e30;
+}
+
+/* ===== 雙欄佈局（仿 Airbnb 結帳頁：左欄表單可捲動，右欄明細卡 sticky 固定） ===== */
+.checkout__layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .checkout__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 左欄：聯絡人資料表單 ===== */
+.checkout__form-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.checkout__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.checkout__input {
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.checkout__input:focus {
+  outline: none;
+  border-color: #8fae54;
+}
+
+.checkout__unavailable {
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.checkout__unavailable ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.checkout__error {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.checkout__submit-btn {
+  margin-top: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 20px;
+  background: #8fae54;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkout__submit-btn:hover:not(:disabled) {
+  background: #647e30;
+}
+
+.checkout__submit-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* ===== 右欄：明細卡片（sticky） ===== */
+.checkout__summary-col {
+  position: sticky;
+  top: 24px;
+}
+
+.checkout__summary-card {
+  border: 1px solid #ebebeb;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.checkout__summary-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 14px;
+  color: #222;
+}
+
+.checkout__summary-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #717171;
+  margin: 0 0 8px;
+}
+
+.checkout__line-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkout__line-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.checkout__line-item-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.checkout__line-item-meta {
+  color: #717171;
+  font-size: 12px;
+}
+
+.checkout__line-item-price {
+  align-self: flex-end;
+  color: #374151;
+  font-weight: 600;
+}
+
+.checkout__totals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkout__totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #374151;
+}
+
+.checkout__totals-row--discount {
+  color: #647e30;
+}
+
+.checkout__totals-row--grand {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #ebebeb;
+}

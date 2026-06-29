@@ -33,6 +33,11 @@ export class CampSelectionService {
     return this.selections$.value;
   }
 
+  // 結帳頁需要知道目前選位是哪個營區的，才能呼叫 /Checkout/summary
+  get campgroundId(): number | null {
+    return this.currentCampgroundId;
+  }
+
   // 進入 camp-detail 頁面時呼叫：如果跟上次是不同營區，先清空舊選位
   setCampground(campgroundId: number) {
     if (this.currentCampgroundId !== null && this.currentCampgroundId !== campgroundId) {

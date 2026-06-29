@@ -61,6 +61,9 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
   showLightbox = false;
   lightboxIndex = 0;
 
+  // 「要不要加購裝備」確認彈窗
+  showAddonPrompt = false;
+
   constructor(
     private calendarService: CalendarService,
     private campSelectionService: CampSelectionService,
@@ -378,7 +381,30 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
   // F6 結帳頁尚未實作（目前是空殼），先把選位資料留在 CampSelectionService（root 服務，跨頁不會清空）
   // 等結帳頁做好後直接從那邊讀取即可，這裡先把入口接上
+  // 按「前往結帳」先問要不要加購裝備，不直接跳頁
   goToCheckout() {
+    this.showAddonPrompt = true;
+  }
+
+  // 要加購 → 導到同仁的裝備出租頁，選完/跳過後那邊會自動導回 /checkout
+  // 裝備出租頁需要 checkIn/checkOut 算租用天數，不然會預設算 1 晚導致租金算錯。
+  // 使用者可能選了好幾段不連續的日期，這裡取「最早入住日 ~ 最晚退房日」當整趟行程的範圍。
+  confirmAddon() {
+    this.showAddonPrompt = false;
+
+    const checkInDates = this.selections.map(s => s.checkInDate);
+    const checkOutDates = this.selections.map(s => s.checkOutDate);
+    const checkIn = checkInDates.length ? checkInDates.reduce((a, b) => (a < b ? a : b)) : '';
+    const checkOut = checkOutDates.length ? checkOutDates.reduce((a, b) => (a > b ? a : b)) : '';
+
+    this.router.navigate(['/camp', this.campgroundId, 'rental'], {
+      queryParams: { checkIn, checkOut },
+    });
+  }
+
+  // 不需要裝備 → 直接進結帳頁
+  skipAddon() {
+    this.showAddonPrompt = false;
     this.router.navigate(['/checkout']);
   }
 

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { loginData } from '../interface/loginData';
 import { MemberService } from '../Service/member-service';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
@@ -24,6 +24,7 @@ export class Login {
     private httpClient: HttpClient,
     private memberService: MemberService,
     private routes: Router,
+    private route: ActivatedRoute,
     private messageService: MessageService,
   ) {}
 
@@ -43,7 +44,9 @@ export class Login {
           summary: '登入成功',
           detail: '歡迎回來 ' + name,
         });
-        this.routes.navigate(['/']);
+        // 有 returnUrl 就導回原本在做的事（例如結帳頁），沒有才回首頁
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        this.routes.navigateByUrl(returnUrl || '/');
       },
       error: (err) => {
         console.log(err);

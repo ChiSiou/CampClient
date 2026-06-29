@@ -147,10 +147,126 @@
 
 ---
 
-### ⬜ Phase F6：結帳流程 — 未開始
-- `src/app/component/checkout/checkout.ts` 目前是 `ng generate` 生成的空殼，沒有任何邏輯
-- `checkout.service.ts` 已經寫好（`getSummary()`、`submit()`、`redirectToPayment()`），等著被呼叫
-- 入口應該是 F5 甘特圖選完按「送出訂單」，把 `CampSelectionService` 的選位帶到這頁
+### 🟡 Phase F6：結帳流程 — 已實作並實測過完整流程，剩 F7 銜接
+
+**⚠️ 後端同時在做「庫存鎖定釋放機制」**（背景排程+付款失敗/退款釋放庫存），詳見 `slnCampApi/PROGRESS.md` 同名章節，跟這個 Phase 是同一輪討論決定的，互相關聯但是後端範圍。
+
+**已確認的流程**（跟 PROGRESS.md 原本寫的「先摘要頁→問加購→填資料」順序不同，這次討論後改成）：
+
+```
+甘特圖按「前往結帳」
+  → 彈出確認視窗：「要加購露營裝備嗎？」[要]/[不要]
+      ├─ 要   → 導到 /camp/:id/rental（同仁的頁面，選完會自動寫 sessionStorage 並導回 /checkout）
+      └─ 不要 → 直接導到 /checkout
+  → /checkout 「一頁完成」：不做獨立摘要頁，理由是使用者到這裡已經沒有新的選擇要做了，
+    只剩「看金額」+「填聯絡資料」兩件事，沒必要多一次頁面跳轉
+    - Layout 仿 Airbnb 訂房確認頁：左欄（可捲動）填聯絡人資料 + 確認付款按鈕，
+      右欄（sticky 固定）顯示完整明細卡片（營位+裝備+折扣+總額）
+  → 按「確認付款」→ POST /api/Checkout/submit（建立 Order + 鎖庫存 + 算好綠界表單參數，
+    這一步本身不會跳轉畫面）→ 同一個按鈕的處理函式緊接著呼叫 checkoutService.redirectToPayment()
+    （動態組 form.submit()，瀏覽器才真的離開網站跳到綠界）→ 全部在使用者按一次「確認付款」內完成，
+    中間不會停在任何中繼畫面
+```
+
+**裝備加購的交接機制（同仁已經做好，不用我們碰）**：
+- `EquipmentCartService.STORAGE_KEY = 'equipmentSelection'`，使用者在 `/camp/:id/rental` 選完確認後，
+  把 `StoredEquipmentSelection`（`selectedEquipments`、`shippingMethodId`、`equipments`、`equipmentSubTotal`）
+  寫進 `sessionStorage`，導回 `/checkout`
+- 使用者按「不需要裝備」（`skip()`）會清空這個 key 再導回 `/checkout`
+- **`/checkout` 不用再額外打 API 問裝備資訊**，裝備金額已經在 `sessionStorage` 裡算好了，直接讀出來用，
+  跟營位金額（後端 `/Checkout/summary` 算的）在前端合併顯示就好
+
+**重要：促銷折扣計算範圍**（已查證後端程式碼）：`/Checkout/summary`（`CheckoutService.GetSummaryAsync`）
+**只看營位金額**算「滿額折扣」，`Equipments`/`EquipmentSubTotal` 在這支 API 裡固定是空白佔位
+（DTO 註解寫死「裝備加購由其他同仁負責」）。所以折扣門檻不含裝備金額，這是後端現有設計，
+前端顯示時要注意：折扣是算在 `campSubTotal` 上，`grandTotal` 顯示時要自己把 `equipmentSubTotal`
+加上去（`/Checkout/summary` 回傳的 `grandTotal` 不含裝備）。
+
+**`CampSelectionService` 缺一個公開的 `campgroundId` getter**：目前 `currentCampgroundId` 是 private，
+`checkout.ts` 需要知道要送哪個 `campgroundId` 給 `/Checkout/summary`，要加一個 public getter。
+
+**已實作完成**（2026-06）：
+- `gantt-calendar.ts`：`goToCheckout()` 改成先彈出「要加購露營裝備嗎？」確認視窗（`showAddonPrompt`），
+  `confirmAddon()` 導去 `/camp/:id/rental`（**有附上 `checkIn`/`checkOut` query params**——
+  取所有選位裡最早入住日~最晚退房日當整趟行程範圍，不然裝備頁會抓不到日期，租金天數預設算 1 晚會錯），
+  `skipAddon()` 直接導去 `/checkout`
+- `camp-selection.service.ts` 加了公開的 `campgroundId` getter
+- `checkout.ts`/`.html`/`.css` 完整實作：
+  - 左欄（可捲動）：聯絡人資料表單（姓名/手機/Email）+「確認付款」按鈕
+  - 右欄（sticky）：明細卡片（營位明細 + 裝備明細 + 折扣 + 總金額），仿 Airbnb 訂房確認頁排版
+  - `ngOnInit` 同時做兩件事：呼叫 `/Checkout/summary`（只送營位）+ 讀 `sessionStorage` 的裝備資料
+    （`EquipmentCartService.STORAGE_KEY`），兩邊資料在前端合併顯示，**裝備不用再打一次 API**
+  - `grandTotal` = 後端回的營位 `grandTotal`（已扣折扣）+ 前端自己加上去的裝備小計
+  - 送出後：成功 → 清空 `CampSelectionService` + 裝備 sessionStorage → 呼叫
+    `checkoutService.redirectToPayment()` 跳轉綠界；失敗 → 顯示 `unavailableItems` 清單，不跳轉
+  - **「完全沒有選位資料時」的處理（之前說還沒決定，這次先選了一個合理預設）**：
+    顯示「找不到你的選位資料」+ 一個回首頁的按鈕，不是自動強制導頁——
+    如果你想改成自動導回首頁，之後再調整即可
+- 後端同步完成「庫存鎖定釋放機制」（詳見 `slnCampApi/PROGRESS.md`），但**還沒整合測試過**，
+  因為要先有真正送出過 `/Checkout/submit` 才會產生待付款訂單可以測
+
+**還沒做**：
+- 表單欄位驗證目前只有「不能是空字串」，沒有檢查 Email 格式、手機格式
+- `/checkout` 頁面還沒接綠界付款結果回來後的下一步（那是 Phase F7，見下方待辦）
+
+### 🟢 結帳實測抓到並修好的前端 bug（2026-06-29~30）
+
+**1. 401 自動導去登入頁，沒有 `returnUrl`，登入完不會回到原本的頁面**
+
+**⚠️ 動到同仁負責的範圍**（`component/member/`，本文件「同仁負責的功能」清單裡的檔案），記得跟負責會員功能的同仁說一聲這兩個改動：
+
+- **檔案：`src/app/component/member/Service/interceptor.ts`**
+  - 改動位置：攔截到 401 時的處理（`catchError` 裡）
+  - Before：
+    ```ts
+    if (error.status === 401) {
+      memberservice.clearLoginData();
+      router.navigate(['/login']);
+    }
+    ```
+  - After：
+    ```ts
+    if (error.status === 401) {
+      memberservice.clearLoginData();
+      router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
+    }
+    ```
+  - 原因：原本被導去登入頁時完全沒記住使用者原本在哪一頁（例如 `/checkout`），登入完只能回首頁，使用者要自己手動找回去。
+
+- **檔案：`src/app/component/member/login/login.ts`**
+  - 改動 1：constructor 多注入 `ActivatedRoute`（import 也加了 `ActivatedRoute`）
+  - 改動 2：`GetloginApi()` 登入成功的 `next` callback 裡
+  - Before：
+    ```ts
+    this.routes.navigate(['/']);
+    ```
+  - After：
+    ```ts
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    this.routes.navigateByUrl(returnUrl || '/');
+    ```
+  - 原因：跟上面那個改動是一組的，沒有這個改動，`interceptor.ts` 帶的 `returnUrl` 也沒用，登入完還是會被導去首頁。
+
+兩個檔案合起來的效果：**沒登入被導去登入頁時，網址會變成 `/login?returnUrl=/checkout`，登入成功後會自動導回 `/checkout`，不會只回首頁。**
+
+**2. `checkoutService.redirectToPayment()` 沒設 `input.type='hidden'`，付款表單欄位整個顯示在畫面上**
+動態建立的 `<input>` 預設是 `text` 類型，會員可以直接看到一串綠界表單參數的亂碼文字。已補上 `input.type = 'hidden'`。
+
+**3. `redirectToPayment()` 失敗時畫面卡死在「處理中」**
+原本沒有回傳值，如果 `paymentServiceUrl` 缺漏（例如後端設定沒填），會靜默不跳轉，但畫面的 `submitting` 狀態沒有復原，使用者卡在「處理中」按鈕動彈不得。
+已改成回傳 `boolean`，`checkout.ts` 收到 `false` 才會重置 `submitting` 並顯示錯誤訊息；另外調整了清空 `CampSelectionService`/sessionStorage 的時機，改成**確認真的成功跳轉之後才清空**，避免跳轉失敗又把選位資料弄丟。
+
+**4. `checkout.ts` 的 `error` callback 沒有讀後端真正的錯誤訊息**
+後端對「部分營位無法訂購」「已有待付款訂單」這類業務邏輯失敗回的是 HTTP 409，Angular `HttpClient` 會當成 error 處理，原本只顯示寫死的通用文字，使用者看不到真正原因。
+已改成讀 `err.error?.message` / `err.error?.unavailableItems` 顯示真正的後端訊息。
+
+---
+
+## 📌 下次接續：待辦事項（不要漏掉）
+
+1. **後端在等 ngrok 設定好**（使用者預計明天弄），設定好之後本機才能測「付款成功 → 訂單狀態真的變成已付款」這條完整路徑，目前卡在 ECPay webhook 打不到 `localhost`。
+2. **Phase F7（付款結果頁）還沒做**：現在付款完成導回 `/checkout?orderNumber=xxx`，因為選位已經被清空，會顯示「找不到選位資料」，不是「付款成功」的訊息，體感很怪。要做一個專門頁面（或讓 `checkout.ts` 認得網址上的 `orderNumber`），用 `payment.service.ts` 已經寫好的 `getStatus()` 輪詢顯示付款結果。
+3. 表單欄位驗證（Email/手機格式）還沒做，目前只擋空字串。
 
 ### ⬜ Phase F7：付款確認/退款 — 未開始
 - `src/app/component/payment-result/payment-result.ts` 同樣是空殼

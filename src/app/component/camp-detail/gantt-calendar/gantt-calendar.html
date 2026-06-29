@@ -162,4 +162,15 @@
     <app-lightbox [images]="infoDetail.photoUrls" [(visible)]="showLightbox" [(activeIndex)]="lightboxIndex" />
   }
 
+  <!-- 加購裝備確認彈窗：選完營位按「前往結帳」時先問，不直接跳頁 -->
+  <p-dialog [(visible)]="showAddonPrompt" [modal]="true" [closable]="false" [style]="{ width: '380px' }">
+    <div class="gantt__addon-prompt">
+      <p class="gantt__addon-prompt-text">要加購露營裝備嗎？</p>
+      <div class="gantt__addon-prompt-actions">
+        <button class="gantt__addon-btn gantt__addon-btn--secondary" (click)="skipAddon()">不需要</button>
+        <button class="gantt__addon-btn gantt__addon-btn--primary" (click)="confirmAddon()">要加購</button>
+      </div>
+    </div>
+  </p-dialog>
+
 </div>

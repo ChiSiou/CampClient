@@ -1,1 +1,121 @@
-<p>checkout works!</p>
+<div class="container checkout">
+
+  @if (loading) {
+    <div class="checkout__loading">載入中...</div>
+  } @else if (noSelection) {
+    <div class="checkout__empty">
+      <p>找不到你的選位資料，可能還沒選過營位，或選位資料已經被清空。</p>
+      <a routerLink="/" class="checkout__empty-btn">回首頁重新選擇</a>
+    </div>
+  } @else if (errorMessage) {
+    <div class="checkout__empty">
+      <p>{{ errorMessage }}</p>
+    </div>
+  } @else if (summary) {
+
+    <div class="checkout__layout">
+
+      <!-- 左欄：聯絡人資料 + 確認付款 -->
+      <div class="checkout__form-col">
+        <h2 class="section-title">聯絡人資料</h2>
+
+        <div class="checkout__field">
+          <label class="checkout__label">姓名</label>
+          <input class="checkout__input" [(ngModel)]="contactName" placeholder="請輸入姓名" />
+        </div>
+
+        <div class="checkout__field">
+          <label class="checkout__label">手機號碼</label>
+          <input class="checkout__input" [(ngModel)]="contactPhone" placeholder="請輸入手機號碼" />
+        </div>
+
+        <div class="checkout__field">
+          <label class="checkout__label">電子郵件</label>
+          <input class="checkout__input" [(ngModel)]="contactEmail" placeholder="請輸入電子郵件" type="email" />
+        </div>
+
+        @if (unavailableItems.length) {
+          <div class="checkout__unavailable">
+            <p>以下項目已無法訂購，請返回重新選擇：</p>
+            <ul>
+              @for (item of unavailableItems; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (submitError) {
+          <div class="checkout__error">{{ submitError }}</div>
+        }
+
+        <button class="checkout__submit-btn" [disabled]="!canSubmit" (click)="submit()">
+          {{ submitting ? '處理中...' : '確認付款' }}
+        </button>
+      </div>
+
+      <!-- 右欄：明細摘要（sticky） -->
+      <div class="checkout__summary-col">
+        <div class="checkout__summary-card">
+          <h3 class="checkout__summary-title">{{ summary.campgroundName }}</h3>
+
+          <ul class="checkout__line-list">
+            @for (item of summary.campsites; track $index) {
+              <li class="checkout__line-item">
+                <div class="checkout__line-item-name">
+                  {{ item.zoneName }}{{ item.siteDisplayName ? '（' + item.siteDisplayName + '）' : '' }}
+                </div>
+                <div class="checkout__line-item-meta">
+                  {{ item.checkInDate }} ~ {{ item.checkOutDate }}（{{ item.nights }} 晚）
+                </div>
+                <div class="checkout__line-item-price">NT$ {{ item.subTotal | number }}</div>
+              </li>
+            }
+          </ul>
+
+          @if (equipmentData?.equipments?.length) {
+            <hr class="divider" />
+            <h4 class="checkout__summary-subtitle">租用裝備</h4>
+            <ul class="checkout__line-list">
+              @for (item of equipmentData!.equipments; track $index) {
+                <li class="checkout__line-item">
+                  <div class="checkout__line-item-name">
+                    {{ item.productName }}{{ item.variantName ? '（' + item.variantName + '）' : '' }} × {{ item.quantity }}
+                  </div>
+                  <div class="checkout__line-item-price">NT$ {{ item.itemSubTotal | number }}</div>
+                </li>
+              }
+            </ul>
+          }
+
+          <hr class="divider" />
+
+          <div class="checkout__totals">
+            <div class="checkout__totals-row">
+              <span>營位小計</span>
+              <span>NT$ {{ summary.campSubTotal | number }}</span>
+            </div>
+            @if (equipmentData) {
+              <div class="checkout__totals-row">
+                <span>裝備小計</span>
+                <span>NT$ {{ equipmentData.equipmentSubTotal | number }}</span>
+              </div>
+            }
+            @if (summary.discountAmount > 0) {
+              <div class="checkout__totals-row checkout__totals-row--discount">
+                <span>{{ summary.promotionName }}</span>
+                <span>-NT$ {{ summary.discountAmount | number }}</span>
+              </div>
+            }
+            <div class="checkout__totals-row checkout__totals-row--grand">
+              <span>總金額</span>
+              <span>NT$ {{ grandTotal | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>
