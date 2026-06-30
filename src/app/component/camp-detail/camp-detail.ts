@@ -292,6 +292,7 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
 
   contactOwner() {
     if (!this.detail) return;
-    this.chatService.openChatWith(this.detail.ownerUserId, this.detail.ownerName || '營主');
+    // this.chatService.openChatWith(this.detail.ownerUserId, this.detail.ownerName || '營主');
+    this.chatService.openChatWith(this.detail.ownerUserId, this.detail.name);
   }
 }
