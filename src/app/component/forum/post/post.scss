@@ -187,6 +187,131 @@
   }
 }
 
+// 按讚／收藏共用底色按鈕（顏色由各自的修飾子覆寫）
+%interact-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 50px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #718096;
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    transform: scale(1.06);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  .pi {
+    font-size: 0.95rem;
+  }
+}
+
+// 讚按鈕
+.like-toggle {
+  @extend %interact-toggle;
+
+  .pi-thumbs-up-fill {
+    color: #2563eb;
+  }
+
+  &.liked {
+    border-color: #bfdbfe;
+    background-color: #eff6ff;
+    color: #2563eb;
+  }
+
+  &.pop {
+    animation: heart-pop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+  }
+
+  .like-count {
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  .like-burst {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, rgba(37, 99, 235, 0) 70%);
+    animation: heart-burst 0.5s ease-out forwards;
+    pointer-events: none;
+  }
+}
+
+// 愛心收藏按鈕
+.heart-toggle {
+  @extend %interact-toggle;
+
+  .pi-heart-fill {
+    color: #ef4444;
+  }
+
+  &.liked {
+    border-color: #fecaca;
+    background-color: #fff5f5;
+    color: #ef4444;
+  }
+
+  &.pop {
+    animation: heart-pop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+  }
+
+  .heart-burst {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.55) 0%, rgba(239, 68, 68, 0) 70%);
+    animation: heart-burst 0.5s ease-out forwards;
+    pointer-events: none;
+  }
+}
+
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.15);
+  }
+
+  60% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heart-burst {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
 .tag-list {
   display: flex;
   align-items: center;
