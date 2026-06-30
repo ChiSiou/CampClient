@@ -33,8 +33,9 @@ export class SReview {
     return 1;
   }
 
-  getRiviewAPI() {
-    return this.httpClient.get<IReview[]>(this.connString);
+  getRiviewAPI(campId?: number) {
+    const params = campId ? { params: { campId } } : {};
+    return this.httpClient.get<IReview[]>(this.connString, params);
   }
 
   getRiviewByIdAPI(id: number) {

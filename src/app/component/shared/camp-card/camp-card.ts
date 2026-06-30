@@ -18,6 +18,12 @@ export class CampCard {
 
   currentImageIndex = 0;
 
+  // p-rating 只用 `星數 <= value` 判斷填滿與否，不會四捨五入，
+  // 所以像 3.8 分這種非整數平均分要先四捨五入成整數星數再丟進去顯示
+  get displayRating(): number {
+    return Math.round(this.camp.averageRating);
+  }
+
   prevImage(e: Event) {
     e.preventDefault();
     e.stopPropagation();
