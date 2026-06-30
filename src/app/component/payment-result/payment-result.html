@@ -1,1 +1,47 @@
-<p>payment-result works!</p>
+<div class="container payment-result">
+
+  @if (errorMessage) {
+    <div class="payment-result__card payment-result__card--error">
+      <div class="payment-result__icon">⚠️</div>
+      <h2>{{ errorMessage }}</h2>
+      <a routerLink="/member-center/orders" class="payment-result__btn">查看我的訂單</a>
+    </div>
+  } @else if (timedOut) {
+    <div class="payment-result__card">
+      <div class="payment-result__icon">⏳</div>
+      <h2>確認中</h2>
+      <p>付款結果確認時間較長，可能是銀行處理較慢，請稍後手動重新檢查，或先離開等候 Email 通知。</p>
+      <button type="button" class="payment-result__btn" (click)="retryCheck()">重新檢查</button>
+      <a routerLink="/" class="payment-result__link">回首頁</a>
+    </div>
+  } @else if (!status || status.status === 'Processing') {
+    <div class="payment-result__card">
+      <div class="payment-result__spinner"></div>
+      <h2>正在確認付款結果...</h2>
+      <p>請勿關閉視窗，這通常只需要幾秒鐘。</p>
+    </div>
+  } @else if (status.status === 'Success') {
+    <div class="payment-result__card payment-result__card--success">
+      <div class="payment-result__icon">✅</div>
+      <h2>付款成功</h2>
+      <p>訂單編號：{{ status.orderNumber }}</p>
+      @if (status.message) {
+        <p class="payment-result__message">{{ status.message }}</p>
+      }
+      <a routerLink="/member-center/orders" class="payment-result__btn">查看訂單</a>
+      <a routerLink="/" class="payment-result__link">回首頁</a>
+    </div>
+  } @else {
+    <div class="payment-result__card payment-result__card--failed">
+      <div class="payment-result__icon">❌</div>
+      <h2>付款失敗</h2>
+      <p>訂單編號：{{ status.orderNumber }}</p>
+      @if (status.message) {
+        <p class="payment-result__message">{{ status.message }}</p>
+      }
+      <a routerLink="/member-center/orders" class="payment-result__btn">查看訂單</a>
+      <a routerLink="/" class="payment-result__link">回首頁</a>
+    </div>
+  }
+
+</div>

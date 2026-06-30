@@ -21,6 +21,16 @@ export class CheckoutService {
   submit(body: CheckoutSubmitDto) {
     return this.http.post<CheckoutResultDto>(`${this.base}/Checkout/submit`, body);
   }
+
+  // 主動取消自己卡住的待付款訂單，立刻釋放鎖定的營位，不用等 15 分鐘背景排程
+  cancelPending() {
+    return this.http.post<{ cancelled: boolean }>(`${this.base}/Checkout/cancel-pending`, {});
+  }
+
+  // 「我的訂單」頁面的「繼續付款」：重新組一份付款表單，回傳結果交給 redirectToPayment() 跳轉
+  resumePayment(orderId: number) {
+    return this.http.post<CheckoutResultDto>(`${this.base}/Checkout/${orderId}/resume`, {});
+  }
   // 這裡直接操作 DOM 轉成表單提交以重定向到第三方支付頁面。
   // 回傳是否真的觸發了跳轉——呼叫端要靠這個判斷要不要把畫面的「處理中」狀態復原並顯示錯誤，
   // 不然像綠界設定值缺漏這種情況，這裡會靜默不做事，畫面就會卡死在「處理中」。

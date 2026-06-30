@@ -92,11 +92,35 @@
           <strong>NT{{data.totalAmount}}</strong>
         </div>
 
-        <div class="actions">
-          <button class="btn outline">查看詳情</button>
-          <button class="btn primary">聯絡營主</button>
-        </div>
+        @if (data.status === 0) {
+          <!-- 待付款訂單：可能是付款到一半放棄/瀏覽器當機重開，這裡讓使用者能繼續付款或主動取消 -->
+          <div class="actions">
+            <button
+              class="btn outline"
+              [disabled]="processingOrderId === data.orderId"
+              (click)="cancelOrder(data)"
+            >
+              {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
+            </button>
+            <button
+              class="btn primary"
+              [disabled]="processingOrderId === data.orderId"
+              (click)="resumePayment(data)"
+            >
+              {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
+            </button>
+          </div>
+        } @else {
+          <div class="actions">
+            <button class="btn outline">查看詳情</button>
+            <button class="btn primary">聯絡營主</button>
+          </div>
+        }
       </div>
+
+      @if (pendingActionError && processingOrderId === null) {
+        <p class="order-action-error">{{ pendingActionError }}</p>
+      }
     </div>
     }
 

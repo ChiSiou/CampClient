@@ -363,3 +363,13 @@
     max-width: 100%;
   }
 }
+
+.order-action-error {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  font-size: 13px;
+}
