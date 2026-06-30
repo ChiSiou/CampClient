@@ -1,6 +1,7 @@
 import { MemberService } from './../Service/member-service';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NotificationService } from '../../notification-center/Service/NotificationService';
 
 @Component({
   selector: 'profile',
@@ -10,32 +11,34 @@ import { RouterLink } from '@angular/router';
 })
 export class Profile {
   profile = {
-   name:  '',
-  email: '',
-  phone: '',
-  }
-  
+    name: '',
+    email: '',
+    phone: '',
+  };
+  notificationCount = 0;
   ordercount = 0;
-  constructor(private memberService: MemberService) {}
+  constructor(
+    private memberService: MemberService,
+    private notification: NotificationService,
+  ) {}
 
   ngOnInit(): void {
+    this.notification.getUnreadCount().subscribe({});
     this.memberService.getProfile().subscribe({
-      next:(res)=>{
-
-        this.profile = res.profileData
-        console.log(res)
+      next: (res) => {
+        this.profile = res.profileData;
+        console.log(res);
       },
-      error:(err)=>{
-        console.log("message:",err.message)
-
-      }
-    })
+      error: (err) => {
+        console.log('message:', err.message);
+      },
+    });
     this.memberService.getorder().subscribe({
       next: (res) => {
         this.ordercount = res.length;
       },
       error: (err) => {
-        console.log(err.message)
+        console.log(err.message);
       },
     });
   }

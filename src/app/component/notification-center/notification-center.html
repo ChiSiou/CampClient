@@ -1,0 +1,87 @@
+<section class="notification-page">
+  <div class="notification-shell">
+    <header class="notification-header">
+      <div>
+        <p class="eyebrow">Notification Center</p>
+        <h1>通知中心</h1>
+        <p class="header-copy">查看訂單、付款與系統通知，重要消息會優先標示為未讀。</p>
+      </div>
+
+      <button
+        class="mark-all-btn"
+        type="button"
+        [disabled]="unreadCount === 0 || markingAll"
+        (click)="markAllAsRead()"
+      >
+        <i class="pi pi-check-circle"></i>
+        <span>{{ markingAll ? '處理中' : '全部已讀' }}</span>
+      </button>
+    </header>
+
+    <div class="summary-row">
+      <button class="filter-chip" type="button" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+        全部
+        <strong>{{ notifications.length }}</strong>
+      </button>
+      <button class="filter-chip" type="button" [class.active]="activeFilter === 'unread'" (click)="setFilter('unread')">
+        未讀
+        <strong>{{ unreadCount }}</strong>
+      </button>
+      <button class="filter-chip" type="button" [class.active]="activeFilter === 'read'" (click)="setFilter('read')">
+        已讀
+        <strong>{{ notifications.length - unreadCount }}</strong>
+      </button>
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-panel">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>通知載入中...</span>
+      </div>
+    } @else if (filteredNotifications.length === 0) {
+      <div class="state-panel empty">
+        <i class="pi pi-inbox"></i>
+        <h2>目前沒有通知</h2>
+        <p>新的訂單、付款或系統消息會出現在這裡。</p>
+      </div>
+    } @else {
+      <div class="notification-list">
+        @for (item of filteredNotifications; track item.notificationId) {
+          <article class="notification-card" [class.unread]="!item.isRead" (click)="openNotification(item)">
+            <div class="type-icon" [ngClass]="{ unread: !item.isRead }">
+              <i [class]="getTypeIcon(item.type)"></i>
+            </div>
+
+            <div class="notification-content">
+              <div class="notification-topline">
+                <span class="type-pill">{{ getTypeLabel(item.type) }}</span>
+                <time>{{ item.createdAt | date: 'yyyy/MM/dd HH:mm' }}</time>
+              </div>
+
+              <h2>{{ item.title }}</h2>
+              <p>{{ item.message }}</p>
+            </div>
+
+            <div class="notification-actions">
+              @if (!item.isRead) {
+                <span class="unread-dot" aria-label="未讀"></span>
+                <button class="icon-btn" type="button" title="標示已讀" (click)="markAsRead(item, $event)">
+                  <i class="pi pi-check"></i>
+                </button>
+              } @else {
+                <span class="read-label">已讀</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
