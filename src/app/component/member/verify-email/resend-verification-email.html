@@ -1,0 +1,41 @@
+<div class="resend-page">
+  <div class="resend-card">
+    <h2>重新寄送驗證信</h2>
+
+    <p class="description">
+      請輸入註冊時使用的 Email，我們會重新寄送一封驗證信給你。
+    </p>
+
+    <form (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="請輸入 Email"
+          required
+        />
+      </div>
+
+      @if (message) {
+        <p
+          class="message"
+          [class.success]="success"
+          [class.error]="!success"
+        >
+          {{ message }}
+        </p>
+      }
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? '寄送中...' : '重新寄送驗證信' }}
+      </button>
+    </form>
+
+    <a routerLink="/login" class="back-login">
+      返回登入
+    </a>
+  </div>
+</div>

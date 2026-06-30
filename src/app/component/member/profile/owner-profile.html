@@ -1,0 +1,140 @@
+<main class="owner-main">
+  <section class="owner-hero">
+    <div>
+      <p class="page-label">Owner Center</p>
+      <h1>營主中心</h1>
+      <p class="hero-text">管理你的營地、訂單、收入與顧客訊息。</p>
+    </div>
+
+    <div class="hero-actions">
+      <button class="primary-btn" routerLink="/owner/camps/add">新增營地</button>
+      <button class="secondary-btn" routerLink="/owner/edit">編輯營主資料</button>
+    </div>
+  </section>
+
+  <section class="owner-profile-card">
+    <div class="owner-avatar">
+      <img [src]="ownerprofilephoto || 'https://placehold.co/120x120'" alt="營主頭像" />
+    </div>
+
+    <div class="owner-info">
+      <h2>{{ name || '營主' }}</h2>
+      <p>{{email ||'owner@example.com'}}</p>
+      <span class="status-badge">已完成驗證</span>
+    </div>
+
+    <div class="owner-meta">
+      <div>
+        <span>加入日期</span>
+        <strong>{{createdAt|date}}</strong>
+      </div>
+      <div>
+        <span>營地數量</span>
+        <strong>3 間</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span>本月收入</span>
+      <h3>NT$ 36,800</h3>
+      <p>較上月 +12%</p>
+    </div>
+
+    <div class="stat-card">
+      <span>待處理訂單</span>
+      <h3>8 筆</h3>
+      <p>請盡快確認</p>
+    </div>
+
+    <div class="stat-card">
+      <span>累積評價</span>
+      <h3>126 則</h3>
+      <p>平均 4.8 星</p>
+    </div>
+
+    <div class="stat-card">
+      <span>上架營地</span>
+      <h3>3 間</h3>
+      <p>目前正常顯示</p>
+    </div>
+  </section>
+
+  <section class="content-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>我的營地</h2>
+        <button class="text-btn" routerLink="/owner/camps">查看全部</button>
+      </div>
+
+      <div class="camp-list">
+        <div class="camp-item">
+          <img src="https://placehold.co/120x90" alt="營地圖片" />
+
+          <div class="camp-info">
+            <h3>山谷露營區</h3>
+            <p>新北市烏來區</p>
+            <span class="camp-status active">上架中</span>
+          </div>
+
+          <div class="camp-actions">
+            <button routerLink="/owner/edit">編輯</button>
+            <button routerLink="/owner/orders">查看訂單</button>
+          </div>
+        </div>
+
+        <div class="camp-item">
+          <img src="https://placehold.co/120x90" alt="營地圖片" />
+
+          <div class="camp-info">
+            <h3>森林小屋營地</h3>
+            <p>宜蘭縣冬山鄉</p>
+            <span class="camp-status active">上架中</span>
+          </div>
+
+          <div class="camp-actions">
+            <button routerLink="/owner/edit">編輯</button>
+            <button routerLink="/owner/orders">查看訂單</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel order-panel">
+    <div class="panel-header">
+      <h2>近期訂單</h2>
+      <button class="text-btn" routerLink="/owner/orders">查看全部</button>
+    </div>
+
+    <div class="order-table">
+      <div class="table-row table-head">
+        <span>訂單編號</span>
+        <span>營地</span>
+        <span>入住日期</span>
+        <span>金額</span>
+        <span>狀態</span>
+        <span>操作</span>
+      </div>
+
+      <div class="table-row">
+        <span>#A10231</span>
+        <span>山谷露營區</span>
+        <span>2026 / 07 / 12</span>
+        <span>NT$ 4,200</span>
+        <span class="order-status paid">已付款</span>
+        <button class="text-btn" (click)="contactCustomer(99945, '王小明')">聯絡顧客</button>
+      </div>
+
+      <div class="table-row">
+        <span>#A10230</span>
+        <span>森林小屋營地</span>
+        <span>2026 / 07 / 18</span>
+        <span>NT$ 3,600</span>
+        <span class="order-status pending">待確認</span>
+        <button class="text-btn" (click)="contactCustomer(99946, '陳小姐')">聯絡顧客</button>
+      </div>
+    </div>
+  </section>
+</main>

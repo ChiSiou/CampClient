@@ -1,0 +1,51 @@
+<div class="owner-center-page">
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-logo">
+        <h2>營主中心</h2>
+        <p>Owner Center</p>
+      </div>
+
+      <nav class="sidebar-menu">
+        <button class="active" routerLink="/ownerCenter/profile">
+          <span>🏠</span>
+          總覽
+        </button>
+
+        <button routerLink="/owner/camps">
+          <span>🏕️</span>
+          我的營地
+        </button>
+
+        <button routerLink="/owner/camps/add">
+          <span>＋</span>
+          新增營地
+        </button>
+
+        <button routerLink="/owner/orders">
+          <span>📋</span>
+          訂單管理
+        </button>
+
+        <button routerLink="/owner/income">
+          <span>💰</span>
+          收入報表
+        </button>
+
+        <button routerLink="/owner/reviews">
+          <span>★</span>
+          評價管理
+        </button>
+
+        <button routerLink="/owner/edit">
+          <span>⚙</span>
+          營主資料
+        </button>
+      </nav>
+    </aside>
+
+    <div class="owner-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

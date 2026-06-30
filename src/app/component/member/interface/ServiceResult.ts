@@ -4,5 +4,16 @@ export interface LoginResponse {
   activeRole: string;
 }
 
-// 後端 /api/Member/login 實際回傳的是扁平結構（沒有 loginResponse 包裝層）
-export type ServiceResult = LoginResponse;
+export interface ServiceResult {
+  success: boolean;
+  message: string;
+  uploadOwnerProfilePhoto?: UploadOwnerProfilePhoto;
+}
+
+export interface LoginServiceResult extends ServiceResult {
+  loginResponse: LoginResponse;
+}
+export interface UploadOwnerProfilePhoto {
+  imageUrl: string;
+  mediaId: number;
+}

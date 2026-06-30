@@ -9,21 +9,34 @@ import { RouterLink } from '@angular/router';
   styleUrl: './profile.css',
 })
 export class Profile {
-  name = '';
-  email = '';
-  phone = '';
+  profile = {
+   name:  '',
+  email: '',
+  phone: '',
+  }
+  
   ordercount = 0;
   constructor(private memberService: MemberService) {}
 
   ngOnInit(): void {
-    this.name = this.memberService.getname();
-    this.email = this.memberService.getemail();
-    this.phone = this.memberService.getphone();
+    this.memberService.getProfile().subscribe({
+      next:(res)=>{
+
+        this.profile = res.profileData
+        console.log(res)
+      },
+      error:(err)=>{
+        console.log("message:",err.message)
+
+      }
+    })
     this.memberService.getorder().subscribe({
       next: (res) => {
         this.ordercount = res.length;
       },
-      error: () => {},
+      error: (err) => {
+        console.log(err.message)
+      },
     });
   }
   MemberEdit() {

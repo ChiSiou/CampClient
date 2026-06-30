@@ -7,30 +7,48 @@
   </div>
 
   <div class="orders-tabs">
-    <button class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+    <button class="tab" [class.active]="activeTab === 'all'" (click)="setActiveTab('all')">
       全部
     </button>
 
-    <button class="tab" [class.active]="activeTab === 0" (click)="activeTab = 0">
+    <button class="tab" [class.active]="activeTab === 0" (click)="setActiveTab(0)">
       待付款
     </button>
 
-    <button class="tab" [class.active]="activeTab === 1" (click)="activeTab = 1">
+    <button class="tab" [class.active]="activeTab === 1" (click)="setActiveTab(1)">
       已付款
     </button>
 
-    <button class="tab" [class.active]="activeTab === 4" (click)="activeTab = 4">
+    <button class="tab" [class.active]="activeTab === 4" (click)="setActiveTab(4)">
       已完成
     </button>
 
-    <button class="tab" [class.active]="activeTab === 2" (click)="activeTab = 2">
+    <button class="tab" [class.active]="activeTab === 2" (click)="setActiveTab(2)">
       已取消
     </button>
   </div>
 
+  <div class="orders-toolbar">
+    <label class="count-control">
+      顯示筆數
+      <input
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="displayCount"
+        (change)="onDisplayCountChange()"
+        (blur)="onDisplayCountChange()"
+      />
+    </label>
+
+    <span class="orders-summary">
+      目前顯示第 {{ pageStartItem }}-{{ pageEndItem }} 筆，共 {{ totalFilteredCount }} 筆
+    </span>
+  </div>
+
   <div class="orders-list">
     <!-- 訂單卡片 -->
-    @for(data of filteredOrders; track data.orderId){
+    @for(data of displayedOrders; track data.orderId){
     <div class="order-card">
       <div class="order-top">
         <div>
@@ -82,5 +100,33 @@
     </div>
     }
 
+    @if (totalFilteredCount === 0) {
+      <div class="empty-orders">目前沒有符合條件的訂單</div>
+    }
+
   </div>
+
+  @if (totalFilteredCount > 0) {
+    <div class="orders-pagination">
+      <button
+        class="page-btn"
+        type="button"
+        [disabled]="currentPage === 1"
+        (click)="goToPreviousPage()"
+      >
+        上一頁
+      </button>
+
+      <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+
+      <button
+        class="page-btn"
+        type="button"
+        [disabled]="currentPage === totalPages"
+        (click)="goToNextPage()"
+      >
+        下一頁
+      </button>
+    </div>
+  }
 </div>

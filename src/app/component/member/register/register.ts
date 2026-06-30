@@ -14,6 +14,9 @@ import { MessageService } from 'primeng/api';
   styleUrl: './register.css',
 })
 export class Register {
+  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  private readonly phonePattern = /^09\d{8}$/;
+
   memberData = {
     Name: '',
     Phone: '',
@@ -48,6 +51,26 @@ export class Register {
     reader.readAsDataURL(this.selectedFile);
   }
   submituser() {
+    if (!this.emailPattern.test(this.memberData.Email.trim())) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: 'Email 格式錯誤',
+        detail: '請輸入正確 Email 格式，例如 user@example.com',
+      });
+      return;
+    }
+
+    if (!this.phonePattern.test(this.memberData.Phone.trim())) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '手機格式錯誤',
+        detail: '請輸入 09 開頭共 10 碼的手機號碼',
+      });
+      return;
+    }
+
     if (!this.selectedFile) {
       alert('請先選擇照片');
       return;

@@ -29,9 +29,49 @@
 .orders-tabs {
   display: flex;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   overflow-x: auto;
   padding-bottom: 6px;
+}
+
+.orders-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.count-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #4f604f;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.count-control input {
+  width: 88px;
+  height: 38px;
+  border: 1px solid #cfd8cf;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #2f3e2f;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 10px;
+  outline: none;
+}
+
+.count-control input:focus {
+  border-color: #3f6b45;
+  box-shadow: 0 0 0 3px rgba(63, 107, 69, 0.14);
+}
+
+.orders-summary {
+  color: #6d776d;
+  font-size: 14px;
 }
 
 .tab {
@@ -60,6 +100,52 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.empty-orders {
+  background: #ffffff;
+  border: 1px dashed #cfd8cf;
+  border-radius: 14px;
+  color: #6d776d;
+  padding: 28px;
+  text-align: center;
+}
+
+.orders-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.page-btn {
+  min-width: 92px;
+  height: 40px;
+  border: 1px solid #3f6b45;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #3f6b45;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #edf5ee;
+}
+
+.page-btn:disabled {
+  border-color: #cfd8cf;
+  color: #a2aaa2;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #4f604f;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .order-card {
@@ -231,6 +317,23 @@
 @media (max-width: 768px) {
   .orders-header h2 {
     font-size: 26px;
+  }
+
+  .orders-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .orders-pagination {
+    width: 100%;
+  }
+
+  .page-btn {
+    flex: 1;
+  }
+
+  .page-info {
+    white-space: nowrap;
   }
 
   .order-content {

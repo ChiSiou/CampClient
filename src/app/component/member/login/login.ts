@@ -18,6 +18,7 @@ import { jwtDecode } from 'jwt-decode';
 export class Login {
   email: string = '';
   password: string = '';
+  emailconfirmed: boolean = false;
   token = localStorage.getItem('token');
 
   constructor(
@@ -26,9 +27,9 @@ export class Login {
     private routes: Router,
     private route: ActivatedRoute,
     private messageService: MessageService,
-  ) {}
+  ) { }
 
-  GetloginApi(data: loginData) {
+  login(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.token);
@@ -49,6 +50,18 @@ export class Login {
         this.routes.navigateByUrl(returnUrl || '/');
       },
       error: (err) => {
+        if (err.error.message === '信箱尚未驗證，請先完成信箱驗證') {
+          this.messageService.add({
+            key: 'top-right',
+            severity: 'error',
+            summary: `登入失敗`,
+            detail: '信箱尚未驗證，請先完成信箱驗證',
+          });
+          
+          this.emailconfirmed = true;
+          console.log(this.emailconfirmed);
+        }
+        else{
         console.log(err);
         this.messageService.add({
           key: 'top-right',
@@ -56,7 +69,12 @@ export class Login {
           summary: `登入失敗`,
           detail: '帳號或密碼錯誤',
         });
+      }
       },
     });
+  }
+
+  Resendpage(){
+    this.routes.navigate(['resend-verify-email'])
   }
 }
