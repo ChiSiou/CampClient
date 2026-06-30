@@ -2,254 +2,267 @@
 
   <!-- ===== Loading 骨架 ===== -->
   @if (loading) {
-    <div class="container">
-      <p-skeleton height="480px" styleClass="mb-3" />
-      <p-skeleton height="28px" width="50%" styleClass="mb-2" />
-      <p-skeleton height="16px" width="30%" styleClass="mb-4" />
-      <p-skeleton height="100px" />
-    </div>
+  <div class="container">
+    <p-skeleton height="480px" styleClass="mb-3" />
+    <p-skeleton height="28px" width="50%" styleClass="mb-2" />
+    <p-skeleton height="16px" width="30%" styleClass="mb-4" />
+    <p-skeleton height="100px" />
+  </div>
   }
 
   <!-- ===== Error ===== -->
   @if (error) {
-    <div class="container error-state">
-      <p>找不到此營區，請確認網址或稍後再試。</p>
-    </div>
+  <div class="container error-state">
+    <p>找不到此營區，請確認網址或稍後再試。</p>
+  </div>
   }
 
   <!-- ===== Section 1：照片格宮 + 基本資訊 ===== -->
   @if (!loading && !error && detail) {
 
-    <div class="container">
+  <div class="container">
 
-      <!-- 格宮照片（Airbnb：左大圖 + 右 2×2） -->
-      <div class="photo-grid" (click)="openLightbox(0)">
-        <div class="photo-cover">
-          <img [src]="gridImages[0]" alt="營區封面" />
+    <!-- 格宮照片（Airbnb：左大圖 + 右 2×2） -->
+    <div class="photo-grid" (click)="openLightbox(0)">
+      <div class="photo-cover">
+        <img [src]="gridImages[0]" alt="營區封面" />
+      </div>
+      <div class="photo-right">
+        <div class="photo-right-row">
+          @for (img of smallImages.slice(0, 2); track img; let i = $index) {
+          <div class="photo-small"
+            [class.photo-small--last]="smallImages.length <= 2 && i === smallImages.slice(0, 2).length - 1">
+            <img [src]="img" [alt]="'營區照片 ' + (i + 2)" />
+            @if (smallImages.length <= 2 && i===smallImages.slice(0, 2).length - 1) { <button class="view-all-btn"
+              (click)="$event.stopPropagation(); openLightbox(i + 1)">
+              查看全部 {{ detail.imageUrls.length }} 張
+              </button>
+              }
+          </div>
+          }
         </div>
-        <div class="photo-right">
-          <div class="photo-right-row">
-            @for (img of smallImages.slice(0, 2); track img; let i = $index) {
-              <div class="photo-small" [class.photo-small--last]="smallImages.length <= 2 && i === smallImages.slice(0, 2).length - 1">
-                <img [src]="img" [alt]="'營區照片 ' + (i + 2)" />
-                @if (smallImages.length <= 2 && i === smallImages.slice(0, 2).length - 1) {
-                  <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 1)">
-                    查看全部 {{ detail.imageUrls.length }} 張
-                  </button>
-                }
-              </div>
+        @if (smallImages.length > 2) {
+        <div class="photo-right-row">
+          @for (img of smallImages.slice(2, 4); track img; let i = $index) {
+          <div class="photo-small" [class.photo-small--last]="i === smallImages.slice(2, 4).length - 1">
+            <img [src]="img" [alt]="'營區照片 ' + (i + 4)" />
+            @if (i === smallImages.slice(2, 4).length - 1) {
+            <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 3)">
+              查看全部 {{ detail.imageUrls.length }} 張
+            </button>
             }
           </div>
-          @if (smallImages.length > 2) {
-            <div class="photo-right-row">
-              @for (img of smallImages.slice(2, 4); track img; let i = $index) {
-                <div class="photo-small" [class.photo-small--last]="i === smallImages.slice(2, 4).length - 1">
-                  <img [src]="img" [alt]="'營區照片 ' + (i + 4)" />
-                  @if (i === smallImages.slice(2, 4).length - 1) {
-                    <button class="view-all-btn" (click)="$event.stopPropagation(); openLightbox(i + 3)">
-                      查看全部 {{ detail.imageUrls.length }} 張
-                    </button>
-                  }
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- 共用 Lightbox 元件（定義於 shared/lightbox） -->
+    <app-lightbox [images]="detail.imageUrls" [(visible)]="showLightbox" [(activeIndex)]="lightboxIndex" />
+
+  </div>
+
+  <!-- 基本資訊 -->
+  <div class="container camp-info">
+
+    <div class="camp-info__header">
+      <h1 class="camp-info__name">{{ detail.name }}</h1>
+      <div class="camp-info__meta">
+        <span class="meta-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 20l5-10 4 5 3-7 6 12H3z" />
+          </svg>
+          海拔 {{ detail.elevation | number }}m
+        </span>
+        @if (location?.fullAddress) {
+        <a [href]="googleMapsNavUrl" target="_blank" rel="noopener noreferrer"
+          class="meta-item meta-item--link meta-item--address">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          {{ location?.fullAddress }}
+          <span class="nav-badge">導航</span>
+        </a>
+        }
+        <a [href]="'tel:' + detail.phone" class="meta-item meta-item--link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z" />
+          </svg>
+          {{ detail.phone }}
+        </a>
+        @if (detail.website) {
+        <a [href]="detail.website" target="_blank" rel="noopener noreferrer" class="meta-item meta-item--link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path
+              d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          官方網站
+        </a>
+        }
+        <button type="button" class="meta-item meta-item--link contact-owner-btn" (click)="contactOwner()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+          </svg>
+          聯絡營主
+        </button>
+      </div>
+    </div>
+
+    <!-- 特色標籤：依分類分組顯示，環境特色／政策規則不要混在一起 -->
+    @if (environmentTags.length) {
+    <div class="feature-tag-group">
+      <span class="feature-tag-group__label">環境特色</span>
+      <div class="feature-tags">
+        @for (tag of environmentTags; track tag.tagName) {
+        <div class="feature-tag">
+          @if (tag.iconUrl) {
+          <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
+          } @else {
+          <span class="feature-tag__dot"></span>
+          }
+          <span class="feature-tag__label">{{ tag.tagName }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    @if (policyTags.length) {
+    <div class="feature-tag-group">
+      <span class="feature-tag-group__label">政策規則</span>
+      <div class="feature-tags">
+        @for (tag of policyTags; track tag.tagName) {
+        <div class="feature-tag">
+          @if (tag.iconUrl) {
+          <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
+          } @else {
+          <span class="feature-tag__dot"></span>
+          }
+          <span class="feature-tag__label">{{ tag.tagName }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- 營區設施 -->
+    @if (detail.facilities?.length) {
+    <div class="facility-list">
+      @for (f of detail.facilities; track f.facilityId) {
+      <div class="facility-item">
+        @if (f.iconUrl) {
+        <img [src]="f.iconUrl" class="facility-item__icon" alt="" />
+        } @else {
+        <i class="pi pi-check-circle facility-item__icon-fallback"></i>
+        }
+        <span class="facility-item__label">{{ f.facilityName }}</span>
+      </div>
+      }
+    </div>
+    }
+
+    <hr class="divider" />
+
+    <!-- 雙欄：左=描述，右=分區+規則 -->
+    <div class="detail-columns">
+
+      <!-- 左欄：關於營區 -->
+      <div class="detail-col-main">
+        <h3 class="section-sub-title">關於這個營區</h3>
+        @if (detail.highlights?.length) {
+        <ul class="highlight-list">
+          @for (h of detail.highlights; track h) {
+          <li class="highlight-list__item">{{ h }}</li>
+          }
+        </ul>
+        }
+        <p class="camp-description__text">{{ detail.description }}</p>
+
+        @if (detail.rules) {
+        <div class="policy-section">
+          <h3 class="section-sub-title">注意事項</h3>
+          @if (detail.rules.includes('\n')) {
+          <ul class="rules-list">
+            @for (rule of detail.rules.split('\n'); track rule) {
+            @if (rule.trim()) {
+            <li class="rules-list__item">{{ rule.trim() }}</li>
+            }
+            }
+          </ul>
+          } @else {
+          <p class="rules-text">{{ detail.rules }}</p>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- 右欄：分區類型 + 注意事項 -->
+      <div class="detail-col-side">
+
+        @if (zones.length) {
+        <div class="zone-summary-card">
+          <h3 class="section-sub-title">分區類型</h3>
+          <div class="zone-list">
+            @for (zone of zones; track zone.zoneId) {
+            <div class="zone-item">
+              <div class="zone-item__icon">
+                @if (zone.zoneType === 2) {
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                } @else {
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 20 L12 4 L21 20 Z" />
+                </svg>
+                }
+              </div>
+              <div class="zone-item__info">
+                <div class="zone-item__name">{{ zone.zoneName }}</div>
+                <div class="zone-item__meta">
+                  <span>{{ zone.totalSites }} 個營位</span>
+                  <span class="zone-item__price">NT${{ zone.weekdayPrice | number:'1.0-0' }}<span
+                      class="zone-item__unit">/晚起</span></span>
                 </div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- 共用 Lightbox 元件（定義於 shared/lightbox） -->
-      <app-lightbox
-        [images]="detail.imageUrls"
-        [(visible)]="showLightbox"
-        [(activeIndex)]="lightboxIndex" />
-
-    </div>
-
-    <!-- 基本資訊 -->
-    <div class="container camp-info">
-
-      <div class="camp-info__header">
-        <h1 class="camp-info__name">{{ detail.name }}</h1>
-        <div class="camp-info__meta">
-          <span class="meta-item">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 20l5-10 4 5 3-7 6 12H3z"/>
-            </svg>
-            海拔 {{ detail.elevation | number }}m
-          </span>
-          @if (location?.fullAddress) {
-            <a [href]="googleMapsNavUrl" target="_blank" rel="noopener noreferrer" class="meta-item meta-item--link meta-item--address">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              {{ location?.fullAddress }}
-              <span class="nav-badge">導航</span>
-            </a>
-          }
-          <a [href]="'tel:' + detail.phone" class="meta-item meta-item--link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/>
-            </svg>
-            {{ detail.phone }}
-          </a>
-          @if (detail.website) {
-            <a [href]="detail.website" target="_blank" rel="noopener noreferrer" class="meta-item meta-item--link">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-              </svg>
-              官方網站
-            </a>
-          }
-          <button type="button" class="meta-item meta-item--link contact-owner-btn" (click)="contactOwner()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-            </svg>
-            聯絡營主
-          </button>
-        </div>
-      </div>
-
-      <!-- 特色標籤：依分類分組顯示，環境特色／政策規則不要混在一起 -->
-      @if (environmentTags.length) {
-        <div class="feature-tag-group">
-          <span class="feature-tag-group__label">環境特色</span>
-          <div class="feature-tags">
-            @for (tag of environmentTags; track tag.tagName) {
-              <div class="feature-tag">
-                @if (tag.iconUrl) {
-                  <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
-                } @else {
-                  <span class="feature-tag__dot"></span>
-                }
-                <span class="feature-tag__label">{{ tag.tagName }}</span>
               </div>
+            </div>
             }
           </div>
         </div>
-      }
+        }
 
-      @if (policyTags.length) {
-        <div class="feature-tag-group">
-          <span class="feature-tag-group__label">政策規則</span>
-          <div class="feature-tags">
-            @for (tag of policyTags; track tag.tagName) {
-              <div class="feature-tag">
-                @if (tag.iconUrl) {
-                  <img [src]="tag.iconUrl" class="feature-tag__icon" alt="" />
-                } @else {
-                  <span class="feature-tag__dot"></span>
-                }
-                <span class="feature-tag__label">{{ tag.tagName }}</span>
-              </div>
+        @if (refundPolicy?.tiers?.length) {
+        <div class="rules-card">
+          <h3 class="section-sub-title">取消政策</h3>
+          <ul class="rules-list">
+            @for (tier of refundPolicy!.tiers; track tier.tierName) {
+            <li class="rules-list__item">
+              {{ tierRangeLabel(tier) }}申請取消：退還 {{ tier.refundPercentage * 100 }}%（{{ tier.tierName }}）
+            </li>
             }
-          </div>
-        </div>
-      }
-
-      <!-- 營區設施 -->
-      @if (detail.facilities?.length) {
-        <div class="facility-list">
-          @for (f of detail.facilities; track f.facilityId) {
-            <div class="facility-item">
-              @if (f.iconUrl) {
-                <img [src]="f.iconUrl" class="facility-item__icon" alt="" />
-              } @else {
-                <i class="pi pi-check-circle facility-item__icon-fallback"></i>
-              }
-              <span class="facility-item__label">{{ f.facilityName }}</span>
-            </div>
+          </ul>
+          @if (refundPolicy!.enableTyphoonOverride) {
+          <p class="rules-text">如入住日遇政府公告颱風假，不受上述限制，可全額退款。</p>
           }
         </div>
-      }
+        }
 
-      <hr class="divider" />
-
-      <!-- 雙欄：左=描述，右=分區+規則 -->
-      <div class="detail-columns">
-
-        <!-- 左欄：關於營區 -->
-        <div class="detail-col-main">
-          <h3 class="section-sub-title">關於這個營區</h3>
-          @if (detail.highlights?.length) {
-            <ul class="highlight-list">
-              @for (h of detail.highlights; track h) {
-                <li class="highlight-list__item">{{ h }}</li>
-              }
-            </ul>
-          }
-          <p class="camp-description__text">{{ detail.description }}</p>
-
-          @if (detail.rules) {
-            <div class="policy-section">
-              <h3 class="section-sub-title">注意事項</h3>
-              @if (detail.rules.includes('\n')) {
-                <ul class="rules-list">
-                  @for (rule of detail.rules.split('\n'); track rule) {
-                    @if (rule.trim()) {
-                      <li class="rules-list__item">{{ rule.trim() }}</li>
-                    }
-                  }
-                </ul>
-              } @else {
-                <p class="rules-text">{{ detail.rules }}</p>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- 右欄：分區類型 + 注意事項 -->
-        <div class="detail-col-side">
-
-          @if (zones.length) {
-            <div class="zone-summary-card">
-              <h3 class="section-sub-title">分區類型</h3>
-              <div class="zone-list">
-                @for (zone of zones; track zone.zoneId) {
-                  <div class="zone-item">
-                    <div class="zone-item__icon">
-                      @if (zone.zoneType === 2) {
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-                        </svg>
-                      } @else {
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M3 20 L12 4 L21 20 Z"/>
-                        </svg>
-                      }
-                    </div>
-                    <div class="zone-item__info">
-                      <div class="zone-item__name">{{ zone.zoneName }}</div>
-                      <div class="zone-item__meta">
-                        <span>{{ zone.totalSites }} 個營位</span>
-                        <span class="zone-item__price">NT${{ zone.weekdayPrice | number:'1.0-0' }}<span class="zone-item__unit">/晚起</span></span>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-
-          @if (refundPolicy?.tiers?.length) {
-            <div class="rules-card">
-              <h3 class="section-sub-title">取消政策</h3>
-              <ul class="rules-list">
-                @for (tier of refundPolicy!.tiers; track tier.tierName) {
-                  <li class="rules-list__item">
-                    {{ tierRangeLabel(tier) }}申請取消：退還 {{ tier.refundPercentage * 100 }}%（{{ tier.tierName }}）
-                  </li>
-                }
-              </ul>
-              @if (refundPolicy!.enableTyphoonOverride) {
-                <p class="rules-text">如入住日遇政府公告颱風假，不受上述限制，可全額退款。</p>
-              }
-            </div>
-          }
-
-        </div>
       </div>
-
     </div>
+
+  </div>
   }
 
   <!-- ===== Section 2：甘特圖選位 ===== -->
@@ -268,65 +281,65 @@
 
     <!-- 附近自然景點 -->
     @if (nearbyAttractions.length) {
-      <div class="nearby-section">
-        <h3 class="nearby-title">附近自然景點</h3>
-        <div class="nearby-row">
-          @for (attr of nearbyAttractions; track attr.id) {
-            <a [routerLink]="['/attraction', attr.id]" class="attraction-card"
-               (mouseenter)="onAttractionCardEnter(attr.id)"
-               (mouseleave)="onCardLeave()">
-              <div class="attraction-card__img-wrap">
-                @if (attr.coverImageUrl) {
-                  <img [src]="attr.coverImageUrl" [alt]="attr.attractionName" class="attraction-card__img" />
-                } @else {
-                  <div class="attraction-card__no-img">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M3 20l5-10 4 5 3-7 6 12H3z"/>
-                      <circle cx="17" cy="5" r="2"/>
-                    </svg>
-                  </div>
-                }
-                <span class="attraction-card__dist-badge">{{ attr.distanceKm.toFixed(1) }} km</span>
-                <span class="card-type-badge card-type-badge--attraction">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l5-10 4 5 3-7 6 12H3z"/></svg>
-                  景點
-                </span>
-              </div>
-              <div class="attraction-card__body">
-                <div class="attraction-card__name">{{ attr.attractionName }}</div>
-                @if (attr.ticketInfo) {
-                  <div class="attraction-card__info">{{ attr.ticketInfo }}</div>
-                }
-                @if (attr.estimatedMinutes) {
-                  <div class="attraction-card__info">車程約 {{ attr.estimatedMinutes }} 分</div>
-                }
-              </div>
-            </a>
-          }
-        </div>
+    <div class="nearby-section">
+      <h3 class="nearby-title">附近自然景點</h3>
+      <div class="nearby-row">
+        @for (attr of nearbyAttractions; track attr.id) {
+        <a [routerLink]="['/attraction', attr.id]" class="attraction-card" (mouseenter)="onAttractionCardEnter(attr.id)"
+          (mouseleave)="onCardLeave()">
+          <div class="attraction-card__img-wrap">
+            @if (attr.coverImageUrl) {
+            <img [src]="attr.coverImageUrl" [alt]="attr.attractionName" class="attraction-card__img" />
+            } @else {
+            <div class="attraction-card__no-img">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20l5-10 4 5 3-7 6 12H3z" />
+                <circle cx="17" cy="5" r="2" />
+              </svg>
+            </div>
+            }
+            <span class="attraction-card__dist-badge">{{ attr.distanceKm.toFixed(1) }} km</span>
+            <span class="card-type-badge card-type-badge--attraction">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20l5-10 4 5 3-7 6 12H3z" />
+              </svg>
+              景點
+            </span>
+          </div>
+          <div class="attraction-card__body">
+            <div class="attraction-card__name">{{ attr.attractionName }}</div>
+            @if (attr.ticketInfo) {
+            <div class="attraction-card__info">{{ attr.ticketInfo }}</div>
+            }
+            @if (attr.estimatedMinutes) {
+            <div class="attraction-card__info">車程約 {{ attr.estimatedMinutes }} 分</div>
+            }
+          </div>
+        </a>
+        }
       </div>
+    </div>
     }
 
     <!-- 附近其他營區 -->
     @if (nearbyCamps.length) {
-      <div class="nearby-section">
-        <h3 class="nearby-title">附近其他營區</h3>
-        <!-- 共用 NearbyCampCard 元件（定義於 shared/nearby-camp-card） -->
-        <div class="nearby-row">
-          @for (camp of nearbyCamps; track camp.id) {
-            <app-nearby-camp-card
-              [camp]="camp"
-              (cardEnter)="onCampCardEnter($event)"
-              (cardLeave)="onCardLeave()" />
-          }
-        </div>
+    <div class="nearby-section">
+      <h3 class="nearby-title">附近其他營區</h3>
+      <!-- 共用 NearbyCampCard 元件（定義於 shared/nearby-camp-card） -->
+      <div class="nearby-row">
+        @for (camp of nearbyCamps; track camp.id) {
+        <app-nearby-camp-card [camp]="camp" (cardEnter)="onCampCardEnter($event)" (cardLeave)="onCardLeave()" />
+        }
       </div>
+    </div>
     }
   </div>
 
   <!-- ===== Section 4：評論（同仁元件） ===== -->
   <div class="container reviews-section">
-    <app-review />
+    <app-review [f_campId]="campId" />
   </div>
 
 </div>

@@ -58,7 +58,7 @@
       <span class="camp-card__price">NT$ {{ camp.basePrice | number }} 起</span>
       @if (camp.averageRating) {
         <div class="camp-card__rating">
-          <p-rating [(ngModel)]="camp.averageRating" [readonly]="true" />
+          <p-rating [ngModel]="displayRating" [readonly]="true" />
           <span class="camp-card__review-count">({{ camp.reviewCount }})</span>
         </div>
       }

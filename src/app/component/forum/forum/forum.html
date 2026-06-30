@@ -15,7 +15,7 @@
     <!-- 文章列表 -->
     <div class="row">
       @for (post of filteredPosts; track post.postId) {
-      <div class="col col-xl-3 col-md-6 posts-section">
+      <div class="col col-xl-3 col-md-6 col-sm-12 posts-section">
         <button (click)="gotoPost(post.postId)" class=" border border-0 rounded">
           <div class="lc-block bg-white shadow rounded-bottom rounded-top card_img">
             <img [src]="getMainImage(post)" class="img-fluid imgs" width="1080" loading="lazy" [alt]="post.title">

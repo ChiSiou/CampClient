@@ -1,8 +1,10 @@
 import { MemberService } from './../../member/Service/member-service';
 import { Sforum } from './../service/sforum';
+import { SPostInteract } from './../service/sPostInteract';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IForum } from '../interfaces/Iforum';
+import { IPostInteract } from '../interfaces/IPostInteract';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -80,13 +82,18 @@ export class Post implements OnInit {
   edit_reply_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
   edit_reply_selectedFiles: File[] = [];
 
+  // 按讚／分享互動
+  myInteract: IPostInteract | null = null;
+  isLiked: boolean = false;
+  likeCount: number = 0;
+  likeBurst: boolean = false;
 
   postForm = {
     submitted: false,
     valid: false,
   };
 
-  constructor(private sforumService: Sforum, private route: ActivatedRoute, private router: Router, private primeng: PrimeNG, private sMember: MemberService) {
+  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private route: ActivatedRoute, private router: Router, private primeng: PrimeNG, private sMember: MemberService) {
     this.primeng.setTranslation({ pending: '等待上傳' });
   }
 
@@ -106,6 +113,98 @@ export class Post implements OnInit {
     });
 
     this.loadReplies();
+    this.loadInteracts();
+  }
+
+  loadInteracts() {
+    this.sPostInteractService.getPostInteracts(this.postId).subscribe({
+      next: (data) => {
+        this.likeCount = data.filter(d => !!d.likePostId).length;
+        const mine = data.find(d => d.userId === this.nowUserId) ?? null;
+        this.myInteract = mine;
+        this.isLiked = !!mine?.likePostId;
+      },
+      error: (err) => console.error('載入互動資料失敗', err),
+    });
+  }
+
+  toggleLike() {
+    if (!this.nowUserId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: '尚未登入',
+        detail: '請先登入後再按愛心收藏。',
+        life: 3000,
+      });
+      return;
+    }
+
+    // 樂觀更新：先讓視覺立即反應，動畫播放後再依結果修正
+    const nextLiked = !this.isLiked;
+    this.isLiked = nextLiked;
+    this.likeCount += nextLiked ? 1 : -1;
+    this.likeBurst = nextLiked;
+
+    if (!this.myInteract) {
+      const param: IPostInteract = {
+        postId: this.postId,
+        userId: this.nowUserId,
+        likePostId: nextLiked ? this.postId : null,
+      };
+      this.sPostInteractService.postPostInteract(param).subscribe({
+        next: (created) => this.myInteract = created,
+        error: (err) => {
+          console.error('按愛心失敗', err);
+          this.revertLike(nextLiked);
+        },
+      });
+    } else {
+      const param: IPostInteract = {
+        ...this.myInteract,
+        likePostId: nextLiked ? this.postId : null,
+      };
+      this.sPostInteractService.putPostInteract(this.myInteract.postInteractId!, param).subscribe({
+        next: () => this.myInteract = param,
+        error: (err) => {
+          console.error('按愛心失敗', err);
+          this.revertLike(nextLiked);
+        },
+      });
+    }
+  }
+
+  private revertLike(attempted: boolean) {
+    this.isLiked = !attempted;
+    this.likeCount += attempted ? -1 : 1;
+  }
+
+  onHeartAnimationEnd() {
+    this.likeBurst = false;
+  }
+
+  markShared() {
+    if (!this.nowUserId || this.myInteract?.sharePostId) return;
+
+    if (!this.myInteract) {
+      const param: IPostInteract = {
+        postId: this.postId,
+        userId: this.nowUserId,
+        sharePostId: this.postId,
+      };
+      this.sPostInteractService.postPostInteract(param).subscribe({
+        next: (created) => this.myInteract = created,
+        error: (err) => console.error('紀錄分享失敗', err),
+      });
+    } else {
+      const param: IPostInteract = {
+        ...this.myInteract,
+        sharePostId: this.postId,
+      };
+      this.sPostInteractService.putPostInteract(this.myInteract.postInteractId!, param).subscribe({
+        next: () => this.myInteract = param,
+        error: (err) => console.error('紀錄分享失敗', err),
+      });
+    }
   }
 
   loadReplies() {
@@ -262,9 +361,11 @@ export class Post implements OnInit {
     if (this.selectedFiles.length > 0) {
       this.uploadAllFiles().then(() => {
         this.addNewReply();
+        this.isReplyPost = false;
       });
     } else {
       this.addNewReply();
+      this.isReplyPost = false;
     }
   }
 
@@ -296,8 +397,8 @@ export class Post implements OnInit {
         console.error('留言失敗', err);
         this.messageService.add({
           severity: 'error',
-          summary: '發文失敗',
-          detail: '請稍後再試。',
+          summary: '留言失敗',
+          detail: '請檢查是否已登入。',
           life: 3000,
         });
       },

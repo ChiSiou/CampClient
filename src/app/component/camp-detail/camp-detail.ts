@@ -84,7 +84,7 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     // 取消政策是全平台共用的設定，跟營區無關，只要載入一次
     this.paymentService.getRefundPolicy().subscribe({
       next: res => (this.refundPolicy = res),
-      error: () => {},
+      error: () => { },
     });
   }
 
@@ -290,8 +290,9 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // TODO: 這頁的 API 還沒接，等 CampDetailDto 補上營主 OwnerUserId/OwnerName 後改成真實資料
   contactOwner() {
-    this.chatService.openChatWith(99946, '營主');
+    if (!this.detail) return;
+    // this.chatService.openChatWith(this.detail.ownerUserId, this.detail.ownerName || '營主');
+    this.chatService.openChatWith(this.detail.ownerUserId, this.detail.name);
   }
 }

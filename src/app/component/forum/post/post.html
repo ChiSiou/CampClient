@@ -103,11 +103,20 @@
       <div class="post-footer">
         <div class="action-btns">
 
-          <p-button icon="pi pi-heart" [outlined]="true" severity="secondary" title="愛心" size="small"></p-button>
+          <button type="button" class="like-toggle" [class.liked]="isLiked" [class.pop]="likeBurst"
+            (click)="toggleLike()" title="按讚">
+            <span class="like-burst" *ngIf="likeBurst" (animationend)="onHeartAnimationEnd()"></span>
+            <i class="pi" [ngClass]="isLiked ? 'pi-thumbs-up-fill' : 'pi-thumbs-up'"></i>
+            <span class="like-count" *ngIf="likeCount > 0">{{ likeCount }}</span>
+          </button>
 
-          <p-button icon="pi pi-bookmark" [outlined]="true" severity="secondary" title="收藏" size="small"></p-button>
+          <button type="button" class="heart-toggle" [class.liked]="isLiked" [class.pop]="likeBurst"
+            (click)="toggleLike()" title="收藏">
+            <span class="heart-burst" *ngIf="likeBurst" (animationend)="onHeartAnimationEnd()"></span>
+            <i class="pi" [ngClass]="isLiked ? 'pi-heart-fill' : 'pi-heart'"></i>
+          </button>
 
-          <p-button (click)="op.toggle($event); copyPostRoute()" icon="pi pi-share-alt" [outlined]="true" label="分享"
+          <p-button (click)="op.toggle($event); copyPostRoute(); markShared()" icon="pi pi-share-alt" [outlined]="true" label="分享"
             size="small" />
 
           <p-button (click)="isReplyPost = !isReplyPost;" icon="pi pi-comments" [outlined]="true" severity="secondary"
@@ -207,8 +216,8 @@
           <div class="field">
             <label>新增附圖</label>
             <p-fileupload name="editReplyImages[]" [customUpload]="true" (onSelect)="onEditReplySelect($event)"
-              [auto]="false" [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced"
-              chooseLabel="選擇" cancelLabel="取消" [showUploadButton]="false">
+              [auto]="false" [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇"
+              cancelLabel="取消" [showUploadButton]="false">
               <ng-template #empty>
                 <div>可將圖片拖曳進方框內上傳</div>
               </ng-template>
@@ -216,9 +225,9 @@
           </div>
 
           <div class="form-actions">
-            <p-button label="送出" icon="pi pi-send" (onClick)="submitEditReply()"></p-button>
-            <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true"
-              (onClick)="cancelEditReply()"></p-button>
+            <p-button label="送出" icon="pi pi-send" (onClick)="submitEditReply()" class="form-btn"></p-button>
+            <p-button label="取消" icon="pi pi-times" severity="secondary" [outlined]="true" (onClick)="cancelEditReply()"
+              class="form-btn"></p-button>
           </div>
           }
         </div>

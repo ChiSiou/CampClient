@@ -1,5 +1,5 @@
 import { Member } from '../../layouts/member/member';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { SReview } from '../service/sreview';
 import { IReview } from '../interfaces/IReview';
 import { RatingModule, Rating } from 'primeng/rating';
@@ -66,6 +66,9 @@ export class Review {
     userName: "",
   };
 
+  // 接收父元件傳入
+  @Input() f_campId = 0;
+
   // 使用者傳圖
   private messageService = inject(MessageService);
   selectedFiles: File[] = [];
@@ -76,19 +79,17 @@ export class Review {
   };
 
   ngOnInit(): void {
-    this.getData();
     this.editParam.userId = Number(this.sReview.getUserId());
-    this.editParam.campId = Number(this.sReview.getCampId());
+    this.editParam.campId = this.f_campId;
+    this.getData();
   }
 
   getData() {
-    this.sReview.getRiviewAPI().subscribe((data) => {
-      this.reviews = data;
-      console.log(data);
+    this.sReview.getRiviewAPI(this.f_campId).subscribe((data) => {
 
+      this.reviews = data.filter(c => c.campId === this.f_campId);
       // 抓取其他資料
       this.totalReviews = data.length;
-
       // --- 計算平均分開始 ---
       if (this.totalReviews > 0) {
         // 1. 先用 reduce 把所有的 rating 加總
@@ -99,6 +100,7 @@ export class Review {
         this.campAVGScore = 0; // 如果沒資料就給 0，避免除以 0 變成 NaN
       }
       // --- 計算平均分結束 ---
+
     });
   }
 
