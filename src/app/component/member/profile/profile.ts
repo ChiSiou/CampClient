@@ -1,3 +1,4 @@
+import { Message } from 'primeng/message';
 import { MemberService } from './../Service/member-service';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -15,7 +16,7 @@ export class Profile {
     email: '',
     phone: '',
   };
-  notificationCount = 0;
+  unreadCount = 0;
   ordercount = 0;
   constructor(
     private memberService: MemberService,
@@ -23,7 +24,14 @@ export class Profile {
   ) {}
 
   ngOnInit(): void {
-    this.notification.getUnreadCount().subscribe({});
+    this.notification.getUnreadCount().subscribe({
+      next: (res) => {
+        this.unreadCount = res;
+      },
+      error: (err) => {
+        console.log(err.Message);
+      },
+    });
     this.memberService.getProfile().subscribe({
       next: (res) => {
         this.profile = res.profileData;
