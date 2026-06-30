@@ -33,10 +33,10 @@
   - `camp-detail.service.ts`（營區詳細頁）
   - `attraction.service.ts`（景點詳細頁）
   - `calendar.service.ts`（甘特圖/選位）
-  - `camp-selection.service.ts`（**新增**：管理甘特圖選位狀態，跨 `gantt-calendar`/`zone-detail` 共用，見下方說明）
-  - `checkout.service.ts`（結帳，含 `redirectToPayment()`，**尚未在畫面上使用**）
-  - `payment.service.ts`（付款狀態/退款，**尚未在畫面上使用**）
-  - `owner-wallet.service.ts`（營主錢包，**尚未在畫面上使用**）
+  - `camp-selection.service.ts`：管理甘特圖選位狀態，跨 `gantt-calendar`/`zone-detail`/`checkout` 共用，含 `setCampground()`/`campgroundId` getter（結帳頁靠這個知道要送哪個營區）
+  - `checkout.service.ts`（結帳，含 `redirectToPayment()`，**已在 `/checkout` 頁面實際使用，Phase F6 完成**）
+  - `payment.service.ts`（付款狀態/退款，**尚未在畫面上使用**，Phase F7 待做）
+  - `owner-wallet.service.ts`（營主錢包，**尚未在畫面上使用**，Phase F8 待做）
   - `equipment-rental.service.ts` / `equipment-cart.service.ts`（裝備出租，同仁負責）
 - `src/app/shared/map-icons.ts`：Leaflet 用的 SVG 圖示字串常數（`TENT_ICON_SVG`、`HOME_ICON_SVG`），多個地圖元件共用
 
@@ -46,12 +46,12 @@
 /                              首頁
 /search                        搜尋/地圖
 /camp/:id                      營區詳細頁（含甘特圖第一層）
-/camp/:id/zone/:zoneId         Zone 細節頁（甘特圖第二層，骨架階段）
+/camp/:id/zone/:zoneId         Zone 細節頁（甘特圖第二層，✅ 已完成）
 /camp/:id/rental                裝備出租（同仁）
 /camp/:id/rental/equipment/:productId  裝備明細（同仁）
 /attraction/:id                景點詳細頁
-/checkout                      結帳（空殼，未實作）
-/payment/result                付款結果（空殼，未實作）
+/checkout                      結帳（✅ 已完成，Phase F6）
+/payment/result                付款結果（空殼，未實作，Phase F7）
 /review, /review/add           評論（同仁）
 /forum, /post, /post/:id       論壇（同仁）
 /member-center (+children: orders, memberEdit, 預設 profile)   會員中心（同仁，有 authGuard）
@@ -109,41 +109,42 @@
 
 ---
 
-### 🟡 Phase F5：甘特圖選位 — 進行中（分兩層，第一層完成、第二層待做）
+### ✅ Phase F5：甘特圖選位 — 完成（兩層都做完了）
 
-**架構說明**：不是獨立頁面，`camp-detail.html` 裡引用 `<app-gantt-calendar>` 子元件（`src/app/component/camp-detail/gantt-calendar/`）。
+**架構說明**：不是獨立頁面，`camp-detail.html` 裡引用 `<app-gantt-calendar>` 子元件（`src/app/component/camp-detail/gantt-calendar/`），第二層 `zone-detail` 才是獨立路由 `/camp/:id/zone/:zoneId`。
 
-#### ✅ 第一層：`gantt-calendar` 元件 — 已完成
+#### ✅ 第一層：`gantt-calendar` 元件
 檔案：`src/app/component/camp-detail/gantt-calendar/gantt-calendar.ts`
 
 已實作功能：
 - 拖拉選取日期格子（`onCellMouseDown` / `onCellMouseEnter` / 全域 `mouseup`）
+- **退房日語意（重要，跟最早版本不一樣，後來改過）**：放開滑鼠的那一格直接就是退房日，不額外+1 天；至少要拖 2 格（1 晚）才算有效選位，只點 1 格直接忽略
 - 同列重疊/緊接選位自動合併成一筆連續區間（`addOrMergeSelection`）
-- Prev/Next 10 天視窗切換（`prevWindow`/`nextWindow`），`jumpToDate()` 供外部呼叫跳轉
-- 右側 Zone 地圖（Leaflet + GeoJSON，衛星空拍底圖 Esri）：
-  - 選位狀態即時連動變色（藍→黃）、permanent tooltip 顯示已選格數
-  - hover 整片亮起 + 邊框加粗
-  - 點 Zone 色塊 → `router.navigate(['/camp', campgroundId, 'zone', zoneId])` 進入第二層
-- INFO 彈窗（`openInfo`）：打 `GET /api/Calendar/zone/{zoneId}/detail`，價格資料直接從父層傳入的 `zones`（`CampMapZoneDto`）取，不重複打 API
-- 計算金額：`POST /api/Calendar/summary`，結果存 `orderSummary`
-- **跨元件選位狀態管理**：新增 `src/app/services/camp-selection.service.ts`（`CampSelectionService`），用 RxJS 管理選位清單，`gantt-calendar` 訂閱顯示、之後 `zone-detail` 完成後也會用這個 service 把選位寫回來
+- **入住/退房格視覺區分**：`isRangeStart`（入住格，淺色+圓角）、`isCheckoutDay`（退房格，可以直接按 X 取消這筆選位，`canRemoveAtCheckout`/`removeAtCheckout`）
+- **Generic 選位的甘特圖視覺示意（`recomputeGenericHighlights`，有修過一次 bug）**：Generic 從 Zone 詳細頁選的沒有真實帳位（`displayRowCampsiteId=0`），純前端在目前已載入的甘特圖列裡，逐筆檢查「這一列這天有沒有被佔用」分配到不同列上做高亮顯示——**舊寫法的 bug**是按「日期區間」分組各自獨立計算，導致不同批次選位都從第一列開始算、互相不知道彼此佔用了哪些列，重疊堆疊在前面幾列。現在改成逐筆檢查整合所有來源（直接拖曳+Zone 詳細頁選位）的列佔用狀態，同一列只要日期不重疊就能重複使用
+- 日期表頭加顯示星期幾（`dayOfWeek()`），週六日不特別標色（平日/假日是看「週六日或國定假日」，只標週六日顏色會誤導）
+- Prev/Next 10 天視窗切換，`jumpToDate()` 供外部呼叫跳轉
+- 右側 Zone 地圖（Leaflet + GeoJSON，衛星空拍底圖 Esri）：選位即時變色（藍→黃）、permanent tooltip 顯示已選格數+日期、hover 發光、點色塊進第二層
+- INFO 彈窗（`openInfo`）：`GET /api/Calendar/zone/{zoneId}/detail` + 從父層 `zones` 直接取價格（不重複打 API）
+- 計算金額：`POST /api/Calendar/summary`
+- **「前往結帳」入口**（`goToCheckout`）：彈窗問要不要加購裝備，串到 Phase F6（見下方）
 
-#### ⬜ 第二層：`zone-detail` 元件 — 骨架階段，下一步要做這個
+#### ✅ 第二層：`zone-detail` 元件
 檔案：`src/app/component/camp-detail/zone-detail/zone-detail.ts`
 
-目前狀態（程式碼裡的註解原文）：
-> 骨架階段：先確保 `/camp/:id/zone/:zoneId` 能正常導航、撈到資料。Generic 月曆+數量選擇 / UniqueUnit 卡片多選，下一步再實作。
+已完整實作：
+- 頁面內自己選日期（`p-datepicker` range），選完才打 `getZoneCalendar()` 拿正確可訂狀態/價格
+- Zone 介紹區塊：照片格宮（點擊開 `app-lightbox`）+ 簡介 + 設施標籤
+- **Generic（`zoneType===1`）**：數量選擇器，`maxAvailableQuantity` **逐天比對**「後端剩餘量」扣掉「同一天已經在前端選位清單裡的數量」取整段期間最小值——**不能只比對日期完全相同**，因為兩次選位日期重疊但不完全一樣（例如 6/30~7/3 跟 6/30~7/2）還是會搶到同一批實體帳位，要逐天檢查才能真正擋住重疊
+- **UniqueUnit（`zoneType===2`）**：卡片網格，**可以一次勾選多張**（購物車邏輯），`isAlreadyBookedElsewhere()` 擋掉「使用者自己已經在別的地方選過同一個 `campsiteId` 且日期重疊」的卡片（後端 `unit.isAvailable` 只看資料庫真實庫存，不知道前端選位清單裡已經佔用的）；卡片可以點「查看詳情」開 `p-dialog` 看完整照片/簡介/設施再決定要不要選
+- 衛浴是訂房決策關鍵資訊，`hasBathroom()` 直接在卡片上顯示徽章，不用點進詳情才看到
+- **確認送出（`confirm()`）**：
+  - Generic → `calendarService.getGenericZoneSummary({zoneId, quantity, checkInDate, checkOutDate})` → 後端回傳的 `items` 筆數展開成對應筆數的 `CampSelectionEntry`（`campsiteId: 0`、`displayRowCampsiteId: 0`，甘特圖那邊靠 `recomputeGenericHighlights` 自己挑列顯示）
+  - UniqueUnit → 對每個勾選的 unit **各自呼叫一次** `getUnitZoneSummary({campsiteId, checkInDate, checkOutDate})`（`forkJoin` 同時送出，全部成功才寫入），**後端這支 API 一次只接受一個 campsiteId，沒有改成批次版本**，前端用迴圈+`forkJoin`處理
+  - 全部寫進 `CampSelectionService.addMany()` 後 `router.navigate(['/camp', campgroundId])` 回第一層
+- 日期格式化**不能用 `toISOString()`**：`p-datepicker` 給的是本地時間午夜的 `Date`，`toISOString()` 會轉成 UTC（台灣 UTC+8 等於減 8 小時）可能跨到前一天，要直接讀本地年/月/日組字串
 
-已完成：
-- 路由參數解析（`campgroundId`、`zoneId`）
-- 打 `GET /api/Calendar/zone/{zoneId}/calendar` 拿到 `CampZoneCalendarDto`
-- `back()` 返回上一層
-
-**還沒做（下一步具體任務）**：
-- `calendar.zoneType === 1`（Generic）：月曆 UI + 數量選擇器，後端自動分配帳位
-- `calendar.zoneType === 2`（UniqueUnit）：`calendar.units` 卡片列表，使用者自選一張或多張
-- 確認後要呼叫 `POST /api/Calendar/zone/summary?type=generic|unit`（`calendar.service.ts` 裡的 `getZoneSummary()` 已經寫好，等著被呼叫）
-- 選完要把結果寫進 `CampSelectionService`，然後 `router.navigate(['/camp', campgroundId])` 回到第一層，甘特圖要能正確反映新增的選位（可能需要呼叫 `gantt-calendar` 的 `jumpToDate()` 或重新整理選位）
+**還沒做**：選完從 Zone 詳細頁回到甘特圖時，如果選的日期超出甘特圖目前視窗，要自動呼叫 `jumpToDate()` 跳過去——這個串接目前還沒做，`jumpToDate()` 方法已經存在但沒人呼叫它。
 
 ---
 
