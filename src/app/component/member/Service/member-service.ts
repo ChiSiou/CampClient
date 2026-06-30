@@ -13,6 +13,7 @@ import { MemberEdit } from '../interface/MemberEdit';
 import { switchRoleResponse } from '../interface/switchRoleResponse';
 import { OrderList } from '../interface/orderList';
 import { LoginServiceResult, ServiceResult } from '../interface/ServiceResult';
+import { OwnerOrderList } from '../interface/ownerOrderList';
 
 @Injectable({
   providedIn: 'root',
@@ -175,6 +176,9 @@ export class MemberService {
   }
   getorder() {
     return this.http.get<OrderList[]>(`${this.apiUrl}/GetOrder`);
+  }
+  getOwnerRecentOrders() {
+    return this.http.get<OwnerOrderList[]>('https://localhost:7011/api/OwnerOrder/recent');
   }
 getProfile() {
   return this.http.get<any>(`${this.apiUrl}/GetProfile`);

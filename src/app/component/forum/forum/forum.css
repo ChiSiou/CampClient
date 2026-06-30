@@ -5,12 +5,11 @@
 }
 
 .posts-section {
-  padding: 48px 0;
-  /* margin: 0 0.1rem; */
+  margin: 1rem 2rem 0 0;
 }
 
 .posts-section__inner {
-  max-width: 1760px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 40px;
 }
@@ -25,7 +24,6 @@
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
 }
 
 .imgs {

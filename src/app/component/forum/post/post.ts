@@ -262,9 +262,11 @@ export class Post implements OnInit {
     if (this.selectedFiles.length > 0) {
       this.uploadAllFiles().then(() => {
         this.addNewReply();
+        this.isReplyPost = false;
       });
     } else {
       this.addNewReply();
+      this.isReplyPost = false;
     }
   }
 
@@ -296,8 +298,8 @@ export class Post implements OnInit {
         console.error('留言失敗', err);
         this.messageService.add({
           severity: 'error',
-          summary: '發文失敗',
-          detail: '請稍後再試。',
+          summary: '留言失敗',
+          detail: '請檢查是否已登入。',
           life: 3000,
         });
       },

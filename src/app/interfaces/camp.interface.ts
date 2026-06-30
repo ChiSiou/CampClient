@@ -109,6 +109,8 @@ export interface FilterTagItem {
 export interface CampDetailDto {
   id: number;
   name: string;
+  ownerUserId: number;
+  ownerName: string;
   phone: string;
   elevation: number;
   website: string;

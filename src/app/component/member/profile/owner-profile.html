@@ -118,22 +118,17 @@
         <span>操作</span>
       </div>
 
-      <div class="table-row">
-        <span>#A10231</span>
-        <span>山谷露營區</span>
-        <span>2026 / 07 / 12</span>
-        <span>NT$ 4,200</span>
-        <span class="order-status paid">已付款</span>
-        <button class="text-btn" (click)="contactCustomer(99945, '王小明')">聯絡顧客</button>
+      <div class="table-row" *ngFor="let order of recentOrders">
+        <span>#{{ order.orderNumber }}</span>
+        <span>{{ order.campName }}</span>
+        <span>{{ order.checkInDate | date }}</span>
+        <span>NT$ {{ order.totalAmount | number }}</span>
+        <span class="order-status" [ngClass]="orderStatusClass(order.status)">{{ orderStatusLabel(order.status) }}</span>
+        <button class="text-btn" (click)="contactCustomer(order.customerId, order.customerName)">聯絡顧客</button>
       </div>
 
-      <div class="table-row">
-        <span>#A10230</span>
-        <span>森林小屋營地</span>
-        <span>2026 / 07 / 18</span>
-        <span>NT$ 3,600</span>
-        <span class="order-status pending">待確認</span>
-        <button class="text-btn" (click)="contactCustomer(99946, '陳小姐')">聯絡顧客</button>
+      <div class="table-row" *ngIf="!recentOrders.length">
+        <span>目前尚無訂單</span>
       </div>
     </div>
   </section>
