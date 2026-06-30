@@ -32,9 +32,9 @@ export class Login {
   login(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('roles', JSON.stringify(res.roles));
-        localStorage.setItem('activeRole', res.activeRole);
+        localStorage.setItem('token', res.loginResponse.token);
+        localStorage.setItem('roles', JSON.stringify(res.loginResponse.roles));
+        localStorage.setItem('activeRole', res.loginResponse.activeRole);
         ///把後端回傳的 JWT token 存到瀏覽器的 localStorage 裡面
         this.memberService.startTokenTimer();
         ///token過期時間開始計時
@@ -57,24 +57,24 @@ export class Login {
             summary: `登入失敗`,
             detail: '信箱尚未驗證，請先完成信箱驗證',
           });
-          
+
           this.emailconfirmed = true;
           console.log(this.emailconfirmed);
         }
-        else{
-        console.log(err);
-        this.messageService.add({
-          key: 'top-right',
-          severity: 'error',
-          summary: `登入失敗`,
-          detail: '帳號或密碼錯誤',
-        });
-      }
+        else {
+          console.log(err);
+          this.messageService.add({
+            key: 'top-right',
+            severity: 'error',
+            summary: `登入失敗`,
+            detail: '帳號或密碼錯誤',
+          });
+        }
       },
     });
   }
 
-  Resendpage(){
+  Resendpage() {
     this.routes.navigate(['resend-verify-email'])
   }
 }
