@@ -18,7 +18,7 @@
     </div>
 
     <div class="stat-card">
-      <h3>3</h3>
+      <h3>{{unreadCount}}</h3>
       <p>未讀通知</p>
     </div>
   </section>
@@ -58,7 +58,7 @@
     <h2>快速功能</h2>
 
     <div class="action-list">
-      <div class="action-card">
+      <div class="action-card" routerLink="orders">
         <div class="icon">🧾</div>
         <div>
           <h3>查看訂單</h3>
@@ -74,7 +74,7 @@
         </div>
       </div>
 
-      <div class="action-card">
+      <div class="action-card" routerLink="/notifications">
         <div class="icon">🔔</div>
         <div>
           <h3>通知中心</h3>
