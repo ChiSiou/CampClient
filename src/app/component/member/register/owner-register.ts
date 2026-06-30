@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MemberService } from '../Service/member-service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-owner-register',
@@ -12,7 +13,8 @@ import { MessageService } from 'primeng/api';
 export class OwnerRegister implements OnInit {
   constructor(
     private memberService: MemberService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private Router: Router,
   ) {}
 
   ownerData = {
@@ -92,7 +94,7 @@ export class OwnerRegister implements OnInit {
     this.memberService.ownerregister(this.ownerData, this.selectedFile).subscribe({
       next: (res) => {
         this.loading = false;
-
+        this.Router.navigate(['/']);
         this.messageService.add({
           key: 'top-right',
           severity: 'success',

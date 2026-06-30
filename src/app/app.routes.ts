@@ -91,6 +91,12 @@ export const routes: Routes = [
           import('./component/camp-detail/zone-detail/zone-detail').then((m) => m.ZoneDetail),
       },
       {
+        path: 'notifications',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./component/notification-center/notification-center').then((m) => m.NotificationCenter),
+      },
+      {
         path: 'checkout',
         loadComponent: () => import('./component/checkout/checkout').then((m) => m.Checkout),
       },

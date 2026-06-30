@@ -1,10 +1,12 @@
 import { Menu } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
-import { Component, viewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { MenuItem, MessageService } from 'primeng/api';
 import { MemberService } from '../../member/Service/member-service';
+import { NotificationService } from '../../notification-center/Service/NotificationService';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-header-w-menu',
   imports: [RouterOutlet, RouterLink, ButtonModule, Menu],
@@ -12,18 +14,28 @@ import { MemberService } from '../../member/Service/member-service';
   templateUrl: './header-w-menu.html',
   styleUrl: './header-w-menu.css',
 })
-export class HeaderWMenu {
+export class HeaderWMenu implements OnDestroy {
   constructor(
     private routes: Router,
     private memberservice: MemberService,
     private messageService: MessageService,
+    private notificationService: NotificationService,
   ) {}
-
+  unreadCount = 0;
   username = '';
   userrole = '';
   activeUserRole = '';
+  private unreadCountSubscription?: Subscription;
+  private unreadRefreshTimer?: ReturnType<typeof setInterval>;
 
   ngOnInit() {
+    this.unreadCountSubscription = this.notificationService.unreadCount$.subscribe((count) => {
+      this.unreadCount = count;
+    });
+
+    this.loadUnreadCount();
+    this.unreadRefreshTimer = setInterval(() => this.loadUnreadCount(), 15000);
+
     this.username = this.memberservice.getname();
     this.userrole = this.memberservice.getrole();
     this.activeUserRole = this.memberservice.getActiveRole();
@@ -31,6 +43,19 @@ export class HeaderWMenu {
     if (token != null) {
       const decoded: any = jwtDecode(token);
       console.log(decoded);
+    }
+  }
+
+  @HostListener('window:focus')
+  refreshUnreadCountOnFocus() {
+    this.loadUnreadCount();
+  }
+
+  ngOnDestroy() {
+    this.unreadCountSubscription?.unsubscribe();
+
+    if (this.unreadRefreshTimer) {
+      clearInterval(this.unreadRefreshTimer);
     }
   }
 
@@ -49,7 +74,26 @@ export class HeaderWMenu {
   toggleMenu(event: Event) {
     this.menu().toggle(event);
   }
+  loadUnreadCount(): void {
+    const token = localStorage.getItem('token');
 
+    if (!token) {
+      this.notificationService.clearUnreadCount();
+      return;
+    }
+
+    this.notificationService.refreshUnreadCount().subscribe({
+      next: (count) => {
+        this.unreadCount = count;
+      },
+      error: () => {
+        this.notificationService.clearUnreadCount();
+      },
+    });
+  }
+  goNotification() {
+    this.routes.navigate(['/notifications']);
+  }
   Center() {
     if (this.activeUserRole === 'Owner') {
       this.routes.navigate(['/ownerCenter']);
@@ -69,6 +113,7 @@ export class HeaderWMenu {
         // 重點：同步更新畫面變數
         this.activeUserRole = res.activeRole;
         this.userrole = res.roles;
+        this.notificationService.refreshUnreadCount().subscribe();
 
         if (res.activeRole === 'Owner') {
           this.routes.navigate(['/ownerCenter']);

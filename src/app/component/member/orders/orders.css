@@ -295,12 +295,12 @@
 
 .btn.outline {
   background: white;
-  color: #3f6b45;
-  border: 1px solid #3f6b45;
+  color: #c83a3a;
+  border: 1px solid #c83a3a;
 }
 
 .btn.outline:hover {
-  background: #edf5ee;
+  background: #ffecec;
 }
 
 .btn.danger {
