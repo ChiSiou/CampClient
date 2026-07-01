@@ -55,8 +55,8 @@
 /review, /review/add           評論（同仁）
 /forum, /post, /post/:id       論壇（同仁）
 /member-center (+children: orders, memberEdit, 預設 profile)   會員中心（同仁，有 authGuard）
-/ownerCenter                   營主中心（同仁，有 authGuard，目前是空殼）
-/register, /login, /owner-register   會員註冊登入（同仁）
+/ownerCenter                   營主中心（同仁，有 authGuard，已有 owner-profile 子路由，不再是純空殼）
+/register, /login, /verify-email, /resend-verify-email, /forgot-password, /reset-password, /owner-register   會員註冊登入（同仁）
 ```
 
 ## 共用元件
@@ -265,16 +265,29 @@
 
 ## 📌 下次接續：待辦事項（不要漏掉）
 
-1. **後端在等 ngrok 設定好**（使用者預計明天弄），設定好之後本機才能測「付款成功 → 訂單狀態真的變成已付款」這條完整路徑，目前卡在 ECPay webhook 打不到 `localhost`。
-2. **Phase F7（付款結果頁）還沒做**：現在付款完成導回 `/checkout?orderNumber=xxx`，因為選位已經被清空，會顯示「找不到選位資料」，不是「付款成功」的訊息，體感很怪。要做一個專門頁面（或讓 `checkout.ts` 認得網址上的 `orderNumber`），用 `payment.service.ts` 已經寫好的 `getStatus()` 輪詢顯示付款結果。
+1. **後端在等 ngrok 設定好**（使用者預計明天弄），設定好之後本機才能測「付款成功 → 訂單狀態真的變成已付款」這條完整路徑，目前卡在 ECPay webhook 打不到 `localhost`。也順便能測新做的 `/payment/result` 頁面真的有沒有跟著 webhook 結果輪詢出對的狀態（目前只能用假資料測 UI，沒測過真的綠界回調）。
+2. ~~Phase F7 付款結果頁~~ **已完成**（見下方 Phase F7 章節）。
 3. 表單欄位驗證（Email/手機格式）還沒做，目前只擋空字串。
+4. **`gantt-calendar.ts` 的 `jumpToDate()` 方法目前沒有任何地方呼叫它**（已確認，`grep` 全專案只有定義沒有使用）：Zone 詳細頁選完日期回到甘特圖，如果選的日期超出甘特圖目前 10 天視窗，使用者看不到自己選的東西反映在畫面上，要接起來。
 
-### ⬜ Phase F7：付款確認/退款 — 未開始
-- `src/app/component/payment-result/payment-result.ts` 同樣是空殼
-- `payment.service.ts` 已寫好（`getStatus()`、`calculateRefund()`、`submitRefund()`）
+### 🟡 Phase F7：付款確認/退款 — 付款結果頁完成，退款流程未開始
+
+**問題根源**：後端 `PaymentController.PaymentResult`（接綠界 `OrderResultUrl` 的 POST 回調）原本寫死導回 `/checkout?orderNumber=xxx`，是 Phase F6 做完後留的暫時做法（程式碼裡原本就有 TODO 註解標明）。`/checkout` 頁面從來沒有處理過 `orderNumber` 這個 query param，使用者付完款回來看到的是「找不到選位資料」（因為 `CampSelectionService` 早就在送出訂單時被清空了），不是付款結果。
+
+**已完成**：
+- 後端 `CampApi/Controllers/PaymentController.cs`：`PaymentResult` 導回目標改成 `{frontendBase}/payment/result?orderNumber={merchantTradeNo}`
+- 前端 `src/app/component/payment-result/`：
+  - 讀網址 `orderNumber` query param，沒有的話顯示錯誤訊息（不嘗試輪詢）
+  - 輪詢 `PaymentService.getStatus(orderNumber)`，**每 3 秒一次**，狀態變成非 `Processing`（`Success`/`Failed`）就停止輪詢
+  - **逾時保護**：輪詢超過 30 秒還是 `Processing` 就自動停止，顯示「確認中」+ 手動「重新檢查」按鈕（`retryCheck()`），不會無限輪詢打 API
+  - 成功/失敗畫面都有「查看訂單」（連到 `/member-center/orders`，同仁的會員中心）和「回首頁」連結
+
+**還沒做**：
+- 退款流程（`calculateRefund()`/`submitRefund()` 已經在 `payment.service.ts` 寫好，但畫面完全沒做，應該是會員中心訂單頁面（同仁負責）要加「申請退款」按鈕串過來，這塊要跟同仁協調）
+- 本機測試還卡在 ECPay webhook 打不到 `localhost`（PROGRESS.md 上面提過，等使用者 ngrok 設定好）
 
 ### ⬜ Phase F8：營主後台/錢包 — 未開始
-- `/ownerCenter` 路由存在（`src/app/component/member/owner-center/owner-center.ts`），但目前是空殼，可能同仁有規劃要放會員管理功能，**錢包功能還沒人接**
+- `/ownerCenter` 路由（同仁負責，`component/layouts/owner-center/`）已經有 `owner-profile` 子路由在用，不是純空殼，但**錢包功能還沒人接**
 - `owner-wallet.service.ts` 已寫好（`getWallet()`、`withdraw()`）
 
 ## JWT 認證機制

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CampsiteSelectionItem } from '../interfaces/camp.interface';
 
 // 比後端 CampsiteSelectionItem 多兩個「純前端顯示用」欄位，這兩個欄位永遠不會送進 API
@@ -19,15 +19,34 @@ export interface ZoneSelectionSummary {
   checkOutDate: string | null;
 }
 
+// 跟 sessionStorage 同步的內部結構：選位清單 + 所屬營區 id 一起存，缺一不可
+interface PersistedState {
+  campgroundId: number | null;
+  entries: CampSelectionEntry[];
+}
+
+const STORAGE_KEY = 'campSelection';
+
 // 累積使用者跨多次「直接拖甘特圖」/「進 Zone 詳細頁選位」的選位清單
 // 用 providedIn: 'root'，在 /camp/:id 和 /camp/:id/zone/:zoneId 之間切換路由時不會被銷毀
+//
+// 額外存進 sessionStorage（不只是記憶體）：使用者送出訂單後，瀏覽器會整頁跳轉去綠界付款頁，
+// 這個過程會離開我們的 SPA，純記憶體的 BehaviorSubject 狀態就會被清空。如果付款中途失敗
+// （網路問題/使用者取消/綠界問題），使用者從綠界返回時，選位資料要還在，才能讓 /checkout
+// 重新顯示「你有一筆待付款訂單」，呼叫後端既有的「沿用舊訂單重新出付款表單」機制，
+// 不用乾等 15 分鐘背景排程才能重試。
 @Injectable({ providedIn: 'root' })
 export class CampSelectionService {
-  private selections$ = new BehaviorSubject<CampSelectionEntry[]>([]);
-  readonly selections = this.selections$.asObservable();
-
-  // 記錄目前選位是哪個營區的，換到別的營區時自動清空舊選位，避免殘留
   private currentCampgroundId: number | null = null;
+  private selections$: BehaviorSubject<CampSelectionEntry[]>;
+  readonly selections: Observable<CampSelectionEntry[]>;
+
+  constructor() {
+    const persisted = this.loadFromStorage();
+    this.currentCampgroundId = persisted.campgroundId;
+    this.selections$ = new BehaviorSubject<CampSelectionEntry[]>(persisted.entries);
+    this.selections = this.selections$.asObservable();
+  }
 
   get current(): CampSelectionEntry[] {
     return this.selections$.value;
@@ -44,14 +63,17 @@ export class CampSelectionService {
       this.clear();
     }
     this.currentCampgroundId = campgroundId;
+    this.persist();
   }
 
   add(entry: CampSelectionEntry) {
     this.selections$.next([...this.current, entry]);
+    this.persist();
   }
 
   addMany(entries: CampSelectionEntry[]) {
     this.selections$.next([...this.current, ...entries]);
+    this.persist();
   }
 
   // 用顯示列 id + 日期區間移除一筆（甘特圖點掉已選格子、或摘要清單按刪除時用）
@@ -70,10 +92,12 @@ export class CampSelectionService {
     const next = [...this.current];
     next.splice(index, 1);
     this.selections$.next(next);
+    this.persist();
   }
 
   clear() {
     this.selections$.next([]);
+    this.persist();
   }
 
   // 給 CalendarService.getSummary() / 下訂用：轉成後端真正認得的格式
@@ -103,5 +127,24 @@ export class CampSelectionService {
       checkInDate: sameDate ? items[0].checkInDate : null,
       checkOutDate: sameDate ? items[0].checkOutDate : null,
     };
+  }
+
+  private persist() {
+    const state: PersistedState = {
+      campgroundId: this.currentCampgroundId,
+      entries: this.current,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  private loadFromStorage(): PersistedState {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return { campgroundId: null, entries: [] };
+
+    try {
+      return JSON.parse(raw) as PersistedState;
+    } catch {
+      return { campgroundId: null, entries: [] };
+    }
   }
 }

@@ -11,18 +11,55 @@ import { MemberService } from '../../member/Service/member-service';
 export class MemberCenter {
   name = '';
   profilePhotoUrl = '';
+  imageLoadFailed = false;
+
+  private readonly apiOrigin = 'https://localhost:7011';
+
   constructor(private memberservice: MemberService) {}
+
   ngOnInit(): void {
-    this.name = this.memberservice.getname();
+    this.name = this.memberservice.getname() ?? '會員';
+    this.loadProfilePhoto();
+  }
+
+  loadProfilePhoto() {
     this.memberservice.Usergetphoto().subscribe({
       next: (res) => {
-        console.log(res.url);
-        this.profilePhotoUrl = res.url;
+        this.profilePhotoUrl = this.toAbsoluteImageUrl(res.url);
+        this.imageLoadFailed = !this.profilePhotoUrl;
       },
-      error: (err) => {
-        return console.log(err);
+      error: () => {
+        this.profilePhotoUrl = '';
+        this.imageLoadFailed = true;
       },
     });
+  }
+
+  onAvatarError() {
+    this.imageLoadFailed = true;
+    this.profilePhotoUrl = '';
+  }
+
+  get avatarInitial(): string {
+    return (this.name || 'M').trim().charAt(0).toUpperCase();
+  }
+
+  private toAbsoluteImageUrl(url?: string | null): string {
+    if (!url) return '';
+
+    const trimmedUrl = url.trim();
+
+    if (!trimmedUrl) return '';
+
+    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+      return trimmedUrl;
+    }
+
+    if (trimmedUrl.startsWith('/')) {
+      return this.apiOrigin + trimmedUrl;
+    }
+
+    return this.apiOrigin + '/' + trimmedUrl;
   }
 
   logout() {

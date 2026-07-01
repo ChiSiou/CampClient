@@ -1,0 +1,90 @@
+.payment-result {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  min-height: 50vh;
+}
+
+.payment-result__card {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  padding: 40px 32px;
+  border-radius: 12px;
+  border: 1px solid #ebebeb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-result__icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.payment-result__card h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.payment-result__card p {
+  color: #717171;
+  font-size: 14px;
+  margin: 0;
+}
+
+.payment-result__message {
+  margin-top: 4px;
+}
+
+.payment-result__btn {
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 24px;
+  background: #222;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.payment-result__btn:hover {
+  background: #444;
+}
+
+.payment-result__link {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #717171;
+  text-decoration: underline;
+}
+
+.payment-result__card--success .payment-result__btn {
+  background: #8fae54;
+}
+
+.payment-result__card--success .payment-result__btn:hover {
+  background: #769343;
+}
+
+.payment-result__card--failed,
+.payment-result__card--error {
+  border-color: #fecaca;
+}
+
+.payment-result__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #ebebeb;
+  border-top-color: #8fae54;
+  border-radius: 50%;
+  animation: payment-result-spin 0.8s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes payment-result-spin {
+  to { transform: rotate(360deg); }
+}

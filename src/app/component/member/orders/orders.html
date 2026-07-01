@@ -31,14 +31,8 @@
   <div class="orders-toolbar">
     <label class="count-control">
       顯示筆數
-      <input
-        type="number"
-        min="1"
-        step="1"
-        [(ngModel)]="displayCount"
-        (change)="onDisplayCountChange()"
-        (blur)="onDisplayCountChange()"
-      />
+      <input type="number" min="1" step="1" [(ngModel)]="displayCount" (change)="onDisplayCountChange()"
+        (blur)="onDisplayCountChange()" />
     </label>
 
     <span class="orders-summary">
@@ -84,7 +78,9 @@
 
 
         </div>
-      </div>}
+      </div>
+      <hr>
+      }
 
       <div class="order-bottom">
         <div class="price">
@@ -92,41 +88,56 @@
           <strong>NT{{data.totalAmount}}</strong>
         </div>
 
-        <div class="actions">
-          <button class="btn outline">查看詳情</button>
-          <button class="btn primary">聯絡營主</button>
-        </div>
+        @if (data.status === 0) {
+          <!-- 待付款訂單：可能是付款到一半放棄/瀏覽器當機重開，這裡讓使用者能繼續付款或主動取消 -->
+          <div class="actions">
+            <button
+              class="btn outline"
+              [disabled]="processingOrderId === data.orderId"
+              (click)="cancelOrder(data)"
+            >
+              {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
+            </button>
+            <button
+              class="btn primary"
+              [disabled]="processingOrderId === data.orderId"
+              (click)="resumePayment(data)"
+            >
+              {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
+            </button>
+          </div>
+        } @else {
+          <div class="actions">
+            <button class="btn outline">查看詳情</button>
+            <button class="btn primary">聯絡營主</button>
+          </div>
+        }
       </div>
+
+      @if (pendingActionError && processingOrderId === null) {
+        <p class="order-action-error">{{ pendingActionError }}</p>
+      }
     </div>
+
     }
 
     @if (totalFilteredCount === 0) {
-      <div class="empty-orders">目前沒有符合條件的訂單</div>
+    <div class="empty-orders">目前沒有符合條件的訂單</div>
     }
 
   </div>
 
   @if (totalFilteredCount > 0) {
-    <div class="orders-pagination">
-      <button
-        class="page-btn"
-        type="button"
-        [disabled]="currentPage === 1"
-        (click)="goToPreviousPage()"
-      >
-        上一頁
-      </button>
+  <div class="orders-pagination">
+    <button class="page-btn" type="button" [disabled]="currentPage === 1" (click)="goToPreviousPage()">
+      上一頁
+    </button>
 
-      <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+    <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
 
-      <button
-        class="page-btn"
-        type="button"
-        [disabled]="currentPage === totalPages"
-        (click)="goToNextPage()"
-      >
-        下一頁
-      </button>
-    </div>
+    <button class="page-btn" type="button" [disabled]="currentPage === totalPages" (click)="goToNextPage()">
+      下一頁
+    </button>
+  </div>
   }
 </div>

@@ -1,72 +1,92 @@
 <div class="edit-page">
   <div class="edit-card">
     <div class="edit-header">
-      <h2>編輯個人資料</h2>
-      <p>更新你的會員資料與登入密碼</p>
+      <h2>編輯會員資料</h2>
+      <p>更新你的基本資料；如果不需要修改密碼，密碼欄位可以留空。</p>
     </div>
 
-    <!-- 大頭貼區 -->
-    <!-- <div class="avatar-section">
-      <div class="avatar-preview">
-        <img *ngIf="previewUrl || profilePhotoUrl" [src]="previewUrl || profilePhotoUrl" alt="會員頭像" />
-
-        <div *ngIf="!previewUrl && !profilePhotoUrl" class="avatar-placeholder">
-          <span>無圖片</span>
-        </div>
+    @if (message) {
+      <div class="form-message" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+        {{ message }}
       </div>
+    }
 
-      <label class="upload-btn"> -->
-    <!-- 更換大頭貼 -->
-    <!-- <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
-      </label>
-    </div> -->
-
-    <!-- 編輯表單 -->
     <form class="edit-form" (ngSubmit)="submitEdit()">
       <div class="form-group">
-        <label>姓名</label>
-        <input type="text" name="name" [(ngModel)]="memberData.Name" placeholder="請輸入姓名" />
+        <label for="member-name">姓名</label>
+        <input
+          id="member-name"
+          type="text"
+          name="name"
+          [(ngModel)]="memberData.name"
+          placeholder="請輸入姓名"
+          autocomplete="name"
+        />
       </div>
 
       <div class="form-group">
-        <label>電話</label>
-        <input type="text" name="phone" [(ngModel)]="memberData.Phone" placeholder="請輸入電話" />
+        <label for="member-phone">電話</label>
+        <input
+          id="member-phone"
+          type="text"
+          name="phone"
+          [(ngModel)]="memberData.phone"
+          placeholder="請輸入電話"
+          autocomplete="tel"
+        />
       </div>
 
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" [(ngModel)]="memberData.Email" disabled />
-        <small>Email 不可修改</small>
+        <label for="member-email">Email</label>
+        <input id="member-email" type="email" name="email" [(ngModel)]="memberData.email" disabled />
+        <small>Email 目前不可修改</small>
       </div>
 
       <div class="password-box">
         <h3>修改密碼</h3>
-        <p>如果不修改密碼，可以留空</p>
+        <p>若不想修改密碼，請將以下欄位留空。</p>
 
         <div class="form-group">
-          <label>舊密碼</label>
-          <input type="password" name="oldPassword" [(ngModel)]="memberData.oldPassword" placeholder="請輸入舊密碼" />
+          <label for="old-password">目前密碼</label>
+          <input
+            id="old-password"
+            type="password"
+            name="oldPassword"
+            [(ngModel)]="memberData.oldPassword"
+            placeholder="請輸入目前密碼"
+            autocomplete="current-password"
+          />
         </div>
 
         <div class="form-group">
-          <label>新密碼</label>
-          <input type="password" name="newPassword" [(ngModel)]="memberData.newPassword" placeholder="請輸入新密碼" />
+          <label for="new-password">新密碼</label>
+          <input
+            id="new-password"
+            type="password"
+            name="newPassword"
+            [(ngModel)]="memberData.newPassword"
+            placeholder="請輸入新密碼"
+            autocomplete="new-password"
+          />
         </div>
 
         <div class="form-group">
-          <label>確認新密碼</label>
-          <input type="password" name="confirmPassword" [(ngModel)]="memberData.confirmPassword"
-            placeholder="再次輸入新密碼" />
+          <label for="confirm-password">確認新密碼</label>
+          <input
+            id="confirm-password"
+            type="password"
+            name="confirmPassword"
+            [(ngModel)]="memberData.confirmPassword"
+            placeholder="請再次輸入新密碼"
+            autocomplete="new-password"
+          />
         </div>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="cancel-btn" routerLink="/member-center">
-          取消
-        </button>
-
-        <button type="submit" class="save-btn">
-          儲存修改
+        <button type="button" class="cancel-btn" routerLink="/member-center">取消</button>
+        <button type="submit" class="save-btn" [disabled]="submitting">
+          {{ submitting ? '儲存中...' : '儲存修改' }}
         </button>
       </div>
     </form>

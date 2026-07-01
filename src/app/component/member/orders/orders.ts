@@ -4,6 +4,7 @@ import { MemberService } from '../Service/member-service';
 import { OrderList } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CheckoutService } from '../../../services/checkout.service';
 
 @Component({
   selector: 'orders',
@@ -12,10 +13,18 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './orders.css',
 })
 export class Orders {
-  constructor(private memberservice: MemberService) {}
+  constructor(
+    private memberservice: MemberService,
+    private checkoutService: CheckoutService,
+  ) {}
   orders: OrderList[] = [];
   displayCount = 5;
   currentPage = 1;
+
+  // 「繼續付款」「取消訂單」按鈕的處理中狀態，用 orderId 當 key，避免一個訂單按下去
+  // 連帶把清單裡其他訂單的按鈕也鎖住
+  processingOrderId: number | null = null;
+  pendingActionError = '';
 
   ngOnInit() {
     this.memberservice.getorder().subscribe({
@@ -119,5 +128,44 @@ export class Orders {
   }
   getOrderStatusText(status: number): string {
     return this.orderStatusMap[status] ?? '未知狀態';
+  }
+
+  // 待付款訂單「繼續付款」：重新組一份付款表單，跳轉回綠界
+  // 使用場景：使用者付款到一半關掉綠界分頁/瀏覽器當機重開，從這個「我的訂單」頁面找回來繼續付
+  resumePayment(order: OrderList) {
+    this.processingOrderId = order.orderId;
+    this.pendingActionError = '';
+
+    this.checkoutService.resumePayment(order.orderId).subscribe({
+      next: result => {
+        const redirected = this.checkoutService.redirectToPayment(result);
+        if (!redirected) {
+          this.processingOrderId = null;
+          this.pendingActionError = '導向付款頁面失敗，請稍後再試。';
+        }
+        // 成功的話瀏覽器會直接跳轉走，不用復原 processingOrderId
+      },
+      error: () => {
+        this.processingOrderId = null;
+        this.pendingActionError = '無法繼續付款，這筆訂單可能已經失效，請重新整理頁面。';
+      },
+    });
+  }
+
+  // 待付款訂單「取消訂單」：立刻釋放鎖定的營位，不用等 15 分鐘背景排程
+  cancelOrder(order: OrderList) {
+    this.processingOrderId = order.orderId;
+    this.pendingActionError = '';
+
+    this.checkoutService.cancelPending().subscribe({
+      next: () => {
+        this.processingOrderId = null;
+        order.status = 2; // 直接更新畫面上的狀態，不用整頁重新打 API 才看到變化
+      },
+      error: () => {
+        this.processingOrderId = null;
+        this.pendingActionError = '取消失敗，請稍後再試。';
+      },
+    });
   }
 }

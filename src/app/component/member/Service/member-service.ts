@@ -192,8 +192,7 @@ getProfile() {
     return this.http.get<profilePhotoResponse>(`${this.apiUrl}/OwnerGetProfilePhoto/${id}`)
   }
   memberEdit(data: FormData) {
-    const token = localStorage.getItem('token');
-    return this.http.post<string>(`${this.apiUrl}/MemberEdit`, data);
+    return this.http.put<{ message: string }>(`${this.apiUrl}/MemberEdit`, data);
   }
   verifyEmail(data: { userId: number; token: string }) {
     return this.http.post<any>(`${this.apiUrl}/VerifyEmail`, data)

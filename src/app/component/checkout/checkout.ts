@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import {
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
-export class Checkout implements OnInit {
+export class Checkout implements OnInit, OnDestroy {
   loading = true;
   // 完全沒有選位資料時顯示的狀態（例如直接打開網址、或重新整理後選位被清空）
   noSelection = false;
@@ -37,6 +37,21 @@ export class Checkout implements OnInit {
   submitError = '';
   unavailableItems: string[] = [];
 
+  cancelling = false;
+  // 「找不到選位資料」畫面按「檢查並釋放卡住的訂單」後的結果訊息
+  pendingCheckMessage = '';
+
+  // 使用者在綠界頁面按瀏覽器「上一頁」回到這頁時，有些瀏覽器（尤其 Chrome）不會重新整理，
+  // 而是用 bfcache 把「離開前那一刻凍結的畫面」直接還原回來——包含當時 submitting=true 的狀態，
+  // 畫面會卡在「處理中」，誤導使用者以為頁面壞了。用 pageshow 事件偵測這個情況，強制重置。
+  private onPageShow = (event: PageTransitionEvent) => {
+    if (event.persisted) {
+      this.submitting = false;
+      this.submitError = '';
+      this.loadData();
+    }
+  };
+
   constructor(
     private checkoutService: CheckoutService,
     private campSelectionService: CampSelectionService,
@@ -44,6 +59,15 @@ export class Checkout implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadData();
+    window.addEventListener('pageshow', this.onPageShow);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('pageshow', this.onPageShow);
+  }
+
+  private loadData() {
     const campgroundId = this.campSelectionService.campgroundId;
     const selectedCampsites = this.campSelectionService.toRequestItems();
 
@@ -53,6 +77,8 @@ export class Checkout implements OnInit {
       return;
     }
 
+    this.noSelection = false;
+    this.loading = true;
     this.loadEquipmentFromStorage();
 
     this.checkoutService.getSummary({ campgroundId, selectedCampsites }).subscribe({
@@ -128,17 +154,15 @@ export class Checkout implements OnInit {
           return;
         }
 
-        // 先確認真的能跳轉到綠界才清空選位/購物車——不然像綠界設定值缺漏這種情況，
-        // 會先清空選位卻沒辦法跳轉付款，使用者連重新送出的資料都沒了
+        // 注意：這裡不能清空 CampSelectionService！跳轉去綠界之後付款可能失敗/被取消/
+        // 使用者按上一頁離開，選位資料要留著，使用者回來才能重試或主動取消，
+        // 不然會跟「結帳失敗能重試」的設計互相打架。真正確定付款結果（成功或失敗）
+        // 是在 payment-result 頁面，要清空也是那邊清空，這裡只負責跳轉。
         const redirected = this.checkoutService.redirectToPayment(result);
         if (!redirected) {
           this.submitting = false;
           this.submitError = '訂單已建立，但導向付款頁面失敗，請稍後再試或聯絡客服。';
-          return;
         }
-
-        this.campSelectionService.clear();
-        sessionStorage.removeItem(EquipmentCartService.STORAGE_KEY);
       },
       // 後端對「部分營位無法訂購」「已有待付款訂單」這類業務邏輯失敗回的是 409，
       // HttpClient 會把非 2xx 都當錯誤丟進這裡，真正的訊息要從 err.error 裡讀出來，
@@ -147,6 +171,40 @@ export class Checkout implements OnInit {
         this.submitting = false;
         this.unavailableItems = err.error?.unavailableItems ?? [];
         this.submitError = err.error?.message || '送出訂單失敗，請稍後再試。';
+      },
+    });
+  }
+
+  // 使用者放棄這次結帳：主動釋放後端鎖定的營位，不用乾等 15 分鐘背景排程。
+  // 這個方法也被「找不到選位資料」畫面的「檢查並釋放卡住的訂單」按鈕共用——
+  // 那個情境下選位資料本來就不見了（例如電腦當機重開），取消 API 只需要登入身分就能查，
+  // 不需要選位資料，所以同一個方法可以共用，只是那邊要留在原地顯示結果訊息，不直接跳轉。
+  cancelAndLeave() {
+    this.cancelling = true;
+    this.pendingCheckMessage = '';
+
+    this.checkoutService.cancelPending().subscribe({
+      next: res => {
+        this.cancelling = false;
+        this.campSelectionService.clear();
+        sessionStorage.removeItem(EquipmentCartService.STORAGE_KEY);
+
+        if (this.noSelection) {
+          this.pendingCheckMessage = res.cancelled
+            ? '已釋放一筆卡住的訂單，營位已重新開放。'
+            : '沒有找到待付款的訂單，目前沒有東西需要釋放。';
+          return;
+        }
+
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        this.cancelling = false;
+        if (this.noSelection) {
+          this.pendingCheckMessage = '檢查失敗，請稍後再試。';
+        } else {
+          this.submitError = '取消失敗，請稍後再試。';
+        }
       },
     });
   }

@@ -28,22 +28,30 @@
 
       <!-- right side -->
       <div class="header-actions">
-        <!-- login icon -->
-        <!-- <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員" -->
-
         <div class="user-info">
-          <span class="user-info__name">{{ username ??'Guest' }}</span>
-          (<span class="user-info__role">{{ activeUserRole ??'Guest' }}</span>)
+          <span class="user-info__name">{{ username ?? 'Guest' }}</span>
+          (<span class="user-info__role">{{ activeUserRole ?? 'Guest' }}</span>)
         </div>
+
 
 
         <!-- login icon -->
         <a pButton icon="pi pi-user" [rounded]="true" [outlined]="true" severity="secondary" aria-label="會員"
-          (click)="Center()"></a> <!-- (click)="islogin('member-center')"></a> -->
-
+          (click)="Center()"></a>
+        <!-- notification bell -->
+        <span class="notification-wrap">
+          <button pButton type="button" icon="pi pi-bell" [rounded]="true" [outlined]="true" severity="secondary"
+            aria-label="通知" class="notification-btn" (click)="goNotification()"></button>
+          @if (unreadCount > 0) {
+          <span class="notification-badge">
+            {{ unreadCount > 99 ? '99+' : unreadCount }}
+          </span>
+          }
+        </span>
         <!-- hamburger menu -->
         <button pButton type="button" icon="pi pi-bars" [rounded]="true" [outlined]="true" severity="secondary"
           aria-label="開啟選單" (click)="toggleMenu($event)"></button>
+
         <p-menu #menu [model]="menuItems" [popup]="true" [appendTo]="'body'" />
       </div>
     </div>
