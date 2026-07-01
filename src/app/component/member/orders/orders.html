@@ -76,7 +76,9 @@
             <strong>{{detail.accomType}}</strong>
           </div>
 
-
+          @if (data.status === 4) {
+            <app-popup [campId]="detail.campId" [orderId]="data.orderId" />
+          }
         </div>
       </div>
       <hr>
@@ -109,7 +111,11 @@
         } @else {
           <div class="actions">
             <button class="btn outline">查看詳情</button>
-            <button class="btn primary">聯絡營主</button>
+            @if (data.details[0]?.ownerId) {
+              <button class="btn primary" (click)="contactOwner(data.details[0])">聯絡營主</button>
+            } @else {
+              <button class="btn primary" disabled>聯絡營主</button>
+            }
           </div>
         }
       </div>

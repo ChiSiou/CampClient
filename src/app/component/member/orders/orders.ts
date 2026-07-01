@@ -1,14 +1,16 @@
 import { Message } from 'primeng/message';
 import { Component } from '@angular/core';
 import { MemberService } from '../Service/member-service';
-import { OrderList } from '../interface/orderList';
+import { OrderList, OrderDetail } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CheckoutService } from '../../../services/checkout.service';
+import { ChatService } from '../../../services/chat.service';
+import { Popup } from '../../reviews/popup/popup';
 
 @Component({
   selector: 'orders',
-  imports: [DatePipe, NgClass, FormsModule],
+  imports: [DatePipe, NgClass, FormsModule, Popup],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
@@ -16,7 +18,14 @@ export class Orders {
   constructor(
     private memberservice: MemberService,
     private checkoutService: CheckoutService,
+    private chatService: ChatService,
   ) {}
+
+  contactOwner(detail: OrderDetail) {
+    if (detail.ownerId && detail.ownerName) {
+      this.chatService.openChatWith(detail.ownerId, detail.ownerName);
+    }
+  }
   orders: OrderList[] = [];
   displayCount = 5;
   currentPage = 1;
