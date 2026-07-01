@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
@@ -14,16 +14,25 @@ L.Icon.Default.mergeOptions({
 });
 
 @Component({
-  selector: 'app-camp-add',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './camp-add.html',
-  styleUrl: './camp-add.css',
+  selector: 'app-camp-edit',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './camp-edit.html',
+  styleUrl: './camp-edit.css',
 })
-export class CampAdd implements AfterViewInit, OnDestroy {
+export class CampEdit implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private map?: L.Map;
   private marker?: L.Marker;
+
+  campgroundId!: number;
+  campgroundName = '';
+  campgroundStatus = 0;
+  loading = true;
+  submitting = false;
+  locating = false;
+  error = '';
+  highlightInput = '';
 
   form: CampgroundCreateDto = {
     name: '',
@@ -40,25 +49,23 @@ export class CampAdd implements AfterViewInit, OnDestroy {
     facilityIds: [],
     tagIds: [],
   };
-  highlightInput = '';
-  submitting = false;
-  locating = false;
-  error = '';
 
-  constructor(private campService: CampManagementService, private router: Router) {}
-
-  addHighlight() {
-    const text = this.highlightInput.trim();
-    if (!text || this.form.highlights.length >= 3) return;
-    this.form.highlights.push(text);
-    this.highlightInput = '';
-  }
-
-  removeHighlight(i: number) {
-    this.form.highlights.splice(i, 1);
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private campService: CampManagementService
+  ) {}
 
   ngAfterViewInit() {
+    this.campgroundId = +this.route.snapshot.paramMap.get('id')!;
+    this.loadCampground();
+  }
+
+  ngOnDestroy() {
+    this.map?.remove();
+  }
+
+  private initMap() {
     this.map = L.map(this.mapContainer.nativeElement).setView([23.5, 121.0], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -68,8 +75,40 @@ export class CampAdd implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.map?.remove();
+  private loadCampground() {
+    this.campService.getCampground(this.campgroundId).subscribe({
+      next: (data) => {
+        this.campgroundName = data.name;
+        this.campgroundStatus = data.status;
+        this.form = {
+          name: data.name,
+          phone: data.phone,
+          elevation: data.elevation,
+          description: data.description,
+          website: data.website,
+          basePrice: data.basePrice,
+          area: data.area,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          rules: data.rules,
+          highlights: [...data.highlights],
+          facilityIds: [...data.facilityIds],
+          tagIds: [...data.tagIds],
+        };
+        this.loading = false;
+        setTimeout(() => {
+          this.initMap();
+          if (data.latitude && data.longitude) {
+            this.map?.setView([data.latitude, data.longitude], 13);
+            this.setLocation(data.latitude, data.longitude);
+          }
+        }, 0);
+      },
+      error: () => {
+        this.error = '載入失敗，請重新整理';
+        this.loading = false;
+      },
+    });
   }
 
   private setLocation(lat: number, lng: number) {
@@ -105,6 +144,17 @@ export class CampAdd implements AfterViewInit, OnDestroy {
     }
   }
 
+  addHighlight() {
+    const text = this.highlightInput.trim();
+    if (!text || this.form.highlights.length >= 3) return;
+    this.form.highlights.push(text);
+    this.highlightInput = '';
+  }
+
+  removeHighlight(i: number) {
+    this.form.highlights.splice(i, 1);
+  }
+
   submit() {
     if (!this.form.name.trim() || !this.form.area.trim()) {
       this.error = '請填寫必填欄位（名稱、地區）';
@@ -119,10 +169,10 @@ export class CampAdd implements AfterViewInit, OnDestroy {
       elevation: +this.form.elevation || 0,
       basePrice: +this.form.basePrice || 0,
     };
-    this.campService.createCampground(dto).subscribe({
-      next: (res) => this.router.navigate(['/ownerCenter/camps', res.id]),
+    this.campService.updateCampground(this.campgroundId, dto).subscribe({
+      next: () => this.router.navigate(['/ownerCenter/camps']),
       error: (err) => {
-        this.error = err.error?.message ?? '建立失敗，請稍後再試';
+        this.error = err.error?.message ?? '儲存失敗，請稍後再試';
         this.submitting = false;
       },
     });

@@ -1,11 +1,36 @@
-.camp-add-page {
+.camp-edit-page {
   padding: 24px;
   max-width: 600px;
 }
 
-.camp-add-page h2 {
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0 0 2px 0;
   font-size: 1.4rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.btn-back {
+  color: #4a7c59;
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.loading {
+  color: #888;
+  padding: 40px 0;
+  text-align: center;
 }
 
 .form-group {
@@ -48,40 +73,41 @@
   flex: 1;
 }
 
-.error-msg {
-  color: #c0392b;
-  font-size: 0.88rem;
-  margin-bottom: 12px;
-}
-
-.form-actions {
+.area-row {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 8px;
 }
 
-.btn-cancel {
-  padding: 9px 20px;
-  border: 1px solid #ccc;
-  background: #fff;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
+.area-row input {
+  flex: 1;
 }
 
-.btn-submit {
-  padding: 9px 20px;
+.btn-locate {
+  padding: 8px 14px;
   background: #4a7c59;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
   font-size: 0.9rem;
 }
 
-.btn-submit:disabled {
+.btn-locate:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.map-container {
+  height: 320px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 6px;
+}
+
+.latlng-display {
+  font-size: 0.85rem;
+  color: #555;
 }
 
 .highlight-input-row {
@@ -136,39 +162,38 @@
   padding: 0;
 }
 
-.area-row {
+.error-msg {
+  color: #c0392b;
+  font-size: 0.88rem;
+  margin-bottom: 12px;
+}
+
+.form-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.area-row input {
-  flex: 1;
+.btn-cancel {
+  padding: 9px 20px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
 }
 
-.btn-locate {
-  padding: 8px 14px;
+.btn-submit {
+  padding: 9px 20px;
   background: #4a7c59;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
   font-size: 0.9rem;
 }
 
-.btn-locate:disabled {
+.btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.map-container {
-  height: 320px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 6px;
-}
-
-.latlng-display {
-  font-size: 0.85rem;
-  color: #555;
 }

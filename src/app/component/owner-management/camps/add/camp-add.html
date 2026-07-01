@@ -19,9 +19,23 @@
     </div>
 
     <div class="form-group">
-      <label>特色亮點</label>
-      <textarea [(ngModel)]="form.highlights" name="highlights" rows="3"
-        placeholder="營地的特色亮點..."></textarea>
+      <label>特色亮點（最多 3 個）</label>
+      <div class="highlight-input-row">
+        <input type="text" [(ngModel)]="highlightInput" name="highlightInput"
+          placeholder="輸入一個亮點，按＋加入..."
+          [disabled]="form.highlights.length >= 3" />
+        <button type="button" class="btn-highlight-add"
+          (click)="addHighlight()"
+          [disabled]="!highlightInput.trim() || form.highlights.length >= 3">＋</button>
+      </div>
+      <div class="highlight-tags">
+        @for (h of form.highlights; track $index) {
+          <span class="highlight-tag">
+            {{ h }}
+            <button type="button" (click)="removeHighlight($index)">×</button>
+          </span>
+        }
+      </div>
     </div>
 
     <div class="form-group">
