@@ -107,6 +107,7 @@
             (click)="toggleLike()" title="收藏">
             <span class="heart-burst" *ngIf="likeBurst" (animationend)="onHeartAnimationEnd()"></span>
             <i class="pi" [ngClass]="isLiked ? 'pi-heart-fill' : 'pi-heart'"></i>
+            <span class="like-count" *ngIf="likeCount > 0">{{ likeCount }}</span>
           </button>
 
           <p-button (click)="op.toggle($event); copyPostRoute(); markShared()" icon="pi pi-share-alt" [outlined]="true"

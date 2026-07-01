@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Sforum } from '../service/sforum';
+import { SPostInteract } from '../service/sPostInteract';
 import { IForum } from '../interfaces/Iforum';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -15,10 +16,11 @@ export class Forum implements OnInit {
   posts: IForum[] = [];
   filteredPosts: IForum[] = [];
   selectedCategory: string | null = null;
+  likeCountMap: Record<number, number> = {};
 
   categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區'];
 
-  constructor(private sforumService: Sforum, private router: Router) { }
+  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private router: Router) { }
 
   ngOnInit(): void {
     this.sforumService.getPosts().subscribe({
@@ -27,6 +29,19 @@ export class Forum implements OnInit {
         this.filteredPosts = data;
       },
       error: (err) => console.error('載入文章失敗', err),
+    });
+
+    this.sPostInteractService.getPostInteracts(undefined, undefined, 1, 1000).subscribe({
+      next: (interacts) => {
+        const map: Record<number, number> = {};
+        for (const item of interacts) {
+          if (item.likePostId != null) {
+            map[item.likePostId] = (map[item.likePostId] ?? 0) + 1;
+          }
+        }
+        this.likeCountMap = map;
+      },
+      error: (err) => console.error('載入互動資料失敗', err),
     });
   }
 
