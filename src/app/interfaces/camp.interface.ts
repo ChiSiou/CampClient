@@ -270,6 +270,10 @@ export interface ZoneOrderItem {
 export interface CampSelectionRequestDto {
   campgroundId: number;
   selectedCampsites: CampsiteSelectionItem[];
+  // 結帳摘要頁一併帶上加購裝備 + 運送方式，讓後端把裝備租金 + 運費算進 grandTotal（單一金額來源）。
+  // 甘特圖選位那邊不帶這兩個欄位（optional）。
+  selectedEquipments?: EquipmentSelectionItem[];
+  shippingMethodId?: number | null;
 }
 
 export interface CampsiteSelectionItem {
@@ -306,6 +310,8 @@ export interface CheckoutSummaryDto {
   campSubTotal: number;
   equipments: EquipmentBreakdownItem[];
   equipmentSubTotal: number;
+  // 運費（後端算好，grandTotal 已含）。沒有加購裝備時為 0。
+  shippingFee: number;
   appliedPromotionId: number | null;
   promotionName: string | null;
   discountAmount: number;
