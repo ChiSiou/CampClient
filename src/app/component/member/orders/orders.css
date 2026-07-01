@@ -215,6 +215,11 @@
   color: #c83a3a;
 }
 
+.status.refunded {
+  background: #efe7fb;
+  color: #7c4dcc;
+}
+
 .order-content {
   display: flex;
   gap: 20px;

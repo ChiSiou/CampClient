@@ -88,3 +88,87 @@
 @keyframes payment-result-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ===== 訂單收據（付款結果頁） ===== */
+.payment-result__receipt {
+  text-align: left;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.payment-result__receipt-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #222;
+}
+
+.payment-result__receipt-subtitle {
+  margin: 14px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #717171;
+}
+
+.payment-result__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-result__line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.payment-result__line-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.payment-result__line-meta {
+  color: #717171;
+  font-size: 12px;
+}
+
+.payment-result__line-price {
+  align-self: flex-end;
+  color: #374151;
+  font-weight: 600;
+}
+
+.payment-result__totals {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #ebebeb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-result__totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #374151;
+}
+
+.payment-result__totals-row--discount {
+  color: #647e30;
+}
+
+.payment-result__totals-row--grand {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #ebebeb;
+}

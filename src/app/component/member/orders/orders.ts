@@ -111,6 +111,8 @@ export class Orders {
     1: '已付款',
     2: '已取消',
     3: '申訴中',
+    4: '已完成',
+    5: '已退款',
   };
   getOrderStatusClass(status: number): string {
     switch (status) {
@@ -122,6 +124,10 @@ export class Orders {
         return 'cancelled';
       case 3:
         return 'appeal';
+      case 4:
+        return 'completed';
+      case 5:
+        return 'refunded';
       default:
         return 'unknown';
     }

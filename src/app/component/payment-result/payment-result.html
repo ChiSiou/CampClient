@@ -28,6 +28,11 @@
       @if (status.message) {
         <p class="payment-result__message">{{ status.message }}</p>
       }
+
+      @if (receipt) {
+        <ng-container [ngTemplateOutlet]="receiptTpl"></ng-container>
+      }
+
       <a routerLink="/member-center/orders" class="payment-result__btn">查看訂單</a>
       <a routerLink="/" class="payment-result__link">回首頁</a>
     </div>
@@ -39,9 +44,75 @@
       @if (status.message) {
         <p class="payment-result__message">{{ status.message }}</p>
       }
+
+      @if (receipt) {
+        <ng-container [ngTemplateOutlet]="receiptTpl"></ng-container>
+      }
+
       <a routerLink="/member-center/orders" class="payment-result__btn">查看訂單</a>
       <a routerLink="/" class="payment-result__link">回首頁</a>
     </div>
   }
 
 </div>
+
+<!-- 訂單收據：訂了什麼 + 金額明細（成功/失敗畫面共用） -->
+<ng-template #receiptTpl>
+  @if (receipt) {
+    <div class="payment-result__receipt">
+      <h3 class="payment-result__receipt-title">{{ receipt.campgroundName }}</h3>
+
+      <ul class="payment-result__lines">
+        @for (item of receipt.campsites; track $index) {
+          <li class="payment-result__line">
+            <div class="payment-result__line-name">
+              {{ item.zoneName }}{{ item.siteName ? '（' + item.siteName + '）' : '' }}
+            </div>
+            <div class="payment-result__line-meta">
+              {{ item.checkInDate }} ~ {{ item.checkOutDate }}（{{ item.nights }} 晚）
+            </div>
+            <div class="payment-result__line-price">NT$ {{ item.subTotal | number }}</div>
+          </li>
+        }
+      </ul>
+
+      @if (receipt.equipments.length) {
+        <h4 class="payment-result__receipt-subtitle">租用裝備</h4>
+        <ul class="payment-result__lines">
+          @for (item of receipt.equipments; track $index) {
+            <li class="payment-result__line">
+              <div class="payment-result__line-name">
+                {{ item.productName }}{{ item.variantName ? '（' + item.variantName + '）' : '' }} × {{ item.quantity }}
+              </div>
+              <div class="payment-result__line-price">NT$ {{ item.subTotal | number }}</div>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="payment-result__totals">
+        <div class="payment-result__totals-row">
+          <span>營位小計</span><span>NT$ {{ receipt.campSubTotal | number }}</span>
+        </div>
+        @if (receipt.equipmentSubTotal > 0) {
+          <div class="payment-result__totals-row">
+            <span>裝備小計</span><span>NT$ {{ receipt.equipmentSubTotal | number }}</span>
+          </div>
+        }
+        @if (receipt.shippingFee > 0) {
+          <div class="payment-result__totals-row">
+            <span>運費</span><span>NT$ {{ receipt.shippingFee | number }}</span>
+          </div>
+        }
+        @if (receipt.discountAmount > 0) {
+          <div class="payment-result__totals-row payment-result__totals-row--discount">
+            <span>折扣</span><span>-NT$ {{ receipt.discountAmount | number }}</span>
+          </div>
+        }
+        <div class="payment-result__totals-row payment-result__totals-row--grand">
+          <span>總金額</span><span>NT$ {{ receipt.grandTotal | number }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</ng-template>

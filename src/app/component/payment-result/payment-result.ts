@@ -1,22 +1,25 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PaymentService } from '../../services/payment.service';
 import { CampSelectionService } from '../../services/camp-selection.service';
 import { EquipmentCartService } from '../../services/equipment-cart.service';
-import { PaymentStatusDto } from '../../interfaces/camp.interface';
+import { PaymentStatusDto, OrderReceiptDto } from '../../interfaces/camp.interface';
 
 const POLL_INTERVAL_MS = 3000;
 const POLL_TIMEOUT_MS = 30000;
 
 @Component({
   selector: 'app-payment-result',
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe, NgTemplateOutlet],
   templateUrl: './payment-result.html',
   styleUrl: './payment-result.css',
 })
 export class PaymentResult implements OnInit, OnDestroy {
   orderNumber = '';
   status: PaymentStatusDto | null = null;
+  // 訂單收據（訂了什麼 + 金額），拿到確定結果後抓一次
+  receipt: OrderReceiptDto | null = null;
   // 找不到 orderNumber（例如直接打開這個網址）或輪詢逾時都算錯誤狀態，但訊息不同
   errorMessage = '';
   timedOut = false;
@@ -79,12 +82,21 @@ export class PaymentResult implements OnInit, OnDestroy {
           // 還能回去重試或主動取消，要等到這裡有確定結果才是清空的時機點
           this.campSelectionService.clear();
           sessionStorage.removeItem(EquipmentCartService.STORAGE_KEY);
+          // 有確定結果後抓一次收據（訂了什麼 + 金額），讓結果頁不只有訂單編號
+          this.loadReceipt();
         }
       },
       error: () => {
         this.stopPolling();
         this.errorMessage = '查詢付款狀態失敗，請稍後再試。';
       },
+    });
+  }
+
+  private loadReceipt() {
+    this.paymentService.getReceipt(this.orderNumber).subscribe({
+      next: res => (this.receipt = res),
+      error: () => (this.receipt = null), // 收據抓不到不影響付款結果本身的顯示
     });
   }
 }

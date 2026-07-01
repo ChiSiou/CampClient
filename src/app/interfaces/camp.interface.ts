@@ -442,6 +442,37 @@ export interface PaymentStatusDto {
   message: string | null;
 }
 
+// 付款結果頁的訂單收據（訂了什麼 + 金額明細，不含個資）
+export interface OrderReceiptDto {
+  orderNumber: string;
+  campgroundName: string;
+  status: number; // 0:待付款 1:已付款 2:已取消
+  paidTime: string | null;
+  campsites: CampsiteReceiptItem[];
+  equipments: EquipmentReceiptItem[];
+  campSubTotal: number;
+  equipmentSubTotal: number;
+  shippingFee: number;
+  discountAmount: number;
+  grandTotal: number;
+}
+
+export interface CampsiteReceiptItem {
+  zoneName: string;
+  siteName: string;
+  checkInDate: string | null;
+  checkOutDate: string | null;
+  nights: number;
+  subTotal: number;
+}
+
+export interface EquipmentReceiptItem {
+  productName: string;
+  variantName: string | null;
+  quantity: number;
+  subTotal: number;
+}
+
 export interface RefundRequestDto {
   orderId: number;
   orderDetailIds: number[];
