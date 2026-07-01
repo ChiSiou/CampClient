@@ -27,7 +27,24 @@ export class CampCard {
     private http: HttpClient,
     private memberService: MemberService,
     private router: Router,
-  ) {}
+  ) { }
+
+  ngOnInit(): void {
+    if (!this.memberService.isAuthenticated()) return;
+
+    this.likeLoading = true;
+    this.http
+      .get<{ isLiked: boolean }>(`${this.campLikeUrl}/${this.camp.id}/status`)
+      .subscribe({
+        next: (res) => {
+          this.camp.isLiked = res.isLiked;
+          this.likeLoading = false;
+        },
+        error: () => {
+          this.likeLoading = false;
+        },
+      });
+  }
 
   get displayRating(): number {
     return Math.round(this.camp.averageRating);
@@ -71,7 +88,7 @@ export class CampCard {
         this.likeLoading = false;
       },
       error: () => {
-        this.camp.isLiked = wasLiked; // 失敗時還原
+        this.camp.isLiked = !wasLiked; // 失敗時還原
         this.likeLoading = false;
       },
     });
