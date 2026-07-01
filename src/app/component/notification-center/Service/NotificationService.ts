@@ -41,6 +41,17 @@ export class NotificationService {
       .pipe(switchMap(() => this.refreshUnreadCount()));
   }
 
+  createNotification(payload: {
+    userId: number;
+    recipientRole: string;
+    title: string;
+    message: string;
+    type?: string;
+    linkUrl?: string;
+  }): Observable<any> {
+    return this.http.post(this.apiUrl, payload);
+  }
+
   markAllAsRead(): Observable<any> {
     return this.getNotifications().pipe(
       switchMap((items) => {

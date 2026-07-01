@@ -1,4 +1,5 @@
 import { MemberService } from './../../member/Service/member-service';
+import { NotificationService } from '../../notification-center/Service/NotificationService';
 import { Sforum } from './../service/sforum';
 import { SPostInteract } from './../service/sPostInteract';
 import { Component, inject, OnInit } from '@angular/core';
@@ -93,7 +94,7 @@ export class Post implements OnInit {
     valid: false,
   };
 
-  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private route: ActivatedRoute, private router: Router, private primeng: PrimeNG, private sMember: MemberService) {
+  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private route: ActivatedRoute, private router: Router, private primeng: PrimeNG, private sMember: MemberService, private notificationService: NotificationService) {
     this.primeng.setTranslation({ pending: '等待上傳' });
   }
 
@@ -152,7 +153,10 @@ export class Post implements OnInit {
         likePostId: nextLiked ? this.postId : null,
       };
       this.sPostInteractService.postPostInteract(param).subscribe({
-        next: (created) => this.myInteract = created,
+        next: (created) => {
+          this.myInteract = created;
+          if (nextLiked) this.sendLikeNotification();
+        },
         error: (err) => {
           console.error('按愛心失敗', err);
           this.revertLike(nextLiked);
@@ -164,13 +168,29 @@ export class Post implements OnInit {
         likePostId: nextLiked ? this.postId : null,
       };
       this.sPostInteractService.putPostInteract(this.myInteract.postInteractId!, param).subscribe({
-        next: () => this.myInteract = param,
+        next: () => {
+          this.myInteract = param;
+          if (nextLiked) this.sendLikeNotification();
+        },
         error: (err) => {
           console.error('按愛心失敗', err);
           this.revertLike(nextLiked);
         },
       });
     }
+  }
+
+  private sendLikeNotification() {
+    const authorId = this.post?.userId;
+    if (!authorId || authorId === this.nowUserId) return;
+    this.notificationService.createNotification({
+      userId: authorId,
+      recipientRole: 'User',
+      title: '有人對你的貼文按讚',
+      message: `有人對《${this.post?.title}》按了愛心`,
+      type: 'forum',
+      linkUrl: `/forum/post/${this.postId}`,
+    }).subscribe();
   }
 
   private revertLike(attempted: boolean) {
@@ -385,6 +405,18 @@ export class Post implements OnInit {
         this.selectedFiles = [];
         this.uploadedImageUrls = [];
         this.new_isHaveImgs = false;
+
+        const authorId = this.post?.userId;
+        if (authorId && authorId !== this.nowUserId) {
+          this.notificationService.createNotification({
+            userId: authorId,
+            recipientRole: 'User',
+            title: '有人回覆了你的貼文',
+            message: `有人在《${this.post?.title}》留下了回覆`,
+            type: 'forum',
+            linkUrl: `/forum/post/${this.postId}`,
+          }).subscribe();
+        }
 
         this.messageService.add({
           severity: 'success',
