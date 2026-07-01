@@ -1,0 +1,35 @@
+<div class="camps-page">
+  <div class="page-header">
+    <h2>我的營地</h2>
+    <a routerLink="/ownerCenter/camps/add" class="btn-add">＋ 新增營地</a>
+  </div>
+
+  <div *ngIf="campgrounds.length === 0" class="empty">
+    還沒有任何營地，點右上角「新增營地」開始建立。
+  </div>
+
+  <div class="camp-list">
+    <div class="camp-card" *ngFor="let c of campgrounds">
+      <img *ngIf="c.coverImageUrl"
+        [src]="apiHost + c.coverImageUrl"
+        alt="{{ c.name }}" class="cover" />
+      <div *ngIf="!c.coverImageUrl" class="cover no-image">無封面圖</div>
+
+      <div class="card-body">
+        <div class="card-title">{{ c.name }}</div>
+        <div class="card-meta">
+          <span [class]="c.status === CampgroundStatus.Active ? 'badge active' : 'badge draft'">
+            {{ c.status === CampgroundStatus.Active ? '上架中' : '草稿' }}
+          </span>
+          <span>{{ c.zoneCount }} 個營區・{{ c.siteCount }} 個營位</span>
+          <span>建立於 {{ c.createdAt | date:'yyyy/MM/dd' }}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <a [routerLink]="['/ownerCenter/camps', c.id]" class="btn-edit">編輯</a>
+        <button (click)="delete(c.id, c.name)" class="btn-delete">刪除</button>
+      </div>
+    </div>
+  </div>
+</div>
