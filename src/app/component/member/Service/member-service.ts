@@ -29,7 +29,7 @@ export class MemberService {
     private http: HttpClient,
     private routes: Router,
     private messageService: MessageService,
-  ) { }
+  ) {}
 
   login(data: loginData) {
     return this.http.post<LoginServiceResult>(`${this.apiUrl}/login`, data);
@@ -155,19 +155,16 @@ export class MemberService {
     formData.append('file', file, file.name);
     return this.http.post<{ Message: string }>(`${this.apiUrl}/MemberRegister`, formData);
   }
- ownerregister(data: ownerregisterData, file: File) {
-  const formData = new FormData();
+  ownerregister(data: ownerregisterData, file: File) {
+    const formData = new FormData();
 
-  formData.append('idNumber', data.idNumber);
-  formData.append('realname', data.realName);
-  formData.append('address', data.address);
-  formData.append('file', file);
+    formData.append('idNumber', data.idNumber);
+    formData.append('realname', data.realName);
+    formData.append('address', data.address);
+    formData.append('file', file);
 
-  return this.http.post<ServiceResult>(
-    `${this.apiUrl}/OwnerRegister`,
-    formData
-  );
-}
+    return this.http.post<ServiceResult>(`${this.apiUrl}/OwnerRegister`, formData);
+  }
 
   uploadOwnerProfilePhoto(file: File) {
     const formData = new FormData();
@@ -180,31 +177,34 @@ export class MemberService {
   getOwnerRecentOrders() {
     return this.http.get<OwnerOrderList[]>('https://localhost:7011/api/OwnerOrder/recent');
   }
-getProfile() {
-  return this.http.get<any>(`${this.apiUrl}/GetProfile`);
-}
+  getProfile() {
+    return this.http.get<any>(`${this.apiUrl}/GetProfile`);
+  }
   Usergetphoto() {
     var id = this.getid();
     return this.http.get<profilePhotoResponse>(`${this.apiUrl}/UserGetProfilePhoto/${id}`);
   }
-  OwnerGetPhoto(){
+  OwnerGetPhoto() {
     var id = this.getid();
-    return this.http.get<profilePhotoResponse>(`${this.apiUrl}/OwnerGetProfilePhoto/${id}`)
+    return this.http.get<profilePhotoResponse>(`${this.apiUrl}/OwnerGetProfilePhoto/${id}`);
   }
   memberEdit(data: FormData) {
     return this.http.put<{ message: string }>(`${this.apiUrl}/MemberEdit`, data);
   }
   verifyEmail(data: { userId: number; token: string }) {
-    return this.http.post<any>(`${this.apiUrl}/VerifyEmail`, data)
+    return this.http.post<any>(`${this.apiUrl}/VerifyEmail`, data);
   }
-  forgotPassword(data:{email:string}){
-    return this.http.post<any>(`${this.apiUrl}/ForgetPassword`,data)
+  forgotPassword(data: { email: string }) {
+    return this.http.post<any>(`${this.apiUrl}/ForgetPassword`, data);
   }
-  reSendConfirmedEmail(data:{email:string}){
-    return this.http.post<any>(`${this.apiUrl}/ReSendConfirmedEmail`,data)
+  reSendConfirmedEmail(data: { email: string }) {
+    return this.http.post<any>(`${this.apiUrl}/ReSendConfirmedEmail`, data);
   }
-  resetPassword(data:{userId:number,token:string,newPassword:string}){
-    return this.http.post<any>(`${this.apiUrl}/ResetPassword`,data)
+  resetPassword(data: { userId: number; token: string; newPassword: string }) {
+    return this.http.post<any>(`${this.apiUrl}/ResetPassword`, data);
+  }
+  googleLogin(data: { credential: string }) {
+    return this.http.post<any>(`${this.apiUrl}/GoogleLogin`, data);
   }
   getActiveRole() {
     const token = localStorage.getItem('token');

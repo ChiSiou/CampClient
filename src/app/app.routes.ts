@@ -44,6 +44,16 @@ export const routes: Routes = [
             loadComponent: () => import('./component/member/orders/orders').then((m) => m.Orders),
           },
           {
+            path: 'itinerary',
+            loadComponent: () =>
+              import('./component/itinerary-list/itinerary-list').then((m) => m.ItineraryList),
+          },
+          {
+            path: 'notifications',
+            loadComponent: () =>
+              import('./component/notification-center/notification-center').then((m) => m.NotificationCenter),
+          },
+          {
             path: 'memberEdit',
             loadComponent: () =>
               import('./component/member/memberedit/memberedit').then((m) => m.Memberedit),
@@ -91,10 +101,14 @@ export const routes: Routes = [
           import('./component/camp-detail/zone-detail/zone-detail').then((m) => m.ZoneDetail),
       },
       {
+        path: 'itinerary',
+        redirectTo: 'member-center/itinerary',
+        pathMatch: 'full',
+      },
+      {
         path: 'notifications',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./component/notification-center/notification-center').then((m) => m.NotificationCenter),
+        redirectTo: 'member-center/notifications',
+        pathMatch: 'full',
       },
       {
         path: 'checkout',

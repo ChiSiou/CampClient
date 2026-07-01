@@ -2,11 +2,8 @@
 
   <!-- 圖片區 -->
   <div class="camp-card__img-wrap">
-    <img
-      [src]="camp.imageUrls[currentImageIndex] || 'assets/placeholder.jpg'"
-      [alt]="camp.name"
-      class="camp-card__img"
-    />
+    <img [src]="camp.imageUrls[currentImageIndex] || 'assets/placeholder.jpg'" [alt]="camp.name"
+      class="camp-card__img" />
 
     <!-- 愛心收藏 -->
     <button class="camp-card__like" (click)="toggleLike($event)" [class.is-liked]="camp.isLiked">
@@ -15,17 +12,17 @@
 
     <!-- 多圖切換（超過1張才顯示） -->
     @if (camp.imageUrls.length > 1) {
-      <button class="camp-card__img-nav camp-card__img-nav--prev" (click)="prevImage($event)">
-        <i class="pi pi-chevron-left"></i>
-      </button>
-      <button class="camp-card__img-nav camp-card__img-nav--next" (click)="nextImage($event)">
-        <i class="pi pi-chevron-right"></i>
-      </button>
-      <div class="camp-card__dots">
-        @for (img of camp.imageUrls; track $index) {
-          <span class="camp-card__dot" [class.active]="$index === currentImageIndex"></span>
-        }
-      </div>
+    <button class="camp-card__img-nav camp-card__img-nav--prev" (click)="prevImage($event)">
+      <i class="pi pi-chevron-left"></i>
+    </button>
+    <button class="camp-card__img-nav camp-card__img-nav--next" (click)="nextImage($event)">
+      <i class="pi pi-chevron-right"></i>
+    </button>
+    <div class="camp-card__dots">
+      @for (img of camp.imageUrls; track $index) {
+      <span class="camp-card__dot" [class.active]="$index === currentImageIndex"></span>
+      }
+    </div>
     }
   </div>
 
@@ -39,28 +36,28 @@
     <span class="camp-card__area">{{ camp.area }}・海拔 {{ camp.elevation }}m</span>
 
     @if (camp.highlights.length) {
-      <ul class="camp-card__highlights">
-        @for (h of camp.highlights; track h) {
-          <li>{{ h }}</li>
-        }
-      </ul>
+    <ul class="camp-card__highlights">
+      @for (h of camp.highlights; track h) {
+      <li>{{ h }}</li>
+      }
+    </ul>
     }
 
     @if (camp.tags.length) {
-      <div class="camp-card__tags">
-        @for (tag of camp.tags; track tag) {
-          <span class="camp-tag">{{ tag }}</span>
-        }
-      </div>
+    <div class="camp-card__tags">
+      @for (tag of camp.tags; track tag) {
+      <span class="camp-tag">{{ tag }}</span>
+      }
+    </div>
     }
 
     <div class="camp-card__footer">
       <span class="camp-card__price">NT$ {{ camp.basePrice | number }} 起</span>
       @if (camp.averageRating) {
-        <div class="camp-card__rating">
-          <p-rating [ngModel]="displayRating" [readonly]="true" />
-          <span class="camp-card__review-count">({{ camp.reviewCount }})</span>
-        </div>
+      <div class="camp-card__rating">
+        <p-rating [ngModel]="displayRating" [readonly]="true" />
+        <span class="camp-card__review-count">({{ camp.reviewCount }})</span>
+      </div>
       }
     </div>
 

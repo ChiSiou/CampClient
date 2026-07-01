@@ -41,6 +41,11 @@ export class NotificationService {
       .pipe(switchMap(() => this.refreshUnreadCount()));
   }
 
+  deleteNotification(notificationId: number): Observable<any> {
+    return this.http
+      .delete(`${this.apiUrl}/${notificationId}`)
+      .pipe(switchMap(() => this.refreshUnreadCount()));
+  }
   markAllAsRead(): Observable<any> {
     return this.getNotifications().pipe(
       switchMap((items) => {

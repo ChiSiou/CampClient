@@ -31,8 +31,7 @@
       </div>
       <div class="action-row">
         <label class="remember">
-          <input type="checkbox">
-          記住我
+
         </label>
 
         <a routerLink="/forgot-password">忘記密碼？</a>
@@ -41,20 +40,19 @@
         登入
       </button>
       @if (emailconfirmed) {
-  <div class="verify-box">
-    <p>尚未完成信箱驗證</p>
-    <button type="button" class="resend-btn" (click)="Resendpage()">
-      重新寄送驗證信
-    </button>
-  </div>
-}
+      <div class="verify-box">
+        <p>尚未完成信箱驗證</p>
+        <button type="button" class="resend-btn" (click)="Resendpage()">
+          重新寄送驗證信
+        </button>
+      </div>
+      }
       <div class="divider">
         <span>或</span>
       </div>
-
-      <button type="button" class="google-btn">
-        Google 登入
-      </button>
+      <div class="google-login-wrapper">
+        <div id="googleSignInDiv"></div>
+      </div>
 
       <p class="register-text">
         還沒有帳號？

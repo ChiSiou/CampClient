@@ -11,7 +11,26 @@ body {
   overflow: hidden;
   font-family: 'Segoe UI', sans-serif;
 }
+#googleSignInDiv {
+  display: flex;
+  justify-content: center;
 
+  padding: 8px;
+  border-radius: 18px;
+
+  background: rgba(76, 96, 64, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
+}
+
+#googleSignInDiv:hover {
+  background: rgba(76, 96, 64, 0.5);
+  transform: translateY(-1px);
+}
 /* 背景 */
 body {
   display: flex;
