@@ -41,6 +41,7 @@ export class Review {
   totalReviews: number = 120;
   activeIndex: number = 0;
   campAVGScore: number = 0;
+  ratingCounts: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
   lightboxVisible: boolean = false;
   lightboxImages: { picId?: number; imageUrl: string }[] = [];
@@ -97,8 +98,13 @@ export class Review {
         // 2. 除以總筆數，並用 +...toFixed(1) 四捨五入到小數點後第一位（可依需求調整）
         this.campAVGScore = +(totalScore / data.length).toFixed(1);
       } else {
-        this.campAVGScore = 0; // 如果沒資料就給 0，避免除以 0 變成 NaN
+        this.campAVGScore = 0;
       }
+      this.ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      data.forEach(item => {
+        const r = item.rating;
+        if (r >= 1 && r <= 5) this.ratingCounts[r]++;
+      });
       // --- 計算平均分結束 ---
 
     });
