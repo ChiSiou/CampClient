@@ -39,7 +39,14 @@ export class CampAdd {
     }
     this.submitting = true;
     this.error = '';
-    this.campService.createCampground(this.form).subscribe({
+    const dto: CampgroundCreateDto = {
+      ...this.form,
+      latitude: +this.form.latitude || 0,
+      longitude: +this.form.longitude || 0,
+      elevation: +this.form.elevation || 0,
+      basePrice: +this.form.basePrice || 0,
+    };
+    this.campService.createCampground(dto).subscribe({
       next: (res) => this.router.navigate(['/ownerCenter/camps', res.id]),
       error: (err) => {
         this.error = err.error?.message ?? '建立失敗，請稍後再試';
