@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { NgClass, DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { HttpClient } from '@angular/common/http';
 import { CampSearchResultDto } from '../../../interfaces/camp.interface';
+import { MemberService } from '../../member/Service/member-service';
 
 @Component({
   selector: 'app-camp-card',
@@ -17,9 +19,16 @@ export class CampCard {
   @Input() layout: 'vertical' | 'horizontal' = 'vertical';
 
   currentImageIndex = 0;
+  likeLoading = false;
 
-  // p-rating 只用 `星數 <= value` 判斷填滿與否，不會四捨五入，
-  // 所以像 3.8 分這種非整數平均分要先四捨五入成整數星數再丟進去顯示
+  private readonly campLikeUrl = 'https://localhost:7011/api/CampLike';
+
+  constructor(
+    private http: HttpClient,
+    private memberService: MemberService,
+    private router: Router,
+  ) {}
+
   get displayRating(): number {
     return Math.round(this.camp.averageRating);
   }
@@ -41,6 +50,30 @@ export class CampCard {
   toggleLike(e: Event) {
     e.preventDefault();
     e.stopPropagation();
-    this.camp.isLiked = !this.camp.isLiked;
+
+    if (!this.memberService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.likeLoading) return;
+    this.likeLoading = true;
+
+    const wasLiked = this.camp.isLiked;
+    this.camp.isLiked = !wasLiked; // 樂觀更新，先切換 UI
+
+    const request$ = wasLiked
+      ? this.http.delete(`${this.campLikeUrl}/${this.camp.id}`)
+      : this.http.post(`${this.campLikeUrl}/${this.camp.id}`, {});
+
+    request$.subscribe({
+      next: () => {
+        this.likeLoading = false;
+      },
+      error: () => {
+        this.camp.isLiked = wasLiked; // 失敗時還原
+        this.likeLoading = false;
+      },
+    });
   }
 }

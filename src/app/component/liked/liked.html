@@ -1,1 +1,175 @@
-<p>liked works!</p>
+<div class="likes-page">
+
+  <!-- 頁首 -->
+  <div class="likes-header">
+    <div>
+      <h2>我的收藏</h2>
+      <p>你按過愛心的營地與社群貼文都在這裡</p>
+    </div>
+  </div>
+
+  <!-- 分類 Tab -->
+  <div class="likes-tabs">
+    <button class="tab" [class.active]="activeTab === 'all'" (click)="setActiveTab('all')">
+      全部
+    </button>
+    <button class="tab" [class.active]="activeTab === 'camp'" (click)="setActiveTab('camp')">
+      <i class="pi pi-home"></i> 營地
+    </button>
+    <button class="tab" [class.active]="activeTab === 'post'" (click)="setActiveTab('post')">
+      <i class="pi pi-comment"></i> 社群貼文
+    </button>
+  </div>
+
+  <!-- 工具列 -->
+  <div class="likes-toolbar">
+    <label class="count-control">
+      顯示筆數
+      <input type="number" min="1" step="1" [(ngModel)]="displayCount" (change)="onDisplayCountChange()"
+        (blur)="onDisplayCountChange()" />
+    </label>
+    <span class="likes-summary">
+      目前顯示第 {{ pageStartItem }}–{{ pageEndItem }} 筆，共 {{ totalFilteredCount }} 筆
+    </span>
+  </div>
+
+  <!-- 收藏清單 -->
+  <div class="likes-list">
+
+    @for (item of displayedItems; track item.id) {
+
+    <!-- 營地卡片 -->
+    @if (item.type === 'camp') {
+    <div class="like-card">
+      <div class="like-top">
+        <div>
+          <span class="like-no">營地收藏</span>
+          <p class="like-date">收藏於 {{ item.likedAt | date:'yyyy-MM-dd' }}</p>
+        </div>
+        <span class="status paid">營地</span>
+      </div>
+
+      <div class="like-content">
+        <img [src]="item.imageUrl || 'assets/placeholder.jpg'" [alt]="item.title" class="camp-img" />
+
+        <div class="like-info">
+          <h3>{{ item.title }}</h3>
+
+          <div class="info-row">
+            <span>地區</span>
+            <strong>{{ item.area }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>海拔</span>
+            <strong>{{ item.elevation }}m</strong>
+          </div>
+
+          <div class="info-row">
+            <span>最低價格</span>
+            <strong>NT$ {{ item.basePrice | number }} 起</strong>
+          </div>
+
+          @if (item.tags?.length) {
+          <div class="like-tags">
+            @for (tag of item.tags; track tag) {
+            <span class="camp-tag">{{ tag }}</span>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="like-bottom">
+        <div class="price">
+          最低價格 <strong>NT$ {{ item.basePrice | number }}</strong>
+        </div>
+        <div class="actions">
+          <button class="btn outline" (click)="unlike(item)">
+            <i class="pi pi-heart-fill"></i> 取消收藏
+          </button>
+          <button class="btn primary" [routerLink]="['/camp', item.refId]">
+            查看詳情
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- 社群貼文卡片 -->
+    @if (item.type === 'post') {
+    <div class="like-card">
+      <div class="like-top">
+        <div>
+          <span class="like-no">社群貼文</span>
+          <p class="like-date">收藏於 {{ item.likedAt | date:'yyyy-MM-dd' }}</p>
+        </div>
+        <span class="status completed">貼文</span>
+      </div>
+
+      <div class="like-content">
+        @if (item.imageUrl) {
+        <img [src]="item.imageUrl" [alt]="item.title" class="camp-img" />
+        } @else {
+        <div class="post-img-placeholder">
+          <i class="pi pi-image"></i>
+        </div>
+        }
+
+        <div class="like-info">
+          <div class="post-meta">
+            <span class="post-category">{{ item.category }}</span>
+            <span class="post-author">
+              <i class="pi pi-user"></i> {{ item.authorName }}
+            </span>
+          </div>
+          <h3>{{ item.title }}</h3>
+          <p class="post-excerpt">{{ item.excerpt }}</p>
+
+          <div class="post-stats">
+            <span><i class="pi pi-heart-fill" style="color:#e74c3c"></i> {{ item.likeCount }}</span>
+            <span><i class="pi pi-comment"></i> {{ item.commentCount }}</span>
+            <span class="post-date">{{ item.postDate | date:'yyyy-MM-dd' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="like-bottom">
+        <div></div>
+        <div class="actions">
+          <button class="btn outline" (click)="unlike(item)">
+            <i class="pi pi-heart-fill"></i> 取消收藏
+          </button>
+          <button class="btn primary" (click)="gotoPost(item.refId)">
+            查看貼文
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    }
+
+    @if (totalFilteredCount === 0) {
+    <div class="empty-orders">
+      <i class="pi pi-heart" style="font-size:2rem; color:#ccc; display:block; margin-bottom:12px;"></i>
+      目前沒有收藏的內容，快去探索吧！
+    </div>
+    }
+
+  </div>
+
+  <!-- 分頁 -->
+  @if (totalFilteredCount > 0) {
+  <div class="likes-pagination">
+    <button class="page-btn" type="button" [disabled]="currentPage === 1" (click)="goToPreviousPage()">
+      上一頁
+    </button>
+    <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+    <button class="page-btn" type="button" [disabled]="currentPage === totalPages" (click)="goToNextPage()">
+      下一頁
+    </button>
+  </div>
+  }
+
+</div>

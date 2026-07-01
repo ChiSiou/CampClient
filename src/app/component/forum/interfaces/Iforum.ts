@@ -12,6 +12,8 @@ export interface IForum {
   templateId?: number | null;
   campId?: number | null;
   isHaveImgs?: boolean | null;
+  likeCount?: number;
+  commentCount?: number;
   moreImages?: IMoreImage[];
 }
 
