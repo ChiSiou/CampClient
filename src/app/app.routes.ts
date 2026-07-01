@@ -59,6 +59,10 @@ export const routes: Routes = [
               import('./component/member/memberedit/memberedit').then((m) => m.Memberedit),
           },
           {
+            path: 'liked',
+            loadComponent: () => import('./component/liked/liked').then((m) => m.Liked),
+          },
+          {
             path: '**',
             loadComponent: () =>
               import('./component/member/profile/profile').then((m) => m.Profile),
@@ -72,11 +76,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./component/layouts/owner-center/owner-center').then((m) => m.OwnerCenter),
         children: [
-         
+
           {
             path: '**',
             loadComponent: () =>
-              import('./component/member/profile/owner-profile').then((m)=>m.OwnerProfile)
+              import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile)
           },
         ],
       },
@@ -133,46 +137,46 @@ export const routes: Routes = [
     ]
   },
   {
-  path: '',
-  loadComponent: () => import('./component/layouts/member/member').then((m) => m.Member),
-  children: [
-    {
-      path: 'register',
-      loadComponent: () =>
-        import('./component/member/register/register').then((m) => m.Register),
-    },
-    {
-      path: 'verify-email',
-      loadComponent: () =>
-        import('./component/member/verify-email/verify-email').then((m) => m.VerifyEmail),
-    },
-    {
-      path: 'resend-verify-email',
-      loadComponent: () =>
-        import('./component/member/verify-email/resend-verification-email').then((m) => m.ResendVerificationEmail),
-    },
-    {
-      path: 'login',
-      loadComponent: () =>
-        import('./component/member/login/login').then((m) => m.Login),
-    },
-    {
-      path: 'forgot-password',
-      loadComponent: () =>
-        import('./component/member/forgot-password/forgot-password').then((m) => m.ForgotPassword),
-    },
-    {
-      path:'reset-password',
-      loadComponent: () =>
-      import('./component/member/reset-password/reset-password').then((m) => m.ResetPassword),
-    },
-    {
-      path: 'owner-register',
-      canActivate: [authGuard],
-      loadComponent: () =>
-        import('./component/member/register/owner-register')
-          .then((m) => m.OwnerRegister),
-    },
-  ],
-}
+    path: '',
+    loadComponent: () => import('./component/layouts/member/member').then((m) => m.Member),
+    children: [
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./component/member/register/register').then((m) => m.Register),
+      },
+      {
+        path: 'verify-email',
+        loadComponent: () =>
+          import('./component/member/verify-email/verify-email').then((m) => m.VerifyEmail),
+      },
+      {
+        path: 'resend-verify-email',
+        loadComponent: () =>
+          import('./component/member/verify-email/resend-verification-email').then((m) => m.ResendVerificationEmail),
+      },
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./component/member/login/login').then((m) => m.Login),
+      },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./component/member/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./component/member/reset-password/reset-password').then((m) => m.ResetPassword),
+      },
+      {
+        path: 'owner-register',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./component/member/register/owner-register')
+            .then((m) => m.OwnerRegister),
+      },
+    ],
+  }
 ];

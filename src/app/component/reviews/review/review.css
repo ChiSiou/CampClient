@@ -1,0 +1,64 @@
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  max-width: 300px;
+}
+
+.rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  color: #555;
+  width: 12px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background-color: #f5c518;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.rating-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 100px;
+}
+
+.score-number {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #333;
+}
+
+.review-count {
+  font-size: 0.85rem;
+  color: #888;
+}

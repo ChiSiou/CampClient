@@ -103,21 +103,15 @@
       <div class="post-footer">
         <div class="action-btns">
 
-          <button type="button" class="like-toggle" [class.liked]="isLiked" [class.pop]="likeBurst"
-            (click)="toggleLike()" title="按讚">
-            <span class="like-burst" *ngIf="likeBurst" (animationend)="onHeartAnimationEnd()"></span>
-            <i class="pi" [ngClass]="isLiked ? 'pi-thumbs-up-fill' : 'pi-thumbs-up'"></i>
-            <span class="like-count" *ngIf="likeCount > 0">{{ likeCount }}</span>
-          </button>
-
           <button type="button" class="heart-toggle" [class.liked]="isLiked" [class.pop]="likeBurst"
             (click)="toggleLike()" title="收藏">
             <span class="heart-burst" *ngIf="likeBurst" (animationend)="onHeartAnimationEnd()"></span>
             <i class="pi" [ngClass]="isLiked ? 'pi-heart-fill' : 'pi-heart'"></i>
+            <span class="like-count" *ngIf="likeCount > 0">{{ likeCount }}</span>
           </button>
 
-          <p-button (click)="op.toggle($event); copyPostRoute(); markShared()" icon="pi pi-share-alt" [outlined]="true" label="分享"
-            size="small" />
+          <p-button (click)="op.toggle($event); copyPostRoute(); markShared()" icon="pi pi-share-alt" [outlined]="true"
+            label="分享" size="small" />
 
           <p-button (click)="isReplyPost = !isReplyPost;" icon="pi pi-comments" [outlined]="true" severity="secondary"
             label="留言" size="small"></p-button>

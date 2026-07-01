@@ -23,7 +23,13 @@
               <small class="text-muted">{{ post.postCategoryName }}</small>
               <h2 class="h5 mt-1">{{ post.title }}</h2>
               <p class="text-truncate" style="max-width: 300px;"> {{ post.mainContent }} </p>
-              <small class="text-muted">{{ post.postDate | date:'yyyy-MM-dd' }}</small>
+              <div class="d-flex align-items-center justify-content-between mt-1">
+                <small class="text-muted">{{ post.postDate | date:'yyyy-MM-dd' }}</small>
+                <small class="text-muted" *ngIf="likeCountMap[post.postId]">
+                  <i class="pi pi-heart-fill" style="color:#e74c3c; font-size:0.75rem;"></i>
+                  {{ likeCountMap[post.postId] }}
+                </small>
+              </div>
             </div>
           </div>
         </button>

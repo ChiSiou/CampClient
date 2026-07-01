@@ -1,5 +1,5 @@
 import { Member } from '../../layouts/member/member';
-import { Component, inject, NgModule } from '@angular/core';
+import { Component, inject, Input, NgModule } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { AvatarModule, Avatar } from 'primeng/avatar';
@@ -43,6 +43,9 @@ interface UploadEvent {
   providers: [MessageService],
 })
 export class Popup {
+  @Input() campId: number = 0;
+  @Input() orderId: number = 0;
+
   // 資料
   reviews: IReview[] = [];
   new_reviewId: number = 0;
@@ -79,6 +82,8 @@ export class Popup {
   }
 
   ngOnInit(): void {
+    if (this.campId) this.new_campId = this.campId;
+    if (this.orderId) this.new_orderId = this.orderId;
   }
 
   showDialog() {

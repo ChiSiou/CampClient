@@ -12,7 +12,7 @@ export class NotificationService {
 
   unreadCount$ = this.unreadCountSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getNotifications(): Observable<NotificationItem[]> {
     return this.http.get<NotificationItem[]>(this.apiUrl);
@@ -46,6 +46,17 @@ export class NotificationService {
       .delete(`${this.apiUrl}/${notificationId}`)
       .pipe(switchMap(() => this.refreshUnreadCount()));
   }
+  createNotification(payload: {
+    userId: number;
+    recipientRole: string;
+    title: string;
+    message: string;
+    type?: string;
+    linkUrl?: string;
+  }): Observable<any> {
+    return this.http.post(this.apiUrl, payload);
+  }
+
   markAllAsRead(): Observable<any> {
     return this.getNotifications().pipe(
       switchMap((items) => {

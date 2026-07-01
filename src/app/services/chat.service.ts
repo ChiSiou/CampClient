@@ -8,6 +8,7 @@ import { ChatMessageDto, MoreImageDto } from '../interfaces/chat.interface';
 export interface ChatConversation {
   otherUserId: number;
   otherUserName: string;
+  otherUserAvatar?: string;
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
@@ -22,7 +23,7 @@ export class ChatService {
 
   private messageReceived$ = new Subject<ChatMessageDto>();
   private messagesRead$ = new Subject<{ readerId: number }>();
-  private openChatRequest$ = new Subject<{ otherUserId: number; otherUserName: string }>();
+  private openChatRequest$ = new Subject<{ otherUserId: number; otherUserName: string; otherUserAvatar?: string }>();
 
   onReceiveMessage() {
     return this.messageReceived$.asObservable();
@@ -38,8 +39,8 @@ export class ChatService {
 
   // 給其他元件呼叫的入口（例如營區頁的「聯絡營主」按鈕、營主後台的「聯絡客人」按鈕）
   // ChatWidget 掛在 app root，跟呼叫端不是父子關係，所以用這個 Subject 跨元件溝通
-  openChatWith(otherUserId: number, otherUserName: string) {
-    this.openChatRequest$.next({ otherUserId, otherUserName });
+  openChatWith(otherUserId: number, otherUserName: string, otherUserAvatar?: string) {
+    this.openChatRequest$.next({ otherUserId, otherUserName, otherUserAvatar });
   }
 
   constructor(private http: HttpClient) {}

@@ -16,4 +16,6 @@ export interface OrderDetail {
   checkoutDate: string;
   accomType: string;
   campImageUrl: string;
+  ownerId?: number;
+  ownerName?: string;
 }

@@ -1,7 +1,7 @@
 import { Message } from 'primeng/message';
 import { Component, Input } from '@angular/core';
 import { MemberService } from '../Service/member-service';
-import { OrderList } from '../interface/orderList';
+import { OrderList, OrderDetail } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,10 +9,12 @@ import { CheckoutService } from '../../../services/checkout.service';
 import { ExplorationService } from '../../../services/exploration.service';
 import { CampSearchResultDto } from '../../../interfaces/camp.interface';
 import { CampCard } from '../../shared/camp-card/camp-card';
+import { ChatService } from '../../../services/chat.service';
+import { Popup } from '../../reviews/popup/popup';
 
 @Component({
   selector: 'orders',
-  imports: [DatePipe, NgClass, FormsModule, RouterLink, CampCard],
+  imports: [DatePipe, NgClass, FormsModule, RouterLink, CampCard, Popup],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
@@ -21,7 +23,14 @@ export class Orders {
     private memberservice: MemberService,
     private checkoutService: CheckoutService,
     private explorationService: ExplorationService,
-  ) {}
+    private chatService: ChatService,
+  ) { }
+
+  contactOwner(detail: OrderDetail) {
+    if (detail.ownerId && detail.ownerName) {
+      this.chatService.openChatWith(detail.ownerId, detail.ownerName);
+    }
+  }
   orders: OrderList[] = [];
   popularCamps: CampSearchResultDto[] = [];
   loadingPopularCamps = false;
