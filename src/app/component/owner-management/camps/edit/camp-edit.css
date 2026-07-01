@@ -197,3 +197,192 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ── Zone 區塊 ── */
+
+.zone-section {
+  margin-top: 32px;
+  border-top: 2px solid #e8f4ec;
+  padding-top: 20px;
+}
+
+.zone-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.zone-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2d6a3f;
+}
+
+.btn-add-zone {
+  padding: 7px 16px;
+  background: #4a7c59;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.zone-empty {
+  color: #aaa;
+  font-size: 0.9rem;
+  padding: 24px 0;
+  text-align: center;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+}
+
+.zone-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+.zone-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.zone-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.zone-badge {
+  background: #e8f4ec;
+  color: #2d6a3f;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.zone-meta {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.zone-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-zone-edit {
+  padding: 5px 14px;
+  border: 1px solid #4a7c59;
+  color: #4a7c59;
+  background: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-zone-delete {
+  padding: 5px 14px;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  background: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ── Modal ── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 28px 32px 20px;
+  width: 55vw;
+  max-width: 55vw;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.modal-box h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.1rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.zone-map-container {
+  height: 480px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  cursor: crosshair;
+}
+
+.drawing-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.drawing-hint {
+  font-size: 0.83rem;
+  color: #666;
+}
+
+.drawing-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-drawing-action {
+  padding: 3px 10px;
+  border: 1px solid #aaa;
+  color: #555;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.btn-drawing-action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-drawing-clear {
+  border-color: #c0392b;
+  color: #c0392b;
+}
