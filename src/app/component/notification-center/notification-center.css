@@ -285,6 +285,20 @@ time {
   background: #dce9d5;
 }
 
+.icon-btn.danger {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.icon-btn.danger:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.icon-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 @media (max-width: 768px) {
   .notification-page {
     padding: 28px 18px 44px;

@@ -78,6 +78,15 @@
               } @else {
                 <span class="read-label">已讀</span>
               }
+              <button
+                class="icon-btn danger"
+                type="button"
+                title="刪除通知"
+                [disabled]="deletingNotificationId === item.notificationId"
+                (click)="deleteNotification(item, $event)"
+              >
+                <i class="pi" [ngClass]="deletingNotificationId === item.notificationId ? 'pi-spin pi-spinner' : 'pi-trash'"></i>
+              </button>
             </div>
           </article>
         }
