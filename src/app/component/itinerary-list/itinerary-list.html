@@ -1,0 +1,99 @@
+<section class="itinerary-page">
+  <header class="itinerary-header">
+    <div>
+      <p class="eyebrow">Travel Plans</p>
+      <h1>行程清單</h1>
+      <p>查看已付款且尚未到來的露營訂單，掌握入住日期、營地與住宿內容。</p>
+    </div>
+
+    <a class="search-link" routerLink="/search">
+      <i class="pi pi-search"></i>
+      探索營地
+    </a>
+  </header>
+
+  <div class="summary-row">
+    <div class="summary-card">
+      <span>已付款未到來</span>
+      <strong>{{ totalUpcomingPaidCount }}</strong>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="state-panel error">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="state-panel">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>行程載入中...</span>
+    </div>
+  } @else if (itineraries.length === 0) {
+    <div class="state-panel empty">
+      <i class="pi pi-calendar-clock"></i>
+      <h2>目前沒有行程</h2>
+      <p>已付款且入住日尚未到來的訂單會自動整理到這裡。</p>
+      <a routerLink="/search">去找下一個營地</a>
+    </div>
+  } @else {
+    <div class="itinerary-list">
+      @for (item of itineraries; track item.orderId + '-' + item.campId) {
+        <article class="itinerary-card">
+          <a class="image-wrap" [routerLink]="['/camp', item.campId]">
+            <img [src]="item.campImageUrl || 'assets/placeholder.jpg'" [alt]="item.campName" />
+          </a>
+
+          <div class="trip-content">
+            <div class="trip-topline">
+              <span class="status-pill" [ngClass]="getTripStatusClass(item.tripStatus)">
+                {{ getTripStatusText(item.tripStatus) }}
+              </span>
+              <span class="order-number">訂單 {{ item.orderNumber }}</span>
+            </div>
+
+            <h2>
+              <a [routerLink]="['/camp', item.campId]">{{ item.campName }}</a>
+            </h2>
+
+            <div class="date-row">
+              <div>
+                <span>入住</span>
+                <strong>{{ item.checkinDate | date: 'yyyy/MM/dd' }}</strong>
+              </div>
+              <i class="pi pi-arrow-right"></i>
+              <div>
+                <span>退房</span>
+                <strong>{{ item.checkoutDate | date: 'yyyy/MM/dd' }}</strong>
+              </div>
+              <div>
+                <span>晚數</span>
+                <strong>{{ item.nights }} 晚</strong>
+              </div>
+            </div>
+
+            @if (item.accomTypes.length) {
+              <div class="tag-row">
+                @for (type of item.accomTypes; track type) {
+                  <span>{{ type }}</span>
+                }
+              </div>
+            }
+
+            <div class="trip-footer">
+              <span>建立日期 {{ item.orderDate | date: 'yyyy/MM/dd' }}</span>
+              <strong>NT$ {{ item.totalAmount | number }}</strong>
+            </div>
+
+            <div class="trip-actions">
+              <a class="trip-btn outline" [routerLink]="['/camp', item.campId]">詳情</a>
+              <button class="trip-btn danger" type="button">退款</button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

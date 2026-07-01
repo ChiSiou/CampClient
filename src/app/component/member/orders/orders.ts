@@ -1,5 +1,5 @@
 import { Message } from 'primeng/message';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MemberService } from '../Service/member-service';
 import { OrderList } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
@@ -160,7 +160,7 @@ export class Orders {
     this.pendingActionError = '';
 
     this.checkoutService.resumePayment(order.orderId).subscribe({
-      next: result => {
+      next: (result) => {
         const redirected = this.checkoutService.redirectToPayment(result);
         if (!redirected) {
           this.processingOrderId = null;

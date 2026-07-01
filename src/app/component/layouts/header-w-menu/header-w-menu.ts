@@ -63,10 +63,10 @@ export class HeaderWMenu implements OnDestroy {
 
   readonly menuItems: MenuItem[] = [
     { label: '我的收藏', icon: 'pi pi-heart', routerLink: '/favorites' },
-    { label: '訂單', icon: 'pi pi-receipt', routerLink: '/orders' },
-    { label: '行程', icon: 'pi pi-map', routerLink: '/itinerary' },
-    { label: '訊息通知', icon: 'pi pi-bell', routerLink: '/notifications' },
-    { label: '個人簡介', icon: 'pi pi-id-card', routerLink: '/profile' },
+    { label: '訂單', icon: 'pi pi-receipt', routerLink: '/member-center/orders' },
+    { label: '行程', icon: 'pi pi-map', routerLink: '/member-center/itinerary' },
+    { label: '訊息通知', icon: 'pi pi-bell', routerLink: '/member-center/notifications' },
+    { label: '個人簡介', icon: 'pi pi-id-card', routerLink: '/member-center' },
     { label: '帳號設定', icon: 'pi pi-cog', routerLink: '/settings' },
     { label: '登出', icon: 'pi pi-sign-out', command: () => this.memberservice.logout() },
   ];
@@ -92,7 +92,7 @@ export class HeaderWMenu implements OnDestroy {
     });
   }
   goNotification() {
-    this.routes.navigate(['/notifications']);
+    this.routes.navigate(['/member-center/notifications']);
   }
   Center() {
     if (this.activeUserRole === 'Owner') {

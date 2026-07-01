@@ -36,11 +36,7 @@
   </section>
 
   <section class="stats-grid">
-    <div class="stat-card">
-      <span>本月收入</span>
-      <h3>NT$ 36,800</h3>
-      <p>較上月 +12%</p>
-    </div>
+
 
     <div class="stat-card">
       <span>待處理訂單</span>
@@ -123,7 +119,8 @@
         <span>{{ order.campName }}</span>
         <span>{{ order.checkInDate | date }}</span>
         <span>NT$ {{ order.totalAmount | number }}</span>
-        <span class="order-status" [ngClass]="orderStatusClass(order.status)">{{ orderStatusLabel(order.status) }}</span>
+        <span class="order-status"
+          [ngClass]="orderStatusClass(order.status)">{{ orderStatusLabel(order.status) }}</span>
         <button class="text-btn" (click)="contactCustomer(order.customerId, order.customerName)">聯絡顧客</button>
       </div>
 
