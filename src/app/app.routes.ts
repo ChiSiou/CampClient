@@ -62,11 +62,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./component/layouts/owner-center/owner-center').then((m) => m.OwnerCenter),
         children: [
-         
+          {
+            path: 'camps',
+            loadComponent: () =>
+              import('./component/owner-management/camps/camps').then((m) => m.Camps),
+          },
           {
             path: '**',
             loadComponent: () =>
-              import('./component/member/profile/owner-profile').then((m)=>m.OwnerProfile)
+              import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile),
           },
         ],
       },
