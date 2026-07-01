@@ -22,9 +22,11 @@ export class CheckoutService {
     return this.http.post<CheckoutResultDto>(`${this.base}/Checkout/submit`, body);
   }
 
-  // 主動取消自己卡住的待付款訂單，立刻釋放鎖定的營位，不用等 15 分鐘背景排程
-  cancelPending() {
-    return this.http.post<{ cancelled: boolean }>(`${this.base}/Checkout/cancel-pending`, {});
+  // 主動取消自己卡住的待付款訂單，立刻釋放鎖定的營位，不用等 15 分鐘背景排程。
+  // orderId 可選：「我的訂單」頁知道確切訂單就帶上去精準取消；/checkout 頁不知道就不帶。
+  cancelPending(orderId?: number) {
+    const query = orderId != null ? `?orderId=${orderId}` : '';
+    return this.http.post<{ cancelled: boolean }>(`${this.base}/Checkout/cancel-pending${query}`, {});
   }
 
   // 「我的訂單」頁面的「繼續付款」：重新組一份付款表單，回傳結果交給 redirectToPayment() 跳轉

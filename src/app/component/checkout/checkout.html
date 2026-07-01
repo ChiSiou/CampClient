@@ -90,11 +90,11 @@
             }
           </ul>
 
-          @if (equipmentData?.equipments?.length) {
+          @if (summary.equipments.length) {
             <hr class="divider" />
             <h4 class="checkout__summary-subtitle">租用裝備</h4>
             <ul class="checkout__line-list">
-              @for (item of equipmentData!.equipments; track $index) {
+              @for (item of summary.equipments; track $index) {
                 <li class="checkout__line-item">
                   <div class="checkout__line-item-name">
                     {{ item.productName }}{{ item.variantName ? '（' + item.variantName + '）' : '' }} × {{ item.quantity }}
@@ -112,10 +112,16 @@
               <span>營位小計</span>
               <span>NT$ {{ summary.campSubTotal | number }}</span>
             </div>
-            @if (equipmentData) {
+            @if (summary.equipmentSubTotal > 0) {
               <div class="checkout__totals-row">
                 <span>裝備小計</span>
-                <span>NT$ {{ equipmentData.equipmentSubTotal | number }}</span>
+                <span>NT$ {{ summary.equipmentSubTotal | number }}</span>
+              </div>
+            }
+            @if (summary.shippingFee > 0) {
+              <div class="checkout__totals-row">
+                <span>運費</span>
+                <span>NT$ {{ summary.shippingFee | number }}</span>
               </div>
             }
             @if (summary.discountAmount > 0) {

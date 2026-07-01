@@ -81,7 +81,14 @@ export class Checkout implements OnInit, OnDestroy {
     this.loading = true;
     this.loadEquipmentFromStorage();
 
-    this.checkoutService.getSummary({ campgroundId, selectedCampsites }).subscribe({
+    // 把裝備 + 運送方式一起送給後端，讓後端算出「已含裝備租金 + 運費」的 grandTotal，
+    // 前端直接顯示這個值，保證畫面金額 == 實際刷卡金額（單一金額來源，不在前端另外加運費/裝備）。
+    this.checkoutService.getSummary({
+      campgroundId,
+      selectedCampsites,
+      selectedEquipments: this.equipmentData?.selectedEquipments ?? [],
+      shippingMethodId: this.equipmentData?.shippingMethodId ?? null,
+    }).subscribe({
       next: res => {
         this.summary = res;
         this.loading = false;
@@ -106,12 +113,10 @@ export class Checkout implements OnInit, OnDestroy {
     }
   }
 
-  // 後端 /Checkout/summary 的 grandTotal 只算營位金額（折扣也只看營位金額），
-  // 裝備金額是前端從 sessionStorage 讀到後自己加上去的
+  // 後端 /Checkout/summary 的 grandTotal 已含營位 − 折扣 + 裝備租金 + 運費（我們有把裝備一起送過去），
+  // 前端直接用這個值，不再自己加，避免跟實際刷卡金額對不上。
   get grandTotal(): number {
-    const campTotal = this.summary?.grandTotal ?? 0;
-    const equipmentTotal = this.equipmentData?.equipmentSubTotal ?? 0;
-    return campTotal + equipmentTotal;
+    return this.summary?.grandTotal ?? 0;
   }
 
   get canSubmit(): boolean {

@@ -157,7 +157,7 @@ export class Orders {
     this.processingOrderId = order.orderId;
     this.pendingActionError = '';
 
-    this.checkoutService.cancelPending().subscribe({
+    this.checkoutService.cancelPending(order.orderId).subscribe({
       next: () => {
         this.processingOrderId = null;
         order.status = 2; // 直接更新畫面上的狀態，不用整頁重新打 API 才看到變化

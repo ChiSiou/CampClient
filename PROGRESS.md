@@ -263,9 +263,28 @@
 
 ---
 
+### 🟢 卡單救援 + 通知 + 裝備收款（2026-07-01，本輪大更新）
+
+搭配後端同名章節（`slnCampApi/PROGRESS.md` 2026-07-01）。前端這輪的改動：
+
+**A. 卡單救援 UI（付款到一半放棄/當機/關瀏覽器）**
+- `checkout.service.ts`：`cancelPending(orderId?)`、`resumePayment(orderId)`。
+- `checkout.ts`/`.html`：`/checkout` 空狀態（找不到選位資料）新增「檢查並釋放卡住的訂單」按鈕；另有 `pageshow`/bfcache 處理（按綠界上一頁回來不會卡在「處理中」）。
+- `component/member/orders/`（**同仁的檔案，已加東西，記得跟同仁說**）：待付款訂單列新增「繼續付款 / 取消訂單」按鈕（`resumePayment()`/`cancelOrder()`，用 `processingOrderId` 控制單列 loading）。這是使用者關掉瀏覽器後最自然的救援入口。
+
+**B. 選位資料持久化**
+- `camp-selection.service.ts`：改用 `sessionStorage` 持久化選位（key `campSelection`），跳去綠界再回來（整頁導覽）選位資料不會掉。
+- 清空時機：**不在送出訂單跳綠界時清**（那樣會害重試/取消失效），改在 `payment-result.ts` 拿到確定結果（Success/Failed）時才清。
+
+**C. 裝備 + 運費金額顯示（單一來源）**
+- `checkout.ts`：`/Checkout/summary` 現在**一併送 `selectedEquipments` + `shippingMethodId`**，後端回傳「已含裝備租金 + 運費」的 `grandTotal`。前端 `grandTotal` getter 改成直接回 `summary.grandTotal`，**不再自己加**（畫面金額 == 實際刷卡金額）。
+- `checkout.html`：裝備明細/小計改讀 `summary.equipments`/`summary.equipmentSubTotal`，新增「運費」明細列（`summary.shippingFee`）。
+- `camp.interface.ts`：`CampSelectionRequestDto` 加 optional `selectedEquipments`/`shippingMethodId`；`CheckoutSummaryDto` 加 `shippingFee`。
+- **⚠️ 後端要先跑 `DbScripts/2026-07-01-add-equipment-order-columns.sql` 加欄位，否則後端啟動會報錯。**
+
 ## 📌 下次接續：待辦事項（不要漏掉）
 
-1. **後端在等 ngrok 設定好**（使用者預計明天弄），設定好之後本機才能測「付款成功 → 訂單狀態真的變成已付款」這條完整路徑，目前卡在 ECPay webhook 打不到 `localhost`。也順便能測新做的 `/payment/result` 頁面真的有沒有跟著 webhook 結果輪詢出對的狀態（目前只能用假資料測 UI，沒測過真的綠界回調）。
+1. ~~**後端在等 ngrok 設定好**~~ **（已可暫緩）**：付款成功 → 訂單狀態變已付款這條路徑**現在靠 OrderResultURL 在本機就能通、已實測成功**，`/payment/result` 頁也已測過真的綠界回調。ngrok 只剩 server-to-server `ReturnUrl` 備援用途，上雲端再處理。
 2. ~~Phase F7 付款結果頁~~ **已完成**（見下方 Phase F7 章節）。
 3. 表單欄位驗證（Email/手機格式）還沒做，目前只擋空字串。
 4. **`gantt-calendar.ts` 的 `jumpToDate()` 方法目前沒有任何地方呼叫它**（已確認，`grep` 全專案只有定義沒有使用）：Zone 詳細頁選完日期回到甘特圖，如果選的日期超出甘特圖目前 10 天視窗，使用者看不到自己選的東西反映在畫面上，要接起來。
