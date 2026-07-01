@@ -42,7 +42,9 @@
 
   <div class="orders-list">
     <!-- 訂單卡片 -->
+
     @for(data of displayedOrders; track data.orderId){
+
     <div class="order-card">
       <div class="order-top">
         <div>
@@ -89,40 +91,50 @@
         </div>
 
         @if (data.status === 0) {
-          <!-- 待付款訂單：可能是付款到一半放棄/瀏覽器當機重開，這裡讓使用者能繼續付款或主動取消 -->
-          <div class="actions">
-            <button
-              class="btn outline"
-              [disabled]="processingOrderId === data.orderId"
-              (click)="cancelOrder(data)"
-            >
-              {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
-            </button>
-            <button
-              class="btn primary"
-              [disabled]="processingOrderId === data.orderId"
-              (click)="resumePayment(data)"
-            >
-              {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
-            </button>
-          </div>
+        <!-- 待付款訂單：可能是付款到一半放棄/瀏覽器當機重開，這裡讓使用者能繼續付款或主動取消 -->
+        <div class="actions">
+          <button class="btn outline" [disabled]="processingOrderId === data.orderId" (click)="cancelOrder(data)">
+            {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
+          </button>
+          <button class="btn primary" [disabled]="processingOrderId === data.orderId" (click)="resumePayment(data)">
+            {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
+          </button>
+        </div>
         } @else {
-          <div class="actions">
-            <button class="btn outline">查看詳情</button>
-            <button class="btn primary">聯絡營主</button>
-          </div>
+        <div class="actions">
+          <button class="btn outline">查看詳情</button>
+          <button class="btn primary">聯絡營主</button>
+        </div>
         }
       </div>
 
       @if (pendingActionError && processingOrderId === null) {
-        <p class="order-action-error">{{ pendingActionError }}</p>
+      <p class="order-action-error">{{ pendingActionError }}</p>
       }
     </div>
 
     }
 
     @if (totalFilteredCount === 0) {
-    <div class="empty-orders">目前沒有符合條件的訂單</div>
+    <section class="empty-orders">
+      <div class="empty-orders__copy">
+        <p class="empty-orders__eyebrow">尚無訂單</p>
+        <h3>先收藏下一趟露營靈感</h3>
+        <p>目前沒有符合條件的訂單，先看看大家最近喜歡的熱門營地。</p>
+      </div>
+
+      @if (popularCamps.length > 0) {
+      <div class="popular-camps-grid">
+        @for (camp of popularCamps; track camp.id) {
+        <app-camp-card [camp]="camp" />
+        }
+      </div>
+      } @else if (loadingPopularCamps) {
+      <p class="popular-camps-status">熱門營地載入中...</p>
+      } @else {
+      <a class="browse-camps-link" routerLink="/search">瀏覽全部營地</a>
+      }
+    </section>
     }
 
   </div>

@@ -4,11 +4,15 @@ import { MemberService } from '../Service/member-service';
 import { OrderList } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CheckoutService } from '../../../services/checkout.service';
+import { ExplorationService } from '../../../services/exploration.service';
+import { CampSearchResultDto } from '../../../interfaces/camp.interface';
+import { CampCard } from '../../shared/camp-card/camp-card';
 
 @Component({
   selector: 'orders',
-  imports: [DatePipe, NgClass, FormsModule],
+  imports: [DatePipe, NgClass, FormsModule, RouterLink, CampCard],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
@@ -16,8 +20,11 @@ export class Orders {
   constructor(
     private memberservice: MemberService,
     private checkoutService: CheckoutService,
+    private explorationService: ExplorationService,
   ) {}
   orders: OrderList[] = [];
+  popularCamps: CampSearchResultDto[] = [];
+  loadingPopularCamps = false;
   displayCount = 5;
   currentPage = 1;
 
@@ -27,6 +34,8 @@ export class Orders {
   pendingActionError = '';
 
   ngOnInit() {
+    this.loadPopularCamps();
+
     this.memberservice.getorder().subscribe({
       next: (res) => {
         this.orders = res;
@@ -34,6 +43,20 @@ export class Orders {
       },
       error: (err) => {
         console.log('error', err.Message);
+      },
+    });
+  }
+
+  private loadPopularCamps() {
+    this.loadingPopularCamps = true;
+
+    this.explorationService.getHome().subscribe({
+      next: (feed) => {
+        this.popularCamps = feed.featuredCamps.slice(0, 3);
+        this.loadingPopularCamps = false;
+      },
+      error: () => {
+        this.loadingPopularCamps = false;
       },
     });
   }
