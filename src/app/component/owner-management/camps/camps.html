@@ -10,9 +10,7 @@
 
   <div class="camp-list">
     <div class="camp-card" *ngFor="let c of campgrounds">
-      <img *ngIf="c.coverImageUrl"
-        [src]="apiHost + c.coverImageUrl"
-        alt="{{ c.name }}" class="cover" />
+      <img *ngIf="c.coverImageUrl" [src]="apiHost + c.coverImageUrl" alt="{{ c.name }}" class="cover" />
       <div *ngIf="!c.coverImageUrl" class="cover no-image">無封面圖</div>
 
       <div class="card-body">
