@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CampManagementService } from '../../../services/camp-management.service';
 import { CampgroundListItemDto, CampgroundStatus } from '../../../interfaces/camp-management.interface';
 
 @Component({
   selector: 'app-camps',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './camps.html',
   styleUrl: './camps.css',
 })
@@ -15,16 +16,25 @@ export class Camps implements OnInit {
   CampgroundStatus = CampgroundStatus;
   apiHost = 'https://localhost:7011';
 
+  searchName = '';
+  searchStatus = '';
+
   constructor(private campService: CampManagementService) {}
 
-  ngOnInit() {
-    this.load();
-  }
+  ngOnInit() { this.load(); }
 
   load() {
     this.campService.listMine().subscribe({
       next: (data) => (this.campgrounds = data),
       error: (err) => console.error('載入失敗', err),
+    });
+  }
+
+  get filtered(): CampgroundListItemDto[] {
+    return this.campgrounds.filter(c => {
+      const nameMatch = !this.searchName || c.name.includes(this.searchName);
+      const statusMatch = this.searchStatus === '' || c.status === +this.searchStatus;
+      return nameMatch && statusMatch;
     });
   }
 

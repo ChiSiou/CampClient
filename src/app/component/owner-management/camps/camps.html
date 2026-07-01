@@ -1,33 +1,84 @@
 <div class="camps-page">
   <div class="page-header">
-    <h2>我的營地</h2>
+    <div>
+      <h2>營地資源總管理系統</h2>
+      <span class="subtitle">Campground Resource</span>
+    </div>
     <a routerLink="/ownerCenter/camps/add" class="btn-add">＋ 新增營地</a>
   </div>
 
-  <div *ngIf="campgrounds.length === 0" class="empty">
-    還沒有任何營地，點右上角「新增營地」開始建立。
-  </div>
-
-  <div class="camp-list">
-    <div class="camp-card" *ngFor="let c of campgrounds">
-      <img *ngIf="c.coverImageUrl" [src]="apiHost + c.coverImageUrl" alt="{{ c.name }}" class="cover" />
-      <div *ngIf="!c.coverImageUrl" class="cover no-image">無封面圖</div>
-
-      <div class="card-body">
-        <div class="card-title">{{ c.name }}</div>
-        <div class="card-meta">
-          <span [class]="c.status === CampgroundStatus.Active ? 'badge active' : 'badge draft'">
-            {{ c.status === CampgroundStatus.Active ? '上架中' : '草稿' }}
-          </span>
-          <span>{{ c.zoneCount }} 個營區・{{ c.siteCount }} 個營位</span>
-          <span>建立於 {{ c.createdAt | date:'yyyy/MM/dd' }}</span>
-        </div>
-      </div>
-
-      <div class="card-actions">
-        <a [routerLink]="['/ownerCenter/camps', c.id]" class="btn-edit">編輯</a>
-        <button (click)="delete(c.id, c.name)" class="btn-delete">刪除</button>
-      </div>
+  <div class="filter-bar">
+    <div class="filter-item">
+      <label>名稱</label>
+      <input type="text" [(ngModel)]="searchName" placeholder="搜尋名稱..." />
+    </div>
+    <div class="filter-item">
+      <label>狀態</label>
+      <select [(ngModel)]="searchStatus">
+        <option value="">全部</option>
+        <option value="0">草稿</option>
+        <option value="1">上架中</option>
+      </select>
     </div>
   </div>
+
+  @if (campgrounds.length === 0) {
+    <div class="empty-state">
+      <div class="empty-title">目前此營地主沒有任何營地</div>
+      <div class="empty-desc">點擊右上角「＋ 新增營地」開始建立您的第一個營地。</div>
+      <a routerLink="/ownerCenter/camps/add" class="btn-add-empty">＋ 新增營地</a>
+    </div>
+  }
+
+  @if (campgrounds.length > 0) {
+  <div class="table-wrapper">
+    <div class="table-title">
+      <span>營地、分區與營位列表</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>層級</th>
+          <th>名稱／編號</th>
+          <th>狀態</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (filtered.length === 0) {
+          <tr>
+            <td colspan="4" class="empty-row">
+              沒有符合篩選條件的營地。
+            </td>
+          </tr>
+        }
+        @for (c of filtered; track c.id) {
+          <tr class="row-campground">
+            <td><span class="level-badge campground">營地</span></td>
+            <td class="name-cell">
+              @if (c.coverImageUrl) {
+                <img [src]="apiHost + c.coverImageUrl" alt="{{ c.name }}" class="thumb" />
+              } @else {
+                <div class="thumb no-thumb"></div>
+              }
+              <div>
+                <span class="row-name">{{ c.name }}</span>
+                <span class="row-meta">{{ c.zoneCount }} 個營區・{{ c.siteCount }} 個營位</span>
+              </div>
+            </td>
+            <td>
+              <span [class]="c.status === CampgroundStatus.Active ? 'status active' : 'status draft'">
+                {{ c.status === CampgroundStatus.Active ? '上架中' : '草稿' }}
+              </span>
+            </td>
+            <td class="actions">
+              <a [routerLink]="['/ownerCenter/camps', c.id]" class="btn-edit">修改</a>
+              <button (click)="delete(c.id, c.name)" class="btn-delete">刪除</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
 </div>
