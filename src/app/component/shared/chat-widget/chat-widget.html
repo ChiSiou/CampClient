@@ -29,7 +29,7 @@
           >
             @if (!avatarErrorIds.has(conv.otherUserId)) {
               <img
-                [src]="avatarUrl(conv.otherUserId)"
+                [src]="avatarUrl(conv.otherUserId, conv.otherUserAvatar)"
                 (error)="onAvatarError(conv.otherUserId)"
                 alt=""
               />
@@ -56,7 +56,7 @@
           <div class="header-avatar">
             @if (!avatarErrorIds.has(activeConversation.otherUserId)) {
               <img
-                [src]="avatarUrl(activeConversation.otherUserId)"
+                [src]="avatarUrl(activeConversation.otherUserId, activeConversation.otherUserAvatar)"
                 (error)="onAvatarError(activeConversation.otherUserId)"
                 alt=""
               />

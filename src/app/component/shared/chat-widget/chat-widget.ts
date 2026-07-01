@@ -67,8 +67,8 @@ export class ChatWidget implements OnInit, OnDestroy {
     );
 
     this.subs.push(
-      this.chatService.onOpenChatRequest().subscribe(({ otherUserId, otherUserName }) => {
-        this.openChatWithUser(otherUserId, otherUserName);
+      this.chatService.onOpenChatRequest().subscribe(({ otherUserId, otherUserName, otherUserAvatar }) => {
+        this.openChatWithUser(otherUserId, otherUserName, otherUserAvatar);
       }),
     );
   }
@@ -108,11 +108,13 @@ export class ChatWidget implements OnInit, OnDestroy {
   }
 
   // 通用版本：其他元件（聯絡營主按鈕、聯絡客人按鈕）透過 ChatService.openChatWith() 呼叫到這裡
-  openChatWithUser(otherUserId: number, otherUserName: string) {
+  openChatWithUser(otherUserId: number, otherUserName: string, otherUserAvatar?: string) {
     this.isOpen = true;
 
     const existing = this.conversations.find((c) => c.otherUserId === otherUserId);
     if (existing) {
+      if (otherUserAvatar) existing.otherUserAvatar = otherUserAvatar;
+      if (otherUserName) existing.otherUserName = otherUserName;
       this.openConversation(existing);
       return;
     }
@@ -120,6 +122,7 @@ export class ChatWidget implements OnInit, OnDestroy {
     this.activeConversation = {
       otherUserId,
       otherUserName,
+      otherUserAvatar,
       lastMessage: '',
       lastMessageTime: '',
       unreadCount: 0,
@@ -240,8 +243,8 @@ export class ChatWidget implements OnInit, OnDestroy {
     return this.conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
   }
 
-  avatarUrl(userId: number) {
-    return `${environment.apiUrl}/Member/GetProfilePhoto/${userId}`;
+  avatarUrl(userId: number, customUrl?: string) {
+    return customUrl ?? `${environment.apiUrl}/Member/GetProfilePhoto/${userId}`;
   }
 
   onAvatarError(userId: number) {
