@@ -64,6 +64,7 @@ export const routes: Routes = [
         children: [
           {
             path: 'camps',
+            pathMatch: 'full',
             loadComponent: () =>
               import('./component/owner-management/camps/camps').then((m) => m.Camps),
           },

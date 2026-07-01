@@ -14,12 +14,18 @@ import { CampgroundCreateDto } from '../../../../interfaces/camp-management.inte
 export class CampAdd {
   form: CampgroundCreateDto = {
     name: '',
+    phone: '',
+    elevation: 0,
     description: '',
-    address: '',
+    website: '',
+    basePrice: 0,
+    area: '',
     latitude: 0,
     longitude: 0,
-    tagIds: [],
+    rules: '',
+    highlights: '',
     facilityIds: [],
+    tagIds: [],
   };
   submitting = false;
   error = '';
@@ -27,8 +33,8 @@ export class CampAdd {
   constructor(private campService: CampManagementService, private router: Router) {}
 
   submit() {
-    if (!this.form.name.trim() || !this.form.address.trim()) {
-      this.error = '請填寫必填欄位（名稱、地址）';
+    if (!this.form.name.trim() || !this.form.area.trim()) {
+      this.error = '請填寫必填欄位（名稱、地區）';
       return;
     }
     this.submitting = true;
