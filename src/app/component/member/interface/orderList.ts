@@ -9,7 +9,11 @@ export interface OrderList {
 
 export interface OrderDetail {
   orderDetailId: number;
-  campId: number;
+  itemType: 'camp' | 'equipment';
+  campId?: number | null;
+  spotId?: number | null;
+  equipmentId?: number | null;
+  variantId?: number | null;
   campName: string;
   totalAmount: number;
   checkinDate: string;

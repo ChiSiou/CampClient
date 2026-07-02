@@ -67,7 +67,7 @@ export class Liked implements OnInit {
     private sPostInteract: SPostInteract,
     private sforum: Sforum,
     private router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadLikedItems();
@@ -76,64 +76,60 @@ export class Liked implements OnInit {
   private loadLikedItems() {
     const userId = this.memberService.getid();
 
-    const camps$ = this.http
-      .get<LikedCampDto[]>(`${this.campApiUrl}`)
-      .pipe(
-        map((camps) =>
-          camps.map<LikedItem>((c) => ({
-            id: `camp-${c.campId}`,
-            type: 'camp',
-            refId: c.campId,
-            title: c.campName,
-            imageUrl: c.imageUrl,
-            likedAt: c.likedAt,
-            area: c.area,
-            elevation: c.elevation,
-            basePrice: c.basePrice,
-            tags: c.tags,
-          }))
-        ),
-        catchError(() => of([] as LikedItem[]))
-      );
+    const camps$ = this.http.get<LikedCampDto[]>(`${this.campApiUrl}`).pipe(
+      map((camps) =>
+        camps.map<LikedItem>((c) => ({
+          id: `camp-${c.campId}`,
+          type: 'camp',
+          refId: c.campId,
+          title: c.campName,
+          imageUrl: c.imageUrl,
+          likedAt: c.likedAt,
+          area: c.area,
+          elevation: c.elevation,
+          basePrice: c.basePrice,
+          tags: c.tags,
+        })),
+      ),
+      catchError(() => of([] as LikedItem[])),
+    );
 
-    const posts$ = this.sPostInteract
-      .getPostInteracts(undefined, userId)
-      .pipe(
-        switchMap((interacts) => {
-          const liked = interacts.filter((i) => i.likePostId != null);
-          if (liked.length === 0) return of([] as LikedItem[]);
+    const posts$ = this.sPostInteract.getPostInteracts(undefined, userId).pipe(
+      switchMap((interacts) => {
+        const liked = interacts.filter((i) => i.likePostId != null);
+        if (liked.length === 0) return of([] as LikedItem[]);
 
-          const postCalls = liked.map((i) =>
-            this.sforum.getPostById(i.likePostId!).pipe(
-              map<IForum, LikedItem>((post) => ({
-                id: `post-${post.postId}`,
-                type: 'post',
-                refId: post.postId,
-                title: post.title,
-                imageUrl: post.moreImages?.[0]?.imageUrl ?? null,
-                likedAt: post.postDate ?? '',
-                category: post.postCategoryName ?? '',
-                authorName: post.userName ?? '',
-                excerpt: post.mainContent,
-                likeCount: post.likeCount ?? 0,
-                commentCount: post.commentCount ?? 0,
-                postDate: post.postDate ?? '',
-                interactId: i.postInteractId,
-              })),
-              catchError(() => of(null))
-            )
-          );
+        const postCalls = liked.map((i) =>
+          this.sforum.getPostById(i.likePostId!).pipe(
+            map<IForum, LikedItem>((post) => ({
+              id: `post-${post.postId}`,
+              type: 'post',
+              refId: post.postId,
+              title: post.title,
+              imageUrl: post.moreImages?.[0]?.imageUrl ?? null,
+              likedAt: post.postDate ?? '',
+              category: post.postCategoryName ?? '',
+              authorName: post.userName ?? '',
+              excerpt: post.mainContent,
+              likeCount: post.likeCount ?? 0,
+              commentCount: post.commentCount ?? 0,
+              postDate: post.postDate ?? '',
+              interactId: i.postInteractId,
+            })),
+            catchError(() => of(null)),
+          ),
+        );
 
-          return forkJoin(postCalls).pipe(
-            map((results) => results.filter((r): r is LikedItem => r !== null))
-          );
-        }),
-        catchError(() => of([] as LikedItem[]))
-      );
+        return forkJoin(postCalls).pipe(
+          map((results) => results.filter((r): r is LikedItem => r !== null)),
+        );
+      }),
+      catchError(() => of([] as LikedItem[])),
+    );
 
     forkJoin({ camps: camps$, posts: posts$ }).subscribe(({ camps, posts }) => {
       this.allItems = [...camps, ...posts].sort(
-        (a, b) => new Date(b.likedAt).getTime() - new Date(a.likedAt).getTime()
+        (a, b) => new Date(b.likedAt).getTime() - new Date(a.likedAt).getTime(),
       );
     });
   }
@@ -213,5 +209,4 @@ export class Liked implements OnInit {
   gotoPost(id: number) {
     this.router.navigate(['post', id]);
   }
-
 }

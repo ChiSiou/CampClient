@@ -161,9 +161,18 @@ export class MemberService {
     formData.append('idNumber', data.idNumber);
     formData.append('realname', data.realName);
     formData.append('address', data.address);
-    formData.append('file', file);
+    formData.append('companyName', data.companyName);
+    formData.append('contactPhone', data.contactPhone);
+    formData.append('bankName', data.bankName);
+    formData.append('bankAccount', data.bankAccount);
+    formData.append('bankAccountName', data.bankAccountName);
+    formData.append('file', file, file.name);
 
     return this.http.post<ServiceResult>(`${this.apiUrl}/OwnerRegister`, formData);
+  }
+
+  ownerEdit(data: FormData) {
+    return this.http.put<ServiceResult>(`${this.apiUrl}/OwnerEdit`, data);
   }
 
   uploadOwnerProfilePhoto(file: File) {

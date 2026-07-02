@@ -1,0 +1,121 @@
+<main class="income-page">
+  <section class="income-hero">
+    <div>
+      <p class="page-label">Income Dashboard</p>
+      <h1>營主收入報表</h1>
+      <p>查看可提領餘額、每月收入趨勢、結算明細與提領狀態。</p>
+    </div>
+    <button type="button" class="refresh-btn" (click)="loadDashboard()" [disabled]="loading">
+      {{ loading ? '更新中...' : '重新整理' }}
+    </button>
+  </section>
+
+  @if (loading) {
+    <section class="state-panel">載入收入資料中...</section>
+  } @else if (errorMessage) {
+    <section class="state-panel error">{{ errorMessage }}</section>
+  } @else if (dashboard) {
+    <section class="summary-grid">
+      <article class="summary-card primary">
+        <span>可提領餘額</span>
+        <strong>{{ formatCurrency(dashboard.balance) }}</strong>
+        <p>處理中提領：{{ formatCurrency(dashboard.pendingWithdrawalAmount) }}</p>
+      </article>
+      <article class="summary-card">
+        <span>本月總收入</span>
+        <strong>{{ formatCurrency(dashboard.thisMonthRevenue) }}</strong>
+        <p>平台費：{{ formatCurrency(dashboard.thisMonthPlatformFee) }}</p>
+      </article>
+      <article class="summary-card">
+        <span>本月淨收入</span>
+        <strong>{{ formatCurrency(dashboard.thisMonthNetRevenue) }}</strong>
+        <p>扣除平台費後收入</p>
+      </article>
+      <article class="summary-card">
+        <span>已結算訂單</span>
+        <strong>{{ dashboard.settledOrderCount }}</strong>
+        <p>最後結算：{{ dashboard.lastSettledAt ? (dashboard.lastSettledAt | date: 'yyyy/MM/dd') : '尚無紀錄' }}</p>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel">
+        <div class="panel-header">
+          <h2>近 6 個月淨收入</h2>
+          <span>總淨收入 {{ formatCurrency(dashboard.totalNetRevenue) }}</span>
+        </div>
+        <div class="bar-chart">
+          @for (item of dashboard.monthlyRevenue; track item.year + '-' + item.month) {
+            <div class="bar-item">
+              <div class="bar-value">{{ formatCurrency(item.netRevenue) }}</div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.height.px]="barHeight(item.netRevenue)"></div>
+              </div>
+              <strong>{{ item.label }}</strong>
+              <small>{{ item.orderCount }} 筆</small>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="panel policy-panel">
+        <div class="panel-header compact"><h2>提領規則</h2></div>
+        <dl>
+          <div><dt>最低提領</dt><dd>{{ formatCurrency(dashboard.withdrawalPolicy.minWithdrawalAmount) }}</dd></div>
+          <div><dt>最高提領</dt><dd>{{ formatCurrency(dashboard.withdrawalPolicy.maxWithdrawalAmount) }}</dd></div>
+          <div><dt>本月免費次數</dt><dd>{{ dashboard.withdrawalPolicy.remainingFreeTimes }} / {{ dashboard.withdrawalPolicy.monthlyFreeTimes }}</dd></div>
+          <div><dt>跨行手續費</dt><dd>{{ formatCurrency(dashboard.withdrawalPolicy.interbankFee) }}</dd></div>
+          <div><dt>入帳天數</dt><dd>{{ dashboard.withdrawalPolicy.clearanceDays }} 天</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-header">
+        <h2>近期收入明細</h2>
+        <span>總收入 {{ formatCurrency(dashboard.totalRevenue) }} / 平台費 {{ formatCurrency(dashboard.totalPlatformFee) }}</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>訂單編號</th><th>總額</th><th>平台費</th><th>淨收入</th><th>狀態</th><th>結算日</th></tr></thead>
+          <tbody>
+            @for (record of dashboard.recentRevenueRecords; track record.orderId) {
+              <tr>
+                <td>#{{ record.orderNumber || record.orderId }}</td>
+                <td>{{ formatCurrency(record.totalAmount) }}</td>
+                <td>{{ formatCurrency(record.platformFee) }}</td>
+                <td class="strong">{{ formatCurrency(record.netRevenue) }}</td>
+                <td><span class="status" [ngClass]="statusClass(record.status)">{{ revenueStatusLabel(record.status) }}</span></td>
+                <td>{{ record.createdAt | date: 'yyyy/MM/dd' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="empty">目前沒有收入紀錄</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-header"><h2>近期提領紀錄</h2></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>申請編號</th><th>金額</th><th>帳號</th><th>狀態</th><th>申請日</th></tr></thead>
+          <tbody>
+            @for (item of dashboard.recentWithdrawals; track item.id) {
+              <tr>
+                <td>#{{ item.id }}</td>
+                <td class="strong">{{ formatCurrency(item.amount) }}</td>
+                <td>{{ item.bankAccount }}</td>
+                <td><span class="status" [ngClass]="statusClass(item.status)">{{ withdrawalStatusLabel(item.status) }}</span></td>
+                <td>{{ item.processedAt | date: 'yyyy/MM/dd' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty">目前沒有提領紀錄</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</main>

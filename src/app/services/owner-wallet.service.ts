@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {
+  OwnerIncomeDashboardDto,
   OwnerWalletDto,
   WithdrawalRequestDto,
   WithdrawalResultDto,
@@ -13,11 +14,15 @@ export class OwnerWalletService {
 
   constructor(private http: HttpClient) {}
 
-  getWallet(ownerId: number) {
-    return this.http.get<OwnerWalletDto>(`${this.base}/OwnerWallet/${ownerId}`);
+  getWallet() {
+    return this.http.get<OwnerWalletDto>(this.base + '/OwnerWallet/me');
   }
 
-  withdraw(ownerId: number, body: WithdrawalRequestDto) {
-    return this.http.post<WithdrawalResultDto>(`${this.base}/OwnerWallet/${ownerId}/withdraw`, body);
+  getDashboard() {
+    return this.http.get<OwnerIncomeDashboardDto>(this.base + '/OwnerWallet/dashboard');
+  }
+
+  withdraw(body: WithdrawalRequestDto) {
+    return this.http.post<WithdrawalResultDto>(this.base + '/OwnerWallet/withdraw', body);
   }
 }

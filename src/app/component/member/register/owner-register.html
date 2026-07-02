@@ -1,61 +1,68 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<div class="register-page">
+  <div class="register-card">
+    <div class="logo">
+      <h1>CampGo</h1>
+      <p>申請成為營主，建立你的營地管理身分。</p>
+    </div>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CampGo 註冊</title>
-  <link rel="stylesheet" href="./owner-register.css">
-</head>
+    <form class="register-form" (ngSubmit)="submitowner()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="companyName">公司/營業名稱</label>
+          <input id="companyName" [(ngModel)]="ownerData.companyName" name="companyName" type="text" placeholder="請輸入公司或營業名稱" />
+        </div>
 
-<body>
+        <div class="form-group">
+          <label for="realName">負責人姓名</label>
+          <input id="realName" [(ngModel)]="ownerData.realName" name="realName" type="text" placeholder="請輸入負責人姓名" />
+        </div>
 
-  <div class="register-page">
-    <div class="register-card">
+        <div class="form-group">
+          <label for="idNumber">身分證字號/統一編號</label>
+          <input id="idNumber" [(ngModel)]="ownerData.idNumber" name="idNumber" type="text" placeholder="請輸入身分證字號或統一編號" />
+        </div>
 
-      <div class="logo">
-        <div class="icon">🏕️</div>
-        <h1>CampGo</h1>
-        <p>加入我們，開始你的露營旅程</p>
+        <div class="form-group">
+          <label for="contactPhone">聯絡電話</label>
+          <input id="contactPhone" [(ngModel)]="ownerData.contactPhone" name="contactPhone" type="tel" placeholder="請輸入聯絡電話" />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="address">聯絡地址</label>
+          <input id="address" [(ngModel)]="ownerData.address" name="address" type="text" placeholder="請輸入聯絡地址" />
+        </div>
+
+        <div class="form-group">
+          <label for="bankName">銀行名稱</label>
+          <input id="bankName" [(ngModel)]="ownerData.bankName" name="bankName" type="text" placeholder="例：台灣銀行" />
+        </div>
+
+        <div class="form-group">
+          <label for="bankAccount">銀行帳號</label>
+          <input id="bankAccount" [(ngModel)]="ownerData.bankAccount" name="bankAccount" type="text" placeholder="請輸入銀行帳號" />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="bankAccountName">帳戶戶名</label>
+          <input id="bankAccountName" [(ngModel)]="ownerData.bankAccountName" name="bankAccountName" type="text" placeholder="請輸入帳戶戶名" />
+        </div>
       </div>
 
-      <form class="register-form">
-
-        <div class="form-group">
-          <label for="name">姓名</label>
-          <input [(ngModel)]="ownerData.realName" name="name" type="text" placeholder="請輸入姓名" />
+      <div class="photo-upload">
+        <div class="upload-copy">
+          <label class="file-btn" for="owner-license-file">上傳證件/營業登記照片</label>
+          <input id="owner-license-file" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+          <span>{{ selectedFile?.name || '尚未選擇檔案' }}</span>
         </div>
 
-        <div class="form-group">
-          <label for="phone">身分證字號</label>
-          <input [(ngModel)]="ownerData.idNumber" name="idNumber" type="idNumber" placeholder="請輸入 身分證字號" />
-        </div>
+        @if (previewUrl) {
+          <img [src]="previewUrl" class="preview-img" alt="證件照片預覽" />
+        }
+      </div>
 
-        <div class="form-group">
-          <label for="Address">地址</label>
-          <input [(ngModel)]="ownerData.address" name="Address" type="Address" placeholder="請輸入 地址" />
-        </div>
-
-        <div class="form-group photo-upload">
-          <label class="file-btn">
-            選擇圖片
-            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
-          </label>
-
-
-          <button type="button" class="upload-btn" (click)="submitowner()">
-            送出
-          </button>@if (previewUrl) {
-          <img [src]="previewUrl" class="preview-img" />
-          }
-        </div>
-
-
-      </form>
-
-    </div>
+      <button type="submit" class="upload-btn" [disabled]="loading">
+        {{ loading ? '送出中...' : '送出申請' }}
+      </button>
+    </form>
   </div>
-
-</body>
-
-</html>
+</div>

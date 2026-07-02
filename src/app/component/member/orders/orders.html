@@ -2,7 +2,7 @@
   <div class="orders-header">
     <div>
       <h2>我的訂單</h2>
-      <p>查看你的露營預訂紀錄與付款狀態</p>
+      <p>查看露營與裝備訂單，管理付款、取消與後續評論。</p>
     </div>
   </div>
 
@@ -35,8 +35,14 @@
   <div class="orders-toolbar">
     <label class="count-control">
       顯示筆數
-      <input type="number" min="1" step="1" [(ngModel)]="displayCount" (change)="onDisplayCountChange()"
-        (blur)="onDisplayCountChange()" />
+      <input
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="displayCount"
+        (change)="onDisplayCountChange()"
+        (blur)="onDisplayCountChange()"
+      />
     </label>
 
     <span class="orders-summary">
@@ -45,121 +51,138 @@
   </div>
 
   <div class="orders-list">
-    <!-- 訂單卡片 -->
+    @for (data of displayedOrders; track data.orderId) {
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <span class="order-no">訂單編號：{{ data.orderNumber }}</span>
+            <p class="order-date">下單日期：{{ data.orderDate | date: 'yyyy-MM-dd' }}</p>
+          </div>
 
-    @for(data of displayedOrders; track data.orderId){
-
-    <div class="order-card">
-      <div class="order-top">
-        <div>
-          <span class="order-no">訂單編號： {{data.orderNumber}}</span>
-          <p class="order-date">下訂日期：{{data.orderDate| date:'yyyy-MM-dd'}}</p>
+          <span class="status" [ngClass]="getOrderStatusClass(data.status)">
+            {{ getOrderStatusText(data.status) }}
+          </span>
         </div>
 
-        <span class="status" [ngClass]="getOrderStatusClass(data.status)">
-          {{ getOrderStatusText(data.status) }}
-        </span>
-      </div>
-      @for (detail of data.details; track detail.orderDetailId){
-      <div class="order-content">
-        <img [src]="detail.campImageUrl || ''" alt="營地圖片" class="camp-img" />
+        @for (detail of data.details; track detail.orderDetailId) {
+          <div class="order-content">
+            <img [src]="detail.campImageUrl || ''" [alt]="detail.campName" class="camp-img" />
 
-        <div class="order-info">
-          <h3>{{detail.campName}}</h3>
+            <div class="order-info">
+              <h3>{{ detail.campName }}</h3>
 
-          <div class="info-row">
-            <span>入住日期</span>
-            <strong>{{detail.checkinDate}}</strong>
+              @if (detail.itemType === 'camp') {
+                <div class="info-row">
+                  <span>入住日期</span>
+                  <strong>{{ detail.checkinDate }}</strong>
+                </div>
+
+                <div class="info-row">
+                  <span>退房日期</span>
+                  <strong>{{ detail.checkoutDate }}</strong>
+                </div>
+              }
+
+              <div class="info-row">
+                <span>{{ detail.itemType === 'camp' ? '住宿類型' : '裝備規格' }}</span>
+                <strong>{{ detail.accomType || '-' }}</strong>
+              </div>
+
+              @if (data.status === 4) {
+                @if (getCampId(detail); as campId) {
+                  <app-popup [campId]="campId" [orderId]="data.orderId" />
+                }
+              }
+            </div>
+          </div>
+          <hr />
+        }
+
+        <div class="order-bottom">
+          <div class="price">
+            訂單金額
+            <strong>NT{{ data.totalAmount }}</strong>
           </div>
 
-          <div class="info-row">
-            <span>退房日期</span>
-            <strong>{{detail.checkoutDate}}</strong>
-          </div>
+          @if (data.status === 0) {
+            <div class="actions">
+              <button
+                class="btn outline"
+                [disabled]="processingOrderId === data.orderId"
+                (click)="cancelOrder(data)"
+              >
+                {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
+              </button>
+              <button
+                class="btn primary"
+                [disabled]="processingOrderId === data.orderId"
+                (click)="resumePayment(data)"
+              >
+                {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
+              </button>
+            </div>
+          } @else {
+            <div class="actions">
+              @if (getPrimaryDetail(data); as primaryDetail) {
+                @if (getDetailLink(primaryDetail); as detailLink) {
+                  <button class="btn outline" [routerLink]="detailLink">查看詳情</button>
+                }
+              }
 
-          <div class="info-row">
-            <span>營位類型</span>
-            <strong>{{detail.accomType}}</strong>
-          </div>
-
-          @if (data.status === 4) {
-            <app-popup [campId]="detail.campId" [orderId]="data.orderId" />
+              @if (getContactDetail(data); as contactDetail) {
+                <button class="btn primary" (click)="contactOwner(contactDetail)">聯絡營主</button>
+              } @else {
+                <button class="btn primary" disabled>聯絡營主</button>
+              }
+            </div>
           }
         </div>
-      </div>
-      <hr>
-      }
 
-      <div class="order-bottom">
-        <div class="price">
-          總金額
-          <strong>NT{{data.totalAmount}}</strong>
-        </div>
-
-        @if (data.status === 0) {
-        <!-- 待付款訂單：可能是付款到一半放棄/瀏覽器當機重開，這裡讓使用者能繼續付款或主動取消 -->
-        <div class="actions">
-          <button class="btn outline" [disabled]="processingOrderId === data.orderId" (click)="cancelOrder(data)">
-            {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
-          </button>
-          <button class="btn primary" [disabled]="processingOrderId === data.orderId" (click)="resumePayment(data)">
-            {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
-          </button>
-        </div>
-        } @else {
-          <div class="actions">
-            <button class="btn outline">查看詳情</button>
-            @if (data.details[0]?.ownerId) {
-              <button class="btn primary" (click)="contactOwner(data.details[0])">聯絡營主</button>
-            } @else {
-              <button class="btn primary" disabled>聯絡營主</button>
-            }
-          </div>
+        @if (pendingActionError && processingOrderId === null) {
+          <p class="order-action-error">{{ pendingActionError }}</p>
         }
       </div>
-
-      @if (pendingActionError && processingOrderId === null) {
-      <p class="order-action-error">{{ pendingActionError }}</p>
-      }
-    </div>
-
     }
 
     @if (totalFilteredCount === 0) {
-    <section class="empty-orders">
-      <div class="empty-orders__copy">
-        <p class="empty-orders__eyebrow">尚無訂單</p>
-        <h3>先收藏下一趟露營靈感</h3>
-        <p>目前沒有符合條件的訂單，先看看大家最近喜歡的熱門營地。</p>
-      </div>
+      <section class="empty-orders">
+        <div class="empty-orders__copy">
+          <p class="empty-orders__eyebrow">目前沒有訂單</p>
+          <h3>還沒有任何露營或裝備訂單</h3>
+          <p>可以先瀏覽推薦營地，找到喜歡的行程後再建立訂單。</p>
+        </div>
 
-      @if (popularCamps.length > 0) {
-      <div class="popular-camps-grid">
-        @for (camp of popularCamps; track camp.id) {
-        <app-camp-card [camp]="camp" />
+        @if (popularCamps.length > 0) {
+          <div class="popular-camps-grid">
+            @for (camp of popularCamps; track camp.id) {
+              <app-camp-card [camp]="camp" />
+            }
+          </div>
+        } @else if (loadingPopularCamps) {
+          <p class="popular-camps-status">推薦營地載入中...</p>
+        } @else {
+          <a class="browse-camps-link" routerLink="/search">瀏覽全部營地</a>
         }
-      </div>
-      } @else if (loadingPopularCamps) {
-      <p class="popular-camps-status">熱門營地載入中...</p>
-      } @else {
-      <a class="browse-camps-link" routerLink="/search">瀏覽全部營地</a>
-      }
-    </section>
+      </section>
     }
-
   </div>
 
   @if (totalFilteredCount > 0) {
-  <div class="orders-pagination">
-    <button class="page-btn" type="button" [disabled]="currentPage === 1" (click)="goToPreviousPage()">
-      上一頁
-    </button>
+    <div class="orders-pagination">
+      <button class="page-btn" type="button" [disabled]="currentPage === 1" (click)="goToPreviousPage()">
+        上一頁
+      </button>
 
-    <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
+      <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 頁</span>
 
-    <button class="page-btn" type="button" [disabled]="currentPage === totalPages" (click)="goToNextPage()">
-      下一頁
-    </button>
-  </div>
+      <button
+        class="page-btn"
+        type="button"
+        [disabled]="currentPage === totalPages"
+        (click)="goToNextPage()"
+      >
+        下一頁
+      </button>
+    </div>
   }
 </div>

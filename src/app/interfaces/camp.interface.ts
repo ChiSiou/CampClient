@@ -557,3 +557,48 @@ export interface WithdrawalResultDto {
   actualAmount: number;
   message: string;
 }
+
+export interface OwnerIncomeDashboardDto {
+  balance: number;
+  totalRevenue: number;
+  totalPlatformFee: number;
+  totalNetRevenue: number;
+  thisMonthRevenue: number;
+  thisMonthPlatformFee: number;
+  thisMonthNetRevenue: number;
+  pendingWithdrawalAmount: number;
+  settledOrderCount: number;
+  lastSettledAt: string | null;
+  monthlyRevenue: OwnerMonthlyRevenueItem[];
+  recentRevenueRecords: OwnerRevenueRecordItem[];
+  recentWithdrawals: OwnerWithdrawalRecordItem[];
+  withdrawalPolicy: WithdrawalPolicyInfo;
+}
+
+export interface OwnerMonthlyRevenueItem {
+  year: number;
+  month: number;
+  label: string;
+  totalAmount: number;
+  platformFee: number;
+  netRevenue: number;
+  orderCount: number;
+}
+
+export interface OwnerRevenueRecordItem {
+  orderId: number;
+  orderNumber: string;
+  totalAmount: number;
+  platformFee: number;
+  netRevenue: number;
+  status: number;
+  createdAt: string;
+}
+
+export interface OwnerWithdrawalRecordItem {
+  id: number;
+  amount: number;
+  bankAccount: string;
+  status: number;
+  processedAt: string;
+}

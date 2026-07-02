@@ -2,7 +2,7 @@
   <div class="edit-card">
     <div class="edit-header">
       <h2>編輯會員資料</h2>
-      <p>更新你的基本資料；如果不需要修改密碼，密碼欄位可以留空。</p>
+      <p>更新你的基本資料、大頭貼與密碼。</p>
     </div>
 
     @if (message) {
@@ -12,6 +12,31 @@
     }
 
     <form class="edit-form" (ngSubmit)="submitEdit()">
+      <section class="avatar-section" aria-label="會員大頭貼">
+        <div class="avatar-preview">
+          @if (profilePhotoPreview && !imageLoadFailed) {
+            <img [src]="profilePhotoPreview" alt="會員大頭貼預覽" (error)="onAvatarError()" />
+          } @else {
+            <span class="avatar-placeholder">{{ avatarInitial }}</span>
+          }
+        </div>
+
+        <div class="avatar-actions">
+          <label class="upload-btn" for="profile-photo">選擇大頭貼</label>
+          <input
+            id="profile-photo"
+            class="file-input"
+            type="file"
+            name="profilePhoto"
+            accept="image/*"
+            (change)="onProfilePhotoSelected($event)"
+          />
+          <p class="file-name">
+            {{ selectedProfilePhoto?.name || '尚未選擇新圖片' }}
+          </p>
+        </div>
+      </section>
+
       <div class="form-group">
         <label for="member-name">姓名</label>
         <input
@@ -44,16 +69,16 @@
 
       <div class="password-box">
         <h3>修改密碼</h3>
-        <p>若不想修改密碼，請將以下欄位留空。</p>
+        <p>若不需要修改密碼，以下欄位可留空。</p>
 
         <div class="form-group">
-          <label for="old-password">目前密碼</label>
+          <label for="old-password">舊密碼</label>
           <input
             id="old-password"
             type="password"
             name="oldPassword"
             [(ngModel)]="memberData.oldPassword"
-            placeholder="請輸入目前密碼"
+            placeholder="請輸入舊密碼"
             autocomplete="current-password"
           />
         </div>
@@ -86,7 +111,7 @@
       <div class="form-actions">
         <button type="button" class="cancel-btn" routerLink="/member-center">取消</button>
         <button type="submit" class="save-btn" [disabled]="submitting">
-          {{ submitting ? '儲存中...' : '儲存修改' }}
+          {{ submitting ? '儲存中...' : '儲存變更' }}
         </button>
       </div>
     </form>

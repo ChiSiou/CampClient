@@ -46,7 +46,7 @@ export class ItineraryList implements OnInit {
   constructor(
     private memberService: MemberService,
     private paymentService: PaymentService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadItineraries();
@@ -70,20 +70,24 @@ export class ItineraryList implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = '行程清單載入失敗，請稍後再試。';
+        this.errorMessage = '行程資料載入失敗，請稍後再試。';
         this.loading = false;
       },
     });
   }
 
   private isPaidOrder(order: OrderList): boolean {
-    return order.status === 1 && order.details.length > 0;
+    return order.status === 1 && order.details.some((detail) => this.isCampDetail(detail));
   }
 
   private toItineraryItems(order: OrderList): ItineraryItem[] {
     const detailsByCamp = new Map<number, OrderDetail[]>();
 
     for (const detail of order.details) {
+      if (!this.isCampDetail(detail)) {
+        continue;
+      }
+
       const details = detailsByCamp.get(detail.campId) ?? [];
       details.push(detail);
       detailsByCamp.set(detail.campId, details);
@@ -107,7 +111,7 @@ export class ItineraryList implements OnInit {
         orderDate: order.orderDate,
         totalAmount: details.reduce((sum, detail) => sum + (detail.totalAmount ?? 0), 0),
         status: order.status,
-        campId: first.campId,
+        campId: first.campId!,
         campName: first.campName,
         campImageUrl: first.campImageUrl,
         checkinDate,
@@ -118,6 +122,10 @@ export class ItineraryList implements OnInit {
         tripStatus: this.getTripStatus(checkinDate, checkoutDate),
       };
     });
+  }
+
+  private isCampDetail(detail: OrderDetail): detail is OrderDetail & { campId: number } {
+    return detail.itemType === 'camp' && typeof detail.campId === 'number';
   }
 
   private getTripStatus(
