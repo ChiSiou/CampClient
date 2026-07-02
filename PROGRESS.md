@@ -305,6 +305,26 @@
 **E. `jumpToDate()` 接線**（`gantt-calendar`）
 - 原本定義了沒人呼叫。工具列加了 `<input type="date">`，挑日期直接把甘特圖視窗跳過去，不用一直按「下 10 天」。這就是 `jumpToDate` 當初要做的事。
 
+### 🟢 標籤 icon（tag IconUrl）（2026-07-02）
+
+各處的營地標籤（森林系/海景/高山/溪流旁/寵物友善/親子適合）加上專屬 icon。
+
+**做法演進**：一開始把 `Tags.IconUrl` 存 Iconify CDN 網址（`https://api.iconify.design/mdi/*.svg`），後來改成**下載到本地** `public/assets/tag-icons/*.svg`、DB 存 `assets/tag-icons/檔名.svg`，不依賴外網。**icon 顏色**：SVG 原本 `fill="currentColor"` 放 `<img>` 會變黑，已把 6 個檔案改成 `fill="#647e30"`（配標籤文字綠）。
+
+**後端**：新增共用 `CampTagDto { TagName, IconUrl }`。把卡片（`SearchService`/`ExplorationService` 的 `CampSearchResultDto.Tags`）、收藏（`CampLikeController` 的 `LikedCampDto.Tags`）、搜尋篩選環境/政策標籤（`FilterTagItem` 加 `IconUrl`）的 tag 從 `string[]` 改成帶 icon 的物件。**順手修了收藏頁既有 bug**：tag 查詢 `RefType` 用錯 `"camp"`（實際是 `"Campground"`），本來收藏頁完全撈不到 tag。
+
+**前端**：`camp-card`、`liked`、`search-filters` 都改成渲染 `<img [src]="tag.iconUrl">` + 名稱；`CampSearchResultDto.tags` / liked 的 tags 型別 `string[]` → `CampTagItem[]`；`FilterTagItem` 加 `iconUrl`。營區詳情頁本來就有 iconUrl 渲染，只差 DB 值。論壇（自己的貼文標籤）、Zone（顯示的是設施）不涉及營地 tag，未動。
+
+**新增 tag 時**：圖檔丟 `public/assets/tag-icons/`，DB `IconUrl` 填 `assets/tag-icons/檔名.svg`。不填只會沒圖、不會壞。
+
+### ⚠️ 踩雷筆記：`.angular/cache` 髒掉造成 NG0912／頁面超慢（2026-07-02）
+
+**症狀**：搜尋頁超級慢，F12 狂噴 `NG0912`（每個 PrimeNG 元件都「component ID 重複」）+ `NG01203`（no value accessor for `rating`）+ `NG0201`。`ng serve` 重啟**無效**。
+
+**原因**：不是程式碼（`ng build` 乾淨、`node_modules` 只有一份 primeng）。是**當天大量改檔 + 一次 git merge 讓 `.angular/cache`（Vite 增量建置快取）留下新舊兩份模組記錄**，PrimeNG 被登記兩次。`ng serve` 重啟會沿用硬碟上的髒快取，所以清不掉。
+
+**解法**：停掉 `ng serve` → 刪 `.angular/cache`（和 `node_modules/.vite`）→ 重開 → `Ctrl+Shift+R`。以後遇到「莫名 NG0912／元件重複／改了沒反應」第一招就是清這個快取。
+
 ## 📌 下次接續：待辦事項（不要漏掉）
 
 1. ~~**後端在等 ngrok 設定好**~~ **（已可暫緩）**：付款成功 → 訂單狀態變已付款**現在靠 OrderResultURL 在本機就通、已實測成功**。ngrok 只剩 server-to-server `ReturnUrl` 備援，上雲端再處理。
