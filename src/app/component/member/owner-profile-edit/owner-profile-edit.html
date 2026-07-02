@@ -1,0 +1,91 @@
+<main class="edit-page">
+  <section class="edit-card">
+    <div class="edit-header">
+      <div>
+        <p class="page-label">Owner Profile</p>
+        <h1>編輯營主資料</h1>
+      </div>
+      <button type="button" class="secondary-btn" routerLink="/ownerCenter">返回營主中心</button>
+    </div>
+
+    @if (message) {
+      <div class="form-message" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+        {{ message }}
+      </div>
+    }
+
+    <form class="edit-form" (ngSubmit)="submitOwnerEdit()">
+      <section class="avatar-section">
+        <div class="avatar-preview">
+          @if (avatarPreviewUrl) {
+            <img [src]="avatarPreviewUrl" alt="營主大頭貼預覽" />
+          } @else {
+            <span>{{ ownerData.realName || 'Owner' }}</span>
+          }
+        </div>
+
+        <div class="avatar-copy">
+          <h2>營主大頭貼</h2>
+          <p>這張圖片會顯示在營主中心。未選擇新圖片時，會保留目前大頭貼。</p>
+          <label class="file-btn" for="owner-avatar-file">選擇新大頭貼</label>
+          <input id="owner-avatar-file" type="file" accept="image/*" (change)="onAvatarSelected($event)" hidden />
+          <span class="file-name">{{ selectedAvatarFile?.name || '尚未選擇新圖片' }}</span>
+        </div>
+      </section>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="companyName">公司/營業名稱</label>
+          <input id="companyName" name="companyName" type="text" [(ngModel)]="ownerData.companyName" placeholder="請輸入公司或營業名稱" />
+        </div>
+
+        <div class="form-group">
+          <label for="realName">負責人姓名</label>
+          <input id="realName" name="realName" type="text" [(ngModel)]="ownerData.realName" placeholder="請輸入負責人姓名" />
+        </div>
+
+        <div class="form-group">
+          <label for="idNumber">身分證字號/統一編號</label>
+          <input id="idNumber" name="idNumber" type="text" [(ngModel)]="ownerData.idNumber" placeholder="請輸入身分證字號或統一編號" />
+        </div>
+
+        <div class="form-group">
+          <label for="contactPhone">聯絡電話</label>
+          <input id="contactPhone" name="contactPhone" type="tel" [(ngModel)]="ownerData.contactPhone" placeholder="請輸入聯絡電話" />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="address">聯絡地址</label>
+          <input id="address" name="address" type="text" [(ngModel)]="ownerData.address" placeholder="請輸入聯絡地址" />
+        </div>
+      </div>
+
+      <section class="section-block">
+        <h2>收款資料</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="bankName">銀行名稱</label>
+            <input id="bankName" name="bankName" type="text" [(ngModel)]="ownerData.bankName" placeholder="例：台灣銀行" />
+          </div>
+
+          <div class="form-group">
+            <label for="bankAccount">銀行帳號</label>
+            <input id="bankAccount" name="bankAccount" type="text" [(ngModel)]="ownerData.bankAccount" placeholder="請輸入銀行帳號" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="bankAccountName">帳戶戶名</label>
+            <input id="bankAccountName" name="bankAccountName" type="text" [(ngModel)]="ownerData.bankAccountName" placeholder="請輸入帳戶戶名" />
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="secondary-btn" routerLink="/ownerCenter">取消</button>
+        <button type="submit" class="primary-btn" [disabled]="submitting">
+          {{ submitting ? '儲存中...' : '儲存變更' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

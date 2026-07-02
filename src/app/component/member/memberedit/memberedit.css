@@ -267,3 +267,49 @@
     width: 100%;
   }
 }
+
+
+.form-message {
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-message.success {
+  background: #edf8e8;
+  color: #3d6f31;
+  border: 1px solid #cfe8c7;
+}
+
+.form-message.error {
+  background: #fff0ee;
+  color: #b24a3c;
+  border: 1px solid #f1c5bd;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.file-name {
+  margin: 0;
+  color: #7d8978;
+  font-size: 14px;
+  word-break: break-all;
+}

@@ -8,13 +8,17 @@
 
     <div class="hero-actions">
       <button class="primary-btn" routerLink="/owner/camps/add">新增營地</button>
-      <button class="secondary-btn" routerLink="/owner/edit">編輯營主資料</button>
+      <button class="secondary-btn" routerLink="/ownerCenter/profileEdit">編輯營主資料</button>
     </div>
   </section>
 
   <section class="owner-profile-card">
     <div class="owner-avatar">
-      <img [src]="ownerprofilephoto || 'https://placehold.co/120x120'" alt="營主頭像" />
+      @if (ownerprofilephoto && !imageLoadFailed) {
+        <img [src]="ownerprofilephoto" alt="營主大頭貼" (error)="onAvatarError()" />
+      } @else {
+        <img src="https://placehold.co/120x120" alt="營主大頭貼預設圖" />
+      }
     </div>
 
     <div class="owner-info">
@@ -75,7 +79,7 @@
           </div>
 
           <div class="camp-actions">
-            <button routerLink="/owner/edit">編輯</button>
+            <button routerLink="/ownerCenter/profileEdit">編輯</button>
             <button routerLink="/owner/orders">查看訂單</button>
           </div>
         </div>
@@ -90,7 +94,7 @@
           </div>
 
           <div class="camp-actions">
-            <button routerLink="/owner/edit">編輯</button>
+            <button routerLink="/ownerCenter/profileEdit">編輯</button>
             <button routerLink="/owner/orders">查看訂單</button>
           </div>
         </div>

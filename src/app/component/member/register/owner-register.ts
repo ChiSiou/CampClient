@@ -14,13 +14,18 @@ export class OwnerRegister implements OnInit {
   constructor(
     private memberService: MemberService,
     private messageService: MessageService,
-    private Router: Router,
+    private router: Router,
   ) {}
 
   ownerData = {
     realName: '',
     idNumber: '',
     address: '',
+    companyName: '',
+    contactPhone: '',
+    bankName: '',
+    bankAccount: '',
+    bankAccountName: '',
   };
 
   selectedFile: File | null = null;
@@ -28,7 +33,8 @@ export class OwnerRegister implements OnInit {
   loading = false;
 
   ngOnInit(): void {
-    this.ownerData.realName = this.memberService.getname();
+    this.ownerData.realName = this.memberService.getname() ?? '';
+    this.ownerData.contactPhone = this.memberService.getphone() ?? '';
   }
 
   onFileSelected(event: Event) {
@@ -38,7 +44,17 @@ export class OwnerRegister implements OnInit {
       return;
     }
 
-    this.selectedFile = input.files[0];
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      input.value = '';
+      this.selectedFile = null;
+      this.previewUrl = null;
+      this.showMessage('warn', '資料不完整', '請選擇圖片檔案');
+      return;
+    }
+
+    this.selectedFile = file;
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -49,43 +65,26 @@ export class OwnerRegister implements OnInit {
   }
 
   submitowner() {
-    if (!this.ownerData.realName.trim()) {
-      this.messageService.add({
-        key: 'top-right',
-        severity: 'warn',
-        summary: '資料不完整',
-        detail: '請輸入真實姓名',
-      });
-      return;
-    }
+    const requiredFields = [
+      { value: this.ownerData.companyName, message: '請輸入公司或營業名稱' },
+      { value: this.ownerData.realName, message: '請輸入負責人姓名' },
+      { value: this.ownerData.idNumber, message: '請輸入身分證字號或統一編號' },
+      { value: this.ownerData.contactPhone, message: '請輸入聯絡電話' },
+      { value: this.ownerData.address, message: '請輸入聯絡地址' },
+      { value: this.ownerData.bankName, message: '請輸入銀行名稱' },
+      { value: this.ownerData.bankAccount, message: '請輸入銀行帳號' },
+      { value: this.ownerData.bankAccountName, message: '請輸入帳戶戶名' },
+    ];
 
-    if (!this.ownerData.idNumber.trim()) {
-      this.messageService.add({
-        key: 'top-right',
-        severity: 'warn',
-        summary: '資料不完整',
-        detail: '請輸入身分證字號或統一編號',
-      });
-      return;
-    }
+    const emptyField = requiredFields.find((field) => !field.value.trim());
 
-    if (!this.ownerData.address.trim()) {
-      this.messageService.add({
-        key: 'top-right',
-        severity: 'warn',
-        summary: '資料不完整',
-        detail: '請輸入地址',
-      });
+    if (emptyField) {
+      this.showMessage('warn', '資料不完整', emptyField.message);
       return;
     }
 
     if (!this.selectedFile) {
-      this.messageService.add({
-        key: 'top-right',
-        severity: 'warn',
-        summary: '資料不完整',
-        detail: '請先選擇照片',
-      });
+      this.showMessage('warn', '資料不完整', '請上傳證件或營業登記照片');
       return;
     }
 
@@ -94,24 +93,22 @@ export class OwnerRegister implements OnInit {
     this.memberService.ownerregister(this.ownerData, this.selectedFile).subscribe({
       next: (res) => {
         this.loading = false;
-        this.Router.navigate(['/']);
-        this.messageService.add({
-          key: 'top-right',
-          severity: 'success',
-          summary: '申請成功',
-          detail: res.message || '申請成功，等待審核',
-        });
+        this.router.navigate(['/']);
+        this.showMessage('success', '申請成功', res.message || '申請成功，請等待審核');
       },
       error: (err) => {
         this.loading = false;
-
-        this.messageService.add({
-          key: 'top-right',
-          severity: 'error',
-          summary: '申請失敗',
-          detail: err.error?.message || '營主申請失敗',
-        });
+        this.showMessage('error', '申請失敗', err.error?.message || '送出申請失敗');
       },
+    });
+  }
+
+  private showMessage(severity: 'success' | 'warn' | 'error', summary: string, detail: string) {
+    this.messageService.add({
+      key: 'top-right',
+      severity,
+      summary,
+      detail,
     });
   }
 }
