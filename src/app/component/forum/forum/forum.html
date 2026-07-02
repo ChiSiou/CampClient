@@ -31,6 +31,9 @@
                   <i class="pi pi-heart-fill" style="color:#e74c3c; font-size:0.75rem;"></i>
                   {{ likeCountMap[post.postId] }}
                 </span>
+                <span *ngIf="post.commentCount" class="ms-2"><i class="pi pi-comment me-1"
+                    style="color:#ffffff; font-size:0.75rem;"></i>{{
+                  post.commentCount}}</span>
               </li>
               <li>
                 <a class="btn btn-link btn-sm text-white" href="javascript:void(0)"

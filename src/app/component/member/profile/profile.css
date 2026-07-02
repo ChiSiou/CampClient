@@ -44,6 +44,14 @@
   color: #666;
 }
 
+/* 筱婷：把醜醜的收藏按鈕改掉樣式 */
+.btn-liked {
+  background-color: #fff;
+  border: 0;
+  margin: 8px 0 0;
+  color: #666;
+}
+
 /* 資料區塊 */
 .info-section,
 .quick-actions {
@@ -157,6 +165,7 @@
   color: #777;
   font-size: 14px;
 }
+
 :host {
   display: block;
   width: 100%;
@@ -177,6 +186,7 @@
   padding: 40px;
   box-sizing: border-box;
 }
+
 /* RWD */
 @media (max-width: 900px) {
   .member-center {
