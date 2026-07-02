@@ -111,11 +111,7 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./component/owner-management/camps/edit/camp-edit').then((m) => m.CampEdit),
           },
-          {
-            path: '**',
-            loadComponent: () =>
-              import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile),
-          },
+
           // Campground
           { path: 'camps', pathMatch: 'full', loadComponent: () => import('./component/owner-management/camps/camps').then((m) => m.Camps) },
           { path: 'camps/add', pathMatch: 'full', loadComponent: () => import('./component/owner-management/camps/add/camp-add').then((m) => m.CampAdd) },
