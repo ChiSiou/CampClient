@@ -159,9 +159,13 @@ export class CampingRentalComponent implements OnInit {
 
           // 欄位名稱對齊同學的 CheckoutSubmitDto / CheckoutSummaryDto，
           // 結帳頁可以直接把這幾個欄位塞進自己的 DTO，不用再轉換。
+          const selectedMethod = this.shippingMethods().find(
+            m => m.shippingMethodId === this.cart.shippingMethodId()
+          );
           const stored: StoredEquipmentSelection = {
             selectedEquipments: this.cart.toSelectionItems(),
             shippingMethodId: this.cart.shippingMethodId(),
+            shippingMethodCode: selectedMethod?.methodCode ?? null,
             equipments: result.items,
             equipmentSubTotal: result.equipmentSubTotal,
           };

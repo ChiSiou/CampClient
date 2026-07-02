@@ -64,6 +64,26 @@
           }
         </div>
 
+        @if (isHomeDelivery) {
+          <div class="checkout__section-title">🚚 黑貓宅配收件資料</div>
+          <div class="checkout__field">
+            <label class="checkout__label">收件人姓名</label>
+            <input class="checkout__input" [(ngModel)]="receiverName" placeholder="請輸入收件人姓名（2-5 個中文字）" />
+          </div>
+          <div class="checkout__field">
+            <label class="checkout__label">收件人手機</label>
+            <input class="checkout__input" [(ngModel)]="receiverPhone" placeholder="09xxxxxxxx" type="tel" />
+          </div>
+          <div class="checkout__field">
+            <label class="checkout__label">郵遞區號</label>
+            <input class="checkout__input" [(ngModel)]="receiverZipCode" placeholder="例：106" maxlength="5" />
+          </div>
+          <div class="checkout__field">
+            <label class="checkout__label">收件地址</label>
+            <input class="checkout__input" [(ngModel)]="receiverAddress" placeholder="請輸入完整收件地址" />
+          </div>
+        }
+
         @if (unavailableItems.length) {
           <div class="checkout__unavailable">
             <p>以下項目已無法訂購，請返回重新選擇：</p>

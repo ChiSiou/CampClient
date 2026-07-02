@@ -33,6 +33,17 @@ export class Checkout implements OnInit, OnDestroy {
   contactPhone = '';
   contactEmail = '';
 
+  // 宅配收件人（選擇黑貓宅配時才需填）
+  receiverName = '';
+  receiverPhone = '';
+  receiverZipCode = '';
+  receiverAddress = '';
+
+  get isHomeDelivery(): boolean {
+    return this.equipmentData?.shippingMethodCode === 'TCAT_HOME' &&
+      (this.summary?.equipmentSubTotal ?? 0) > 0;
+  }
+
   submitting = false;
   submitError = '';
   unavailableItems: string[] = [];
@@ -158,6 +169,10 @@ export class Checkout implements OnInit, OnDestroy {
       contactEmail: this.contactEmail.trim(),
       appliedPromotionId: this.summary.appliedPromotionId,
       shippingMethodId: this.equipmentData?.shippingMethodId ?? null,
+      receiverName: this.isHomeDelivery ? this.receiverName.trim() : null,
+      receiverPhone: this.isHomeDelivery ? this.receiverPhone.trim() : null,
+      receiverZipCode: this.isHomeDelivery ? this.receiverZipCode.trim() : null,
+      receiverAddress: this.isHomeDelivery ? this.receiverAddress.trim() : null,
     };
 
     this.submitting = true;
