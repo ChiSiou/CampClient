@@ -1,10 +1,9 @@
-import { Message } from 'primeng/message';
 import { Component, Input } from '@angular/core';
-import { MemberService } from '../Service/member-service';
-import { OrderList, OrderDetail } from '../interface/orderList';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MemberService } from '../Service/member-service';
+import { OrderList, OrderDetail } from '../interface/orderList';
 import { CheckoutService } from '../../../services/checkout.service';
 import { ExplorationService } from '../../../services/exploration.service';
 import { CampSearchResultDto } from '../../../interfaces/camp.interface';
@@ -19,28 +18,32 @@ import { Popup } from '../../reviews/popup/popup';
   styleUrl: './orders.css',
 })
 export class Orders {
-  constructor(
-    private memberservice: MemberService,
-    private checkoutService: CheckoutService,
-    private explorationService: ExplorationService,
-    private chatService: ChatService,
-  ) { }
+  @Input() camp!: CampSearchResultDto;
 
-  contactOwner(detail: OrderDetail) {
-    if (detail.ownerId && detail.ownerName) {
-      this.chatService.openChatWith(detail.ownerId, detail.ownerName);
-    }
-  }
   orders: OrderList[] = [];
   popularCamps: CampSearchResultDto[] = [];
   loadingPopularCamps = false;
   displayCount = 5;
   currentPage = 1;
-
-  // 「繼續付款」「取消訂單」按鈕的處理中狀態，用 orderId 當 key，避免一個訂單按下去
-  // 連帶把清單裡其他訂單的按鈕也鎖住
   processingOrderId: number | null = null;
   pendingActionError = '';
+  activeTab: number | 'all' = 'all';
+
+  orderStatusMap: { [key: number]: string } = {
+    0: '待付款',
+    1: '已付款',
+    2: '已取消',
+    3: '申訴中',
+    4: '已完成',
+    5: '已退款',
+  };
+
+  constructor(
+    private memberservice: MemberService,
+    private checkoutService: CheckoutService,
+    private explorationService: ExplorationService,
+    private chatService: ChatService,
+  ) {}
 
   ngOnInit() {
     this.loadPopularCamps();
@@ -48,32 +51,49 @@ export class Orders {
     this.memberservice.getorder().subscribe({
       next: (res) => {
         this.orders = res;
-        console.log('response', res);
       },
       error: (err) => {
-        console.log('error', err.Message);
+        console.log('error', err?.message ?? err);
       },
     });
   }
 
-  private loadPopularCamps() {
-    this.loadingPopularCamps = true;
-
-    this.explorationService.getHome().subscribe({
-      next: (feed) => {
-        this.popularCamps = feed.featuredCamps.slice(0, 3);
-        this.loadingPopularCamps = false;
-      },
-      error: () => {
-        this.loadingPopularCamps = false;
-      },
-    });
+  contactOwner(detail: OrderDetail) {
+    if (detail.ownerId && detail.ownerName) {
+      this.chatService.openChatWith(detail.ownerId, detail.ownerName);
+    }
   }
-  activeTab: number | 'all' = 'all';
 
-  setActiveTab(status: number | 'all') {
-    this.activeTab = status;
-    this.currentPage = 1;
+  getDetailLink(detail: OrderDetail): (string | number)[] | null {
+    if (detail.itemType === 'camp' && detail.campId) {
+      return ['/camp', detail.campId];
+    }
+
+    if (detail.itemType === 'equipment' && detail.campId && detail.equipmentId) {
+      return ['/camp', detail.campId, 'rental', 'equipment', detail.equipmentId];
+    }
+
+    if (detail.itemType === 'equipment' && detail.campId) {
+      return ['/camp', detail.campId, 'rental'];
+    }
+
+    return null;
+  }
+
+  getPrimaryDetail(order: OrderList): OrderDetail | null {
+    return (
+      order.details.find((detail) => detail.itemType === 'camp' && !!detail.campId) ??
+      order.details.find((detail) => this.getDetailLink(detail) !== null) ??
+      null
+    );
+  }
+
+  getCampId(detail: OrderDetail): number | null {
+    return detail.itemType === 'camp' && detail.campId ? detail.campId : null;
+  }
+
+  getContactDetail(order: OrderList): OrderDetail | null {
+    return order.details.find((detail) => !!detail.ownerId && !!detail.ownerName) ?? null;
   }
 
   get filteredOrders() {
@@ -121,6 +141,11 @@ export class Orders {
     return Math.min(this.currentPage * this.normalizedDisplayCount, this.totalFilteredCount);
   }
 
+  setActiveTab(status: number | 'all') {
+    this.activeTab = status;
+    this.currentPage = 1;
+  }
+
   onDisplayCountChange() {
     this.displayCount = this.normalizedDisplayCount;
     this.currentPage = Math.min(this.currentPage, this.totalPages);
@@ -138,14 +163,6 @@ export class Orders {
     }
   }
 
-  orderStatusMap: { [key: number]: string } = {
-    0: '待付款',
-    1: '已付款',
-    2: '已取消',
-    3: '申訴中',
-    4: '已完成',
-    5: '已退款',
-  };
   getOrderStatusClass(status: number): string {
     switch (status) {
       case 0:
@@ -164,12 +181,11 @@ export class Orders {
         return 'unknown';
     }
   }
+
   getOrderStatusText(status: number): string {
     return this.orderStatusMap[status] ?? '未知狀態';
   }
 
-  // 待付款訂單「繼續付款」：重新組一份付款表單，跳轉回綠界
-  // 使用場景：使用者付款到一半關掉綠界分頁/瀏覽器當機重開，從這個「我的訂單」頁面找回來繼續付
   resumePayment(order: OrderList) {
     this.processingOrderId = order.orderId;
     this.pendingActionError = '';
@@ -179,18 +195,16 @@ export class Orders {
         const redirected = this.checkoutService.redirectToPayment(result);
         if (!redirected) {
           this.processingOrderId = null;
-          this.pendingActionError = '導向付款頁面失敗，請稍後再試。';
+          this.pendingActionError = '無法重新導向付款頁，請稍後再試。';
         }
-        // 成功的話瀏覽器會直接跳轉走，不用復原 processingOrderId
       },
       error: () => {
         this.processingOrderId = null;
-        this.pendingActionError = '無法繼續付款，這筆訂單可能已經失效，請重新整理頁面。';
+        this.pendingActionError = '繼續付款失敗，請確認訂單狀態後再試。';
       },
     });
   }
 
-  // 待付款訂單「取消訂單」：立刻釋放鎖定的營位，不用等 15 分鐘背景排程
   cancelOrder(order: OrderList) {
     this.processingOrderId = order.orderId;
     this.pendingActionError = '';
@@ -198,11 +212,25 @@ export class Orders {
     this.checkoutService.cancelPending(order.orderId).subscribe({
       next: () => {
         this.processingOrderId = null;
-        order.status = 2; // 直接更新畫面上的狀態，不用整頁重新打 API 才看到變化
+        order.status = 2;
       },
       error: () => {
         this.processingOrderId = null;
-        this.pendingActionError = '取消失敗，請稍後再試。';
+        this.pendingActionError = '取消訂單失敗，請稍後再試。';
+      },
+    });
+  }
+
+  private loadPopularCamps() {
+    this.loadingPopularCamps = true;
+
+    this.explorationService.getHome().subscribe({
+      next: (feed) => {
+        this.popularCamps = feed.featuredCamps.slice(0, 3);
+        this.loadingPopularCamps = false;
+      },
+      error: () => {
+        this.loadingPopularCamps = false;
       },
     });
   }

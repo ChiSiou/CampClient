@@ -2,19 +2,19 @@
   <header class="itinerary-header">
     <div>
       <p class="eyebrow">Travel Plans</p>
-      <h1>行程清單</h1>
-      <p>查看已付款且尚未到來的露營訂單，掌握入住日期、營地與住宿內容。</p>
+      <h1>我的行程</h1>
+      <p>查看已付款的露營行程，快速掌握入住日期、住宿類型與訂單金額。</p>
     </div>
 
     <a class="search-link" routerLink="/search">
       <i class="pi pi-search"></i>
-      探索營地
+      尋找營地
     </a>
   </header>
 
   <div class="summary-row">
     <div class="summary-card">
-      <span>已付款未到來</span>
+      <span>即將出發</span>
       <strong>{{ totalUpcomingPaidCount }}</strong>
     </div>
   </div>
@@ -34,9 +34,9 @@
   } @else if (itineraries.length === 0) {
     <div class="state-panel empty">
       <i class="pi pi-calendar-clock"></i>
-      <h2>目前沒有行程</h2>
-      <p>已付款且入住日尚未到來的訂單會自動整理到這裡。</p>
-      <a routerLink="/search">去找下一個營地</a>
+      <h2>目前沒有即將到來的行程</h2>
+      <p>完成付款後，露營行程會顯示在這裡。</p>
+      <a routerLink="/search">瀏覽營地</a>
     </div>
   } @else {
     <div class="itinerary-list">
@@ -83,13 +83,13 @@
             }
 
             <div class="trip-footer">
-              <span>建立日期 {{ item.orderDate | date: 'yyyy/MM/dd' }}</span>
+              <span>下單日期 {{ item.orderDate | date: 'yyyy/MM/dd' }}</span>
               <strong>NT$ {{ item.totalAmount | number }}</strong>
             </div>
 
             <div class="trip-actions">
-              <a class="trip-btn outline" [routerLink]="['/camp', item.campId]">詳情</a>
-              <button class="trip-btn danger" type="button">退款</button>
+              <a class="trip-btn outline" [routerLink]="['/camp', item.campId]">查看詳情</a>
+              <button class="trip-btn danger" type="button">取消行程</button>
             </div>
           </div>
         </article>

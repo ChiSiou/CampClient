@@ -3,6 +3,7 @@ import { MemberService } from './../Service/member-service';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NotificationService } from '../../notification-center/Service/NotificationService';
+import { Liked } from '../../liked/liked';
 
 @Component({
   selector: 'profile',
@@ -18,12 +19,15 @@ export class Profile {
   };
   unreadCount = 0;
   ordercount = 0;
+  likedcount = 0;
   constructor(
     private memberService: MemberService,
     private notification: NotificationService,
+    // private liked: Liked,
   ) {}
 
   ngOnInit(): void {
+    // this.likedcount = this.liked.displayedItems.length;
     this.notification.getUnreadCount().subscribe({
       next: (res) => {
         this.unreadCount = res;

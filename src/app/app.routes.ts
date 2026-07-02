@@ -88,6 +88,16 @@ export const routes: Routes = [
               import('./component/owner-management/camps/add/camp-add').then((m) => m.CampAdd),
           },
           {
+            path: 'notifications',
+            loadComponent: () =>
+              import('./component/notification-center/notification-center').then((m) => m.NotificationCenter),
+          },
+          {
+            path: 'income',
+            loadComponent: () =>
+              import('./component/owner-management/income-dashboard/income-dashboard').then((m) => m.IncomeDashboard),
+          },
+          {
             path: 'profileEdit',
             loadComponent: () =>
               import('./component/member/owner-profile-edit/owner-profile-edit').then((m) => m.OwnerProfileEdit),

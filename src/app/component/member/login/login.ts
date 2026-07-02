@@ -7,10 +7,12 @@ import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { EyeIcon, EyeSlashIcon } from 'primeng/icons';
+
 declare const google: any;
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, ButtonModule, ToastModule, RouterLink],
+  imports: [FormsModule, ButtonModule, ToastModule, RouterLink, EyeIcon, EyeSlashIcon],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

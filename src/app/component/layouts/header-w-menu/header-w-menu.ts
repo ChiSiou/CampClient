@@ -20,7 +20,7 @@ export class HeaderWMenu implements OnDestroy {
     private memberservice: MemberService,
     private messageService: MessageService,
     private notificationService: NotificationService,
-  ) { }
+  ) {}
   unreadCount = 0;
   username = '';
   userrole = '';
@@ -92,7 +92,11 @@ export class HeaderWMenu implements OnDestroy {
     });
   }
   goNotification() {
-    this.routes.navigate(['/member-center/notifications']);
+    if (this.activeUserRole === 'Owner') {
+      this.routes.navigate(['/ownerCenter/notifications']);
+    } else if (this.activeUserRole === 'User') {
+      this.routes.navigate(['/member-center/notifications']);
+    }
   }
   Center() {
     if (this.activeUserRole === 'Owner') {

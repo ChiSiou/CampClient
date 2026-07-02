@@ -42,6 +42,21 @@ export class ItineraryList implements OnInit {
     return this.itineraries.length;
   }
 
+  getTripStatusText(status: ItineraryItem['tripStatus']): string {
+    switch (status) {
+      case 'upcoming':
+        return '即將出發';
+      case 'current':
+        return '旅程中';
+      case 'past':
+        return '已完成';
+    }
+  }
+
+  getTripStatusClass(status: ItineraryItem['tripStatus']): string {
+    return status;
+  }
+
   private loadItineraries() {
     this.loading = true;
     this.errorMessage = '';
@@ -56,20 +71,24 @@ export class ItineraryList implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = '行程清單載入失敗，請稍後再試。';
+        this.errorMessage = '行程資料載入失敗，請稍後再試。';
         this.loading = false;
       },
     });
   }
 
   private isPaidOrder(order: OrderList): boolean {
-    return order.status === 1 && order.details.length > 0;
+    return order.status === 1 && order.details.some((detail) => this.isCampDetail(detail));
   }
 
   private toItineraryItems(order: OrderList): ItineraryItem[] {
     const detailsByCamp = new Map<number, OrderDetail[]>();
 
     for (const detail of order.details) {
+      if (!this.isCampDetail(detail)) {
+        continue;
+      }
+
       const details = detailsByCamp.get(detail.campId) ?? [];
       details.push(detail);
       detailsByCamp.set(detail.campId, details);
@@ -93,7 +112,7 @@ export class ItineraryList implements OnInit {
         orderDate: order.orderDate,
         totalAmount: details.reduce((sum, detail) => sum + (detail.totalAmount ?? 0), 0),
         status: order.status,
-        campId: first.campId,
+        campId: first.campId!,
         campName: first.campName,
         campImageUrl: first.campImageUrl,
         checkinDate,
@@ -104,6 +123,10 @@ export class ItineraryList implements OnInit {
         tripStatus: this.getTripStatus(checkinDate, checkoutDate),
       };
     });
+  }
+
+  private isCampDetail(detail: OrderDetail): detail is OrderDetail & { campId: number } {
+    return detail.itemType === 'camp' && typeof detail.campId === 'number';
   }
 
   private getTripStatus(
@@ -146,20 +169,5 @@ export class ItineraryList implements OnInit {
 
   private toDateTime(value: string): number {
     return this.startOfDate(value).getTime();
-  }
-
-  getTripStatusText(status: ItineraryItem['tripStatus']): string {
-    switch (status) {
-      case 'upcoming':
-        return '即將出發';
-      case 'current':
-        return '旅程中';
-      case 'past':
-        return '已完成';
-    }
-  }
-
-  getTripStatusClass(status: ItineraryItem['tripStatus']): string {
-    return status;
   }
 }
