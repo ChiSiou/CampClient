@@ -225,7 +225,10 @@ export class CampEdit implements AfterViewInit, OnDestroy {
     this.zoneError = '';
     this.drawnPoints = [];
     this.showZoneModal = true;
-    setTimeout(() => this.initZoneMap(), 0);
+    setTimeout(() => {
+      this.initZoneMap();
+      this.drawExistingZones();
+    }, 0);
   }
 
   openEditZone(zone: CampzoneListItemDto) {
@@ -243,6 +246,7 @@ export class CampEdit implements AfterViewInit, OnDestroy {
     this.showZoneModal = true;
     setTimeout(() => {
       this.initZoneMap();
+      this.drawExistingZones();
       if (zone.geoJson) this.loadExistingGeoJson(zone.geoJson);
     }, 0);
   }
@@ -321,9 +325,10 @@ export class CampEdit implements AfterViewInit, OnDestroy {
     const zoom = this.form.latitude ? 14 : 7;
 
     this.zoneMap = L.map(this.zoneMapContainer.nativeElement).setView(center, zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.zoneMap);
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { attribution: 'Tiles &copy; Esri' }
+    ).addTo(this.zoneMap);
 
     this.zoneMap.on('click', (e: L.LeafletMouseEvent) => {
       this.drawnPoints.push(e.latlng);
@@ -331,6 +336,20 @@ export class CampEdit implements AfterViewInit, OnDestroy {
     });
 
     setTimeout(() => this.zoneMap?.invalidateSize(), 100);
+  }
+
+  private drawExistingZones() {
+    this.zones.forEach((zone) => {
+      if (!zone.geoJson || zone.id === this.editingZoneId) return;
+      try {
+        const geojson = JSON.parse(zone.geoJson);
+        L.geoJSON(geojson, {
+          style: { color: '#fff', weight: 2, fillColor: '#aaa', fillOpacity: 0.35 },
+        })
+          .bindTooltip(zone.zoneName, { sticky: true })
+          .addTo(this.zoneMap!);
+      } catch {}
+    });
   }
 
   private loadExistingGeoJson(geojsonStr: string) {
@@ -354,15 +373,15 @@ export class CampEdit implements AfterViewInit, OnDestroy {
 
     if (this.drawnPoints.length === 0) return;
 
-    const style = { color: '#4a7c59', weight: 2 };
+    const style = { color: '#ff6600', weight: 3 };
 
     if (this.drawnPoints.length < 3) {
       this.zonePolyline = L.polyline(this.drawnPoints, style).addTo(this.zoneMap!);
     } else {
       this.zonePolygon = L.polygon(this.drawnPoints, {
         ...style,
-        fillColor: '#4a7c59',
-        fillOpacity: 0.2,
+        fillColor: '#ff6600',
+        fillOpacity: 0.25,
       }).addTo(this.zoneMap!);
     }
 
