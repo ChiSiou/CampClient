@@ -104,10 +104,10 @@ export interface CampMediumDto {
   isCover: boolean;
 }
 
-// 固定兩選項，對應後端 Common/CampzoneType.cs
+// 固定兩選項，對應後端 Common/CampzoneType.cs（值與 AccomType.Category 相同）
 export enum CampzoneType {
-  BringOwnGear = 0,        // 自帶露營裝備
-  OnSiteAccommodation = 1, // 園區住宿
+  BringOwnGear = 1,        // 自帶露營裝備，對應 AccomType.Category = 1
+  OnSiteAccommodation = 2, // 園區住宿，對應 AccomType.Category = 2
 }
 
 // 對應後端 CampManagementService 的狀態常數
