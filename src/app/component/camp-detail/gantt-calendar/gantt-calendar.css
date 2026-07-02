@@ -509,3 +509,20 @@
 .gantt__addon-btn--primary:hover {
   background: #647e30;
 }
+
+/* 工具列：直接跳日期的選擇器 */
+.gantt__date-picker {
+  margin-left: 12px;
+  padding: 6px 10px;
+  border: 1px solid #cfd8cf;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2f3e2f;
+  cursor: pointer;
+}
+
+.gantt__date-picker:focus {
+  outline: none;
+  border-color: #3f6b45;
+  box-shadow: 0 0 0 3px rgba(63, 107, 69, 0.14);
+}

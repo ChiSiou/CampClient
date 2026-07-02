@@ -28,7 +28,13 @@ export interface CampSearchResultDto {
   imageUrls: string[];
   highlights: string[];
   elevation: number;
-  tags: string[];
+  tags: CampTagItem[];
+}
+
+// 營地特色標籤（含專屬 icon 圖片網址），卡片/收藏共用
+export interface CampTagItem {
+  tagName: string;
+  iconUrl: string | null;
 }
 
 export interface CampSearchRequest {
@@ -101,7 +107,8 @@ export interface CampFilterDto {
 export interface FilterTagItem {
   tagId: number;
   tagName: string;
-  iconClass: string;
+  iconClass: string;      // 設施：字體圖示 class
+  iconUrl?: string | null; // 環境/政策標籤：icon 圖片網址
 }
 
 // ===== Phase 3：營區詳細頁 =====

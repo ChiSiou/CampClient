@@ -146,3 +146,11 @@
 .filters-btn--primary:hover {
   background: #444;
 }
+
+/* 環境/政策標籤 icon */
+.filters-tag-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+}

@@ -6,6 +6,14 @@
       {{ matrixDates[0] }} ~ {{ matrixDates[matrixDates.length - 1] }}
     </span>
     <button class="gantt__nav-btn" (click)="nextWindow()">下 10 天 ›</button>
+
+    <!-- 直接跳到指定日期，不用一直按「下 10 天」 -->
+    <input
+      class="gantt__date-picker"
+      type="date"
+      [value]="startDate"
+      (change)="onPickDate($any($event.target).value)"
+    />
   </div>
 
   @if (loading) {

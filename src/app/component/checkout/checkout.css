@@ -225,3 +225,17 @@
   padding-top: 10px;
   border-top: 1px solid #ebebeb;
 }
+
+/* 表單欄位格式錯誤 */
+.checkout__input--error {
+  border-color: #dc2626;
+}
+
+.checkout__input--error:focus {
+  border-color: #dc2626;
+}
+
+.checkout__field-error {
+  font-size: 12px;
+  color: #b91c1c;
+}

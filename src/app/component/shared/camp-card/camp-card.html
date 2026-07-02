@@ -45,8 +45,13 @@
 
     @if (camp.tags.length) {
     <div class="camp-card__tags">
-      @for (tag of camp.tags; track tag) {
-      <span class="camp-tag">{{ tag }}</span>
+      @for (tag of camp.tags; track tag.tagName) {
+      <span class="camp-tag">
+        @if (tag.iconUrl) {
+        <img [src]="tag.iconUrl" class="camp-tag__icon" alt="" />
+        }
+        {{ tag.tagName }}
+      </span>
       }
     </div>
     }

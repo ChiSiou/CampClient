@@ -241,3 +241,15 @@
   color: #647e30;
   border: 1px solid #cfe0ae;
 }
+
+/* 標籤專屬 icon */
+.camp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.camp-tag__icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}

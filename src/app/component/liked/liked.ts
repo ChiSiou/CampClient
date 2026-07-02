@@ -10,6 +10,7 @@ import { Sforum } from '../forum/service/sforum';
 import { IForum } from '../forum/interfaces/Iforum';
 import { IPostInteract } from '../forum/interfaces/IPostInteract';
 import { MemberService } from '../member/Service/member-service';
+import { CampTagItem } from '../../interfaces/camp.interface';
 
 export interface LikedItem {
   id: string;
@@ -22,7 +23,7 @@ export interface LikedItem {
   area?: string;
   elevation?: number;
   basePrice?: number;
-  tags?: string[];
+  tags?: CampTagItem[];
   // 貼文專用
   category?: string;
   authorName?: string;
@@ -41,7 +42,7 @@ interface LikedCampDto {
   area: string;
   elevation: number;
   basePrice: number;
-  tags: string[];
+  tags: CampTagItem[];
   likedAt: string;
 }
 

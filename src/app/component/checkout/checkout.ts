@@ -119,13 +119,27 @@ export class Checkout implements OnInit, OnDestroy {
     return this.summary?.grandTotal ?? 0;
   }
 
+  // 手機：台灣手機格式 09 + 8 碼數字；Email：基本格式（有 @、網域、點）
+  private readonly phonePattern = /^09\d{8}$/;
+  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // 「已經填了東西、但格式不對」才顯示錯誤，避免一進畫面每個欄位都紅通通
+  get phoneInvalid(): boolean {
+    const v = this.contactPhone.trim();
+    return v.length > 0 && !this.phonePattern.test(v);
+  }
+  get emailInvalid(): boolean {
+    const v = this.contactEmail.trim();
+    return v.length > 0 && !this.emailPattern.test(v);
+  }
+
   get canSubmit(): boolean {
     return (
       !!this.summary &&
       !this.submitting &&
       this.contactName.trim().length > 0 &&
-      this.contactPhone.trim().length > 0 &&
-      this.contactEmail.trim().length > 0
+      this.phonePattern.test(this.contactPhone.trim()) &&
+      this.emailPattern.test(this.contactEmail.trim())
     );
   }
 

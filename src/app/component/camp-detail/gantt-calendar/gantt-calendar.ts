@@ -177,6 +177,14 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     this.loadGantt();
   }
 
+  // 工具列日期選擇器的處理：使用者挑一個日期就把甘特圖視窗跳過去，不用一直按「下 10 天」。
+  // 選空值（例如清掉日期）不動作，避免把 startDate 設成空字串害 loadGantt 出錯。
+  onPickDate(value: string) {
+    if (value) {
+      this.jumpToDate(value);
+    }
+  }
+
   private shiftWindow(deltaDays: number) {
     const d = new Date(this.startDate);
     d.setDate(d.getDate() + deltaDays);

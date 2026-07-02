@@ -282,12 +282,36 @@
 - `camp.interface.ts`：`CampSelectionRequestDto` 加 optional `selectedEquipments`/`shippingMethodId`；`CheckoutSummaryDto` 加 `shippingFee`。
 - **⚠️ 後端要先跑 `DbScripts/2026-07-01-add-equipment-order-columns.sql` 加欄位，否則後端啟動會報錯。**
 
+### 🟢 退款 UI + 收據 + 表單驗證 + jumpToDate（2026-07-02）
+
+搭配後端同名章節（`slnCampApi/PROGRESS.md` 2026-07-02）。前端這輪：
+
+**A. 退款 UI 放在「行程清單 `itinerary-list`」**（不是訂單歷史頁）
+- 使用者情境：不去露營了 → 開行程清單 → 對那張行程退款。訂單歷史頁翻退款很怪，所以退款按鈕做在行程清單。
+- 行程卡內展開式面板：勾要退的項目 → 「試算可退金額」（依政策顯示每項可退多少、級距、總額）→ 「確認退款」。
+- 用 `payment.service.ts` 的 `calculateRefund`/`submitRefund`（後端搭配模擬退款開關可完整測）。
+- 全退完成後訂單變 Status=5（已退款），行程清單只列 status===1+即將到來，**下次載入那筆就自動消失**。
+- **一度加在訂單歷史頁 `member/orders` 又移除了**（放錯地方）；`member/orders` 現在只保留待付款的「繼續付款/取消」。
+
+**B. 已退款狀態顯示**
+- `member/orders` 的 `orderStatusMap`/`getOrderStatusClass` 補上 `5:已退款`（紫色標籤）+ 篩選 tab，也補了漏掉的 `4:已完成`。
+
+**C. 付款結果頁訂單收據**
+- `payment-result` 拿到確定結果後打 `GET /api/Payment/receipt/{orderNumber}`，成功/失敗都顯示「訂了什麼 + 金額明細」（營區/營位/日期/裝備/運費/折扣/總額，不含個資）。
+
+**D. 結帳表單驗證**（`checkout`）
+- 手機 `/^09\d{8}$/`、Email 基本格式；欄位有填但格式錯才顯示紅框+錯誤訊息，`canSubmit` 要求格式通過才可送出。
+
+**E. `jumpToDate()` 接線**（`gantt-calendar`）
+- 原本定義了沒人呼叫。工具列加了 `<input type="date">`，挑日期直接把甘特圖視窗跳過去，不用一直按「下 10 天」。這就是 `jumpToDate` 當初要做的事。
+
 ## 📌 下次接續：待辦事項（不要漏掉）
 
-1. ~~**後端在等 ngrok 設定好**~~ **（已可暫緩）**：付款成功 → 訂單狀態變已付款這條路徑**現在靠 OrderResultURL 在本機就能通、已實測成功**，`/payment/result` 頁也已測過真的綠界回調。ngrok 只剩 server-to-server `ReturnUrl` 備援用途，上雲端再處理。
-2. ~~Phase F7 付款結果頁~~ **已完成**（見下方 Phase F7 章節）。
-3. 表單欄位驗證（Email/手機格式）還沒做，目前只擋空字串。
-4. **`gantt-calendar.ts` 的 `jumpToDate()` 方法目前沒有任何地方呼叫它**（已確認，`grep` 全專案只有定義沒有使用）：Zone 詳細頁選完日期回到甘特圖，如果選的日期超出甘特圖目前 10 天視窗，使用者看不到自己選的東西反映在畫面上，要接起來。
+1. ~~**後端在等 ngrok 設定好**~~ **（已可暫緩）**：付款成功 → 訂單狀態變已付款**現在靠 OrderResultURL 在本機就通、已實測成功**。ngrok 只剩 server-to-server `ReturnUrl` 備援，上雲端再處理。
+2. ~~Phase F7 付款結果頁 + 退款流程~~ **已完成**：付款結果頁（含收據）+ 退款（行程清單 UI、模擬開關、已退款狀態、退款通知）都做完了。**真實綠界退款要正式帳號**才測得到。
+3. ~~表單欄位驗證（Email/手機格式）~~ **已完成**（見上方 2026-07-02 D）。
+4. ~~`gantt-calendar.ts` 的 `jumpToDate()` 沒接線~~ **已完成**（見上方 2026-07-02 E）。
+5. **部署上雲端要換的設定**（現在不用做）：關 `SimulateRefund`、綠界 URL/金鑰換正式、`environment.prod.ts` 的 apiUrl、CORS 收緊、ngrok/ReturnUrl。都是換設定值，不動邏輯。
 
 ### 🟡 Phase F7：付款確認/退款 — 付款結果頁完成，退款流程未開始
 

@@ -39,12 +39,29 @@
 
         <div class="checkout__field">
           <label class="checkout__label">手機號碼</label>
-          <input class="checkout__input" [(ngModel)]="contactPhone" placeholder="請輸入手機號碼" />
+          <input
+            class="checkout__input"
+            [class.checkout__input--error]="phoneInvalid"
+            [(ngModel)]="contactPhone"
+            placeholder="請輸入手機號碼（09 開頭共 10 碼）"
+          />
+          @if (phoneInvalid) {
+            <span class="checkout__field-error">手機號碼格式不正確，請輸入 09 開頭的 10 碼數字。</span>
+          }
         </div>
 
         <div class="checkout__field">
           <label class="checkout__label">電子郵件</label>
-          <input class="checkout__input" [(ngModel)]="contactEmail" placeholder="請輸入電子郵件" type="email" />
+          <input
+            class="checkout__input"
+            [class.checkout__input--error]="emailInvalid"
+            [(ngModel)]="contactEmail"
+            placeholder="請輸入電子郵件"
+            type="email"
+          />
+          @if (emailInvalid) {
+            <span class="checkout__field-error">電子郵件格式不正確，請確認包含 @ 與網域。</span>
+          }
         </div>
 
         @if (unavailableItems.length) {
