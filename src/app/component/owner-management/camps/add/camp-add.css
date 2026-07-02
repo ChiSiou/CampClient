@@ -83,3 +83,92 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.highlight-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.highlight-input-row input {
+  flex: 1;
+}
+
+.btn-highlight-add {
+  padding: 8px 14px;
+  background: #4a7c59;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-highlight-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.highlight-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.highlight-tag {
+  background: #e8f4ec;
+  color: #2d6a3f;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.highlight-tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2d6a3f;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.area-row {
+  display: flex;
+  gap: 8px;
+}
+
+.area-row input {
+  flex: 1;
+}
+
+.btn-locate {
+  padding: 8px 14px;
+  background: #4a7c59;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.btn-locate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.map-container {
+  height: 320px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 6px;
+}
+
+.latlng-display {
+  font-size: 0.85rem;
+  color: #555;
+}

@@ -1,0 +1,215 @@
+<div class="camp-edit-page">
+  <div class="page-header">
+    <div>
+      <h2>編輯營地</h2>
+      @if (campgroundName) {
+        <span class="subtitle">正在編輯：{{ campgroundName }}</span>
+      }
+    </div>
+    <a routerLink="/ownerCenter/camps" class="btn-back">← 返回列表</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading">載入中...</div>
+  }
+
+  @if (!loading) {
+    <form (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>名稱 <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="form.name" name="name" placeholder="請輸入營地名稱" />
+      </div>
+
+      <div class="form-group">
+        <label>聯絡電話</label>
+        <input type="text" [(ngModel)]="form.phone" name="phone" placeholder="例：0912-345-678" />
+      </div>
+
+      <div class="form-group">
+        <label>描述</label>
+        <textarea [(ngModel)]="form.description" name="description" rows="4"
+          placeholder="介紹這個營地..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>特色亮點（最多 3 個）</label>
+        <div class="highlight-input-row">
+          <input type="text" [(ngModel)]="highlightInput" name="highlightInput"
+            placeholder="輸入一個亮點，按＋加入..."
+            [disabled]="form.highlights.length >= 3" />
+          <button type="button" class="btn-highlight-add"
+            (click)="addHighlight()"
+            [disabled]="!highlightInput.trim() || form.highlights.length >= 3">＋</button>
+        </div>
+        <div class="highlight-tags">
+          @for (h of form.highlights; track $index) {
+            <span class="highlight-tag">
+              {{ h }}
+              <button type="button" (click)="removeHighlight($index)">×</button>
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>營地規則</label>
+        <textarea [(ngModel)]="form.rules" name="rules" rows="3"
+          placeholder="入住規則、注意事項..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>地區/地址 <span class="required">*</span></label>
+        <div class="area-row">
+          <input type="text" [(ngModel)]="form.area" name="area"
+            placeholder="例：南投縣仁愛鄉（搜尋定位請輸入縣市或鄉鎮）" />
+          <button type="button" (click)="locateByAddress()" [disabled]="locating" class="btn-locate">
+            {{ locating ? '定位中...' : '搜尋定位' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>點地圖選點（自動填入經緯度）</label>
+        <div #mapContainer class="map-container"></div>
+        <div class="latlng-display">
+          緯度：{{ form.latitude || '—' }}　經度：{{ form.longitude || '—' }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>海拔（公尺）</label>
+          <input type="number" [(ngModel)]="form.elevation" name="elevation" />
+        </div>
+        <div class="form-group">
+          <label>基本價格（元/晚）</label>
+          <input type="number" [(ngModel)]="form.basePrice" name="basePrice" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>官方網站</label>
+        <input type="text" [(ngModel)]="form.website" name="website" placeholder="https://..." />
+      </div>
+
+      @if (error) {
+        <div class="error-msg">{{ error }}</div>
+      }
+
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="btn-cancel">取消</button>
+        <button type="submit" [disabled]="submitting" class="btn-submit">
+          {{ submitting ? '儲存中...' : '儲存變更' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- 營區管理 -->
+    <div class="zone-section">
+      <div class="zone-section-header">
+        <h3>營區管理</h3>
+        <button type="button" (click)="openAddZone()" class="btn-add-zone">＋ 新增營區</button>
+      </div>
+
+      @if (zones.length === 0) {
+        <div class="zone-empty">尚未新增任何營區</div>
+      }
+
+      @for (zone of zones; track zone.id) {
+        <div class="zone-card">
+          <div class="zone-info">
+            <span class="zone-name">{{ zone.zoneName }}</span>
+            <span class="zone-badge">{{ zoneTypeName(zone.zoneType) }}</span>
+            <span class="zone-meta">{{ zone.siteCount }} 個營位</span>
+            @if (zone.pricing) {
+              <span class="zone-meta">平日 ${{ zone.pricing.weekdayPrice }} / 假日 ${{ zone.pricing.weekendPrice }}</span>
+            }
+          </div>
+          <div class="zone-actions">
+            <button type="button" (click)="openEditZone(zone)" class="btn-zone-edit">編輯</button>
+            <button type="button" (click)="deleteZone(zone.id)" class="btn-zone-delete">刪除</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- 新增/編輯營區 Modal -->
+@if (showZoneModal) {
+  <div class="modal-overlay" (click)="closeZoneModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>{{ editingZoneId ? '編輯營區' : '新增營區' }}</h3>
+
+      <div class="form-group">
+        <label>營區名稱 <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="zoneForm.zoneName" name="zZoneName" placeholder="例：A 區" />
+      </div>
+
+      <div class="form-group">
+        <label>描述</label>
+        <textarea [(ngModel)]="zoneForm.zoneDescription" name="zZoneDesc" rows="2"
+          placeholder="介紹這個營區..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>類型</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" [(ngModel)]="zoneForm.zoneType" name="zZoneType" [value]="0" />
+            自帶露營裝備
+          </label>
+          <label class="radio-label">
+            <input type="radio" [(ngModel)]="zoneForm.zoneType" name="zZoneType" [value]="1" />
+            園區住宿
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>平日價格（元/晚）</label>
+          <input type="number" [(ngModel)]="zoneForm.pricing.weekdayPrice" name="zWeekday" />
+        </div>
+        <div class="form-group">
+          <label>假日價格（元/晚）</label>
+          <input type="number" [(ngModel)]="zoneForm.pricing.weekendPrice" name="zWeekend" />
+        </div>
+      </div>
+
+      <!-- 圈選營區範圍 -->
+      <div class="form-group">
+        <label>圈選營區範圍</label>
+        <div #zoneMapContainer class="zone-map-container"></div>
+        <div class="drawing-toolbar">
+          <span class="drawing-hint">
+            @if (drawnPointCount === 0) {
+              點擊地圖開始打點
+            } @else if (drawnPointCount < 3) {
+              已打 {{ drawnPointCount }} 點，再打 {{ 3 - drawnPointCount }} 點可圍成多邊形
+            } @else {
+              已打 {{ drawnPointCount }} 點，多邊形已成形
+            }
+          </span>
+          <div class="drawing-btns">
+            <button type="button" (click)="undoLastPoint()" [disabled]="drawnPointCount === 0"
+              class="btn-drawing-action">↩ 上一步</button>
+            <button type="button" (click)="clearDrawing()" [disabled]="drawnPointCount === 0"
+              class="btn-drawing-action btn-drawing-clear">清除重畫</button>
+          </div>
+        </div>
+      </div>
+
+      @if (zoneError) {
+        <div class="error-msg">{{ zoneError }}</div>
+      }
+
+      <div class="form-actions">
+        <button type="button" (click)="closeZoneModal()" class="btn-cancel">取消</button>
+        <button type="button" (click)="submitZone()" [disabled]="zoneSubmitting" class="btn-submit">
+          {{ zoneSubmitting ? '儲存中...' : '儲存' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

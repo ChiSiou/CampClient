@@ -11,7 +11,7 @@ export interface CampgroundCreateDto {
   latitude: number;
   longitude: number;
   rules: string;
-  highlights: string;
+  highlights: string[];
   facilityIds: number[];
   tagIds: number[];
 }
@@ -42,7 +42,7 @@ export interface CampgroundOwnerDetailDto {
   latitude: number;
   longitude: number;
   rules: string;
-  highlights: string;
+  highlights: string[];
   facilityIds: number[];
   tagIds: number[];
   zones: CampzoneListItemDto[];

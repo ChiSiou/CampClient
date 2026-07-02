@@ -107,6 +107,11 @@ export const routes: Routes = [
               import('./component/owner-management/reviews/owner-reviews').then((m) => m.OwnerReviews),
           },
           {
+            path: 'camps/:id',
+            loadComponent: () =>
+              import('./component/owner-management/camps/edit/camp-edit').then((m) => m.CampEdit),
+          },
+          {
             path: '**',
             loadComponent: () =>
               import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile),

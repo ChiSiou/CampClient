@@ -19,9 +19,23 @@
     </div>
 
     <div class="form-group">
-      <label>特色亮點</label>
-      <textarea [(ngModel)]="form.highlights" name="highlights" rows="3"
-        placeholder="營地的特色亮點..."></textarea>
+      <label>特色亮點（最多 3 個）</label>
+      <div class="highlight-input-row">
+        <input type="text" [(ngModel)]="highlightInput" name="highlightInput"
+          placeholder="輸入一個亮點，按＋加入..."
+          [disabled]="form.highlights.length >= 3" />
+        <button type="button" class="btn-highlight-add"
+          (click)="addHighlight()"
+          [disabled]="!highlightInput.trim() || form.highlights.length >= 3">＋</button>
+      </div>
+      <div class="highlight-tags">
+        @for (h of form.highlights; track $index) {
+          <span class="highlight-tag">
+            {{ h }}
+            <button type="button" (click)="removeHighlight($index)">×</button>
+          </span>
+        }
+      </div>
     </div>
 
     <div class="form-group">
@@ -32,20 +46,19 @@
 
     <div class="form-group">
       <label>地區/地址 <span class="required">*</span></label>
-      <input type="text" [(ngModel)]="form.area" name="area"
-        placeholder="例：南投縣仁愛鄉..." />
+      <div class="area-row">
+        <input type="text" [(ngModel)]="form.area" name="area" placeholder="例：南投縣仁愛鄉..." />
+        <button type="button" (click)="locateByAddress()" [disabled]="locating" class="btn-locate">
+          {{ locating ? '定位中...' : '搜尋定位' }}
+        </button>
+      </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>緯度 <span class="required">*</span></label>
-        <input type="number" [(ngModel)]="form.latitude" name="latitude"
-          step="any" placeholder="e.g. 23.897" />
-      </div>
-      <div class="form-group">
-        <label>經度 <span class="required">*</span></label>
-        <input type="number" [(ngModel)]="form.longitude" name="longitude"
-          step="any" placeholder="e.g. 120.675" />
+    <div class="form-group">
+      <label>點地圖選點（自動填入經緯度）</label>
+      <div #mapContainer class="map-container"></div>
+      <div class="latlng-display">
+        緯度：{{ form.latitude || '—' }}　經度：{{ form.longitude || '—' }}
       </div>
     </div>
 
