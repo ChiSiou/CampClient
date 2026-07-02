@@ -88,6 +88,11 @@ export const routes: Routes = [
               import('./component/owner-management/camps/add/camp-add').then((m) => m.CampAdd),
           },
           {
+            path: 'profileEdit',
+            loadComponent: () =>
+              import('./component/member/owner-profile-edit/owner-profile-edit').then((m) => m.OwnerProfileEdit),
+          },
+          {
             path: '**',
             loadComponent: () =>
               import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile),
