@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IForum } from '../interfaces/Iforum';
+import { IForum, IPostEmbedCard } from '../interfaces/Iforum';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -13,6 +13,7 @@ import { IReply } from '../interfaces/IReply';
 export class Sforum {
   private apiUrl = 'https://localhost:7011/api/APIPost';
   private apiReplyUrl = 'https://localhost:7011/api/APIReply';
+  private apiExplorationUrl = 'https://localhost:7011/api/Exploration';
 
   constructor(
     private http: HttpClient,
@@ -71,6 +72,16 @@ export class Sforum {
 
   deleteReply(id: number) {
     return this.http.delete<IReply[]>(`${this.apiReplyUrl}/${id}`);
+  }
+
+  // 代入卡片：搜尋營地／自然景點
+
+  searchCampsForEmbed(keyword: string) {
+    return this.http.get<IPostEmbedCard[]>(`${this.apiExplorationUrl}/camps/search`, { params: { keyword } });
+  }
+
+  searchAttractionsForEmbed(keyword: string) {
+    return this.http.get<IPostEmbedCard[]>(`${this.apiExplorationUrl}/attractions/search`, { params: { keyword } });
   }
 
 }

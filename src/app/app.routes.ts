@@ -101,6 +101,10 @@ export const routes: Routes = [
             path: 'profileEdit',
             loadComponent: () =>
               import('./component/member/owner-profile-edit/owner-profile-edit').then((m) => m.OwnerProfileEdit),
+          }, {
+            path: 'reviews',
+            loadComponent: () =>
+              import('./component/owner-management/reviews/owner-reviews').then((m) => m.OwnerReviews),
           },
           {
             path: '**',

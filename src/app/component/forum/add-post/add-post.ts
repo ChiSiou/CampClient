@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Toast } from 'primeng/toast';
@@ -9,7 +10,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { FileUploadModule } from 'primeng/fileupload';
 import { Sforum } from '../service/sforum';
-import { IForum } from '../interfaces/Iforum';
+import { IForum, IPostEmbedCard } from '../interfaces/Iforum';
 import { PrimeNG } from 'primeng/config';
 
 interface UploadEvent {
@@ -21,6 +22,7 @@ interface UploadEvent {
 @Component({
   selector: 'app-add-post',
   imports: [
+    CommonModule,
     FormsModule,
     Toast,
     ButtonModule,
@@ -43,6 +45,15 @@ export class AddPost {
   new_postCategoryId: number | null = null;
   new_postTag: string = '';
   new_isHaveImgs: boolean = false;
+
+  // 代入營地／自然景點卡片
+  embedType: 'none' | 'camp' | 'attraction' = 'none';
+  embedKeyword: string = '';
+  embedResults: IPostEmbedCard[] = [];
+  selectedEmbedCard: IPostEmbedCard | null = null;
+  new_campId: number | null = null;
+  new_attractionId: number | null = null;
+  private embedSearchTimer: any = null;
 
   categories = [
     { id: 1, name: '北部專區' },
@@ -117,6 +128,52 @@ export class AddPost {
     this.new_isHaveImgs = true;
   }
 
+  // 代入營地／自然景點卡片
+  setEmbedType(type: 'none' | 'camp' | 'attraction') {
+    this.embedType = type;
+    this.embedKeyword = '';
+    this.embedResults = [];
+    this.selectedEmbedCard = null;
+    this.new_campId = null;
+    this.new_attractionId = null;
+  }
+
+  onEmbedKeywordChange() {
+    if (this.embedSearchTimer) {
+      clearTimeout(this.embedSearchTimer);
+    }
+    this.embedSearchTimer = setTimeout(() => this.searchEmbedCards(), 300);
+  }
+
+  searchEmbedCards() {
+    if (this.embedType === 'none') return;
+
+    const search$ =
+      this.embedType === 'camp'
+        ? this.sforumService.searchCampsForEmbed(this.embedKeyword)
+        : this.sforumService.searchAttractionsForEmbed(this.embedKeyword);
+
+    search$.subscribe({
+      next: (data) => (this.embedResults = data),
+      error: (err) => console.error('搜尋代入卡片失敗', err),
+    });
+  }
+
+  selectEmbedCard(card: IPostEmbedCard) {
+    this.selectedEmbedCard = card;
+    this.embedResults = [];
+    this.embedKeyword = '';
+    if (this.embedType === 'camp') {
+      this.new_campId = card.id;
+    } else if (this.embedType === 'attraction') {
+      this.new_attractionId = card.id;
+    }
+  }
+
+  clearEmbedCard() {
+    this.setEmbedType('none');
+  }
+
   addNewPost() {
     const param: IForum = {
       postId: 0,
@@ -125,6 +182,8 @@ export class AddPost {
       mainContent: this.new_mainContent,
       postCategoryId: this.new_postCategoryId!,
       postTag: this.new_postTag,
+      campId: this.new_campId,
+      attractionId: this.new_attractionId,
       isHaveImgs: this.new_isHaveImgs,
       moreImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
     };

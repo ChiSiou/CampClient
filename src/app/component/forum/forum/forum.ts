@@ -5,10 +5,11 @@ import { Sforum } from '../service/sforum';
 import { SPostInteract } from '../service/sPostInteract';
 import { IForum } from '../interfaces/Iforum';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CardModule, Card } from 'primeng/card';
 
 @Component({
   selector: 'app-forum',
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, Card],
   templateUrl: './forum.html',
   styleUrl: './forum.css',
 })
@@ -17,6 +18,7 @@ export class Forum implements OnInit {
   filteredPosts: IForum[] = [];
   selectedCategory: string | null = null;
   likeCountMap: Record<number, number> = {};
+  // commentCountMap: Record<number, number> = {};
 
   categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區'];
 

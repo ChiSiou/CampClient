@@ -4,7 +4,7 @@ import { Sforum } from './../service/sforum';
 import { SPostInteract } from './../service/sPostInteract';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IForum } from '../interfaces/Iforum';
+import { IForum, IPostEmbedCard } from '../interfaces/Iforum';
 import { IPostInteract } from '../interfaces/IPostInteract';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
@@ -68,6 +68,15 @@ export class Post implements OnInit {
   edit_mainContent: string = '';
   edit_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
   edit_selectedFiles: File[] = [];
+
+  // 編輯貼文：代入營地／自然景點卡片
+  embedType: 'none' | 'camp' | 'attraction' = 'none';
+  embedKeyword: string = '';
+  embedResults: IPostEmbedCard[] = [];
+  selectedEmbedCard: IPostEmbedCard | null = null;
+  edit_campId: number | null = null;
+  edit_attractionId: number | null = null;
+  private embedSearchTimer: any = null;
 
   // 回覆
   replies: IReply[] = [];
@@ -251,11 +260,72 @@ export class Post implements OnInit {
     this.edit_mainContent = this.post.mainContent;
     this.edit_moreImages = this.post.moreImages ? [...this.post.moreImages] : [];
     this.edit_selectedFiles = [];
+
+    this.edit_campId = this.post.campId ?? null;
+    this.edit_attractionId = this.post.attractionId ?? null;
+    if (this.post.campCard) {
+      this.embedType = 'camp';
+      this.selectedEmbedCard = this.post.campCard;
+    } else if (this.post.attractionCard) {
+      this.embedType = 'attraction';
+      this.selectedEmbedCard = this.post.attractionCard;
+    } else {
+      this.embedType = 'none';
+      this.selectedEmbedCard = null;
+    }
+    this.embedKeyword = '';
+    this.embedResults = [];
   }
 
   cancelEditPost() {
     this.isEditPost = false;
     this.edit_selectedFiles = [];
+  }
+
+  // 代入營地／自然景點卡片
+  setEmbedType(type: 'none' | 'camp' | 'attraction') {
+    this.embedType = type;
+    this.embedKeyword = '';
+    this.embedResults = [];
+    this.selectedEmbedCard = null;
+    this.edit_campId = null;
+    this.edit_attractionId = null;
+  }
+
+  onEmbedKeywordChange() {
+    if (this.embedSearchTimer) {
+      clearTimeout(this.embedSearchTimer);
+    }
+    this.embedSearchTimer = setTimeout(() => this.searchEmbedCards(), 300);
+  }
+
+  searchEmbedCards() {
+    if (this.embedType === 'none') return;
+
+    const search$ =
+      this.embedType === 'camp'
+        ? this.sforumService.searchCampsForEmbed(this.embedKeyword)
+        : this.sforumService.searchAttractionsForEmbed(this.embedKeyword);
+
+    search$.subscribe({
+      next: (data) => (this.embedResults = data),
+      error: (err) => console.error('搜尋代入卡片失敗', err),
+    });
+  }
+
+  selectEmbedCard(card: IPostEmbedCard) {
+    this.selectedEmbedCard = card;
+    this.embedResults = [];
+    this.embedKeyword = '';
+    if (this.embedType === 'camp') {
+      this.edit_campId = card.id;
+    } else if (this.embedType === 'attraction') {
+      this.edit_attractionId = card.id;
+    }
+  }
+
+  clearEmbedCard() {
+    this.setEmbedType('none');
   }
 
   onEditSelect(event: UploadEvent) {
@@ -299,9 +369,14 @@ export class Post implements OnInit {
       title: this.edit_title,
       mainContent: this.edit_mainContent,
       postTag: this.post.postTag ?? '',
+      campId: this.edit_campId,
+      attractionId: this.edit_attractionId,
       isHaveImgs: moreImages.length > 0,
       moreImages: moreImages,
     };
+
+    param.campCard = this.embedType === 'camp' ? this.selectedEmbedCard : null;
+    param.attractionCard = this.embedType === 'attraction' ? this.selectedEmbedCard : null;
 
     this.sforumService.putPostAPI(this.post.postId, param).subscribe({
       next: () => {
