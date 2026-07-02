@@ -1,0 +1,52 @@
+<div class="zones-page">
+  <div class="page-header">
+    <div>
+      <h2>營區管理</h2>
+      @if (campgroundName) { <span class="subtitle">{{ campgroundName }}</span> }
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', 'add']" class="btn-add">＋ 新增營區</a>
+      <a routerLink="/ownerCenter/camps" class="btn-back">← 返回營地列表</a>
+    </div>
+  </div>
+
+  @if (loading) { <div class="loading">載入中...</div> }
+
+  @if (!loading) {
+    @if (zones.length === 0) {
+      <div class="empty-state">
+        <div class="empty-title">尚未新增任何營區</div>
+        <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', 'add']" class="btn-add-empty">＋ 新增營區</a>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>名稱</th>
+            <th>類型</th>
+            <th>營位數</th>
+            <th>平日價格</th>
+            <th>假日價格</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (z of zones; track z.id) {
+            <tr>
+              <td class="zone-name">{{ z.zoneName }}</td>
+              <td><span class="type-badge">{{ zoneTypeName(z.zoneType) }}</span></td>
+              <td>{{ z.siteCount }}</td>
+              <td>{{ z.pricing ? '$' + z.pricing.weekdayPrice : '—' }}</td>
+              <td>{{ z.pricing ? '$' + z.pricing.weekendPrice : '—' }}</td>
+              <td class="actions">
+                <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', z.id, 'edit']" class="btn-edit">修改</a>
+                <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', z.id, 'sites']" class="btn-manage">管理營位</a>
+                <button (click)="delete(z.id, z.zoneName)" class="btn-delete">刪除</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>

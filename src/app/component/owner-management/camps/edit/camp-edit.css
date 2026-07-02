@@ -20,6 +20,22 @@
   color: #888;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-manage-zones {
+  padding: 7px 16px;
+  background: #4a7c59;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 .btn-back {
   color: #4a7c59;
   text-decoration: none;

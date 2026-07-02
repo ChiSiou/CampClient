@@ -1,0 +1,56 @@
+<div class="sites-page">
+  <div class="page-header">
+    <div>
+      <h2>營位管理</h2>
+      <span class="subtitle">
+        {{ campgroundName }}@if (zoneName) { > {{ zoneName }} }
+      </span>
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', zoneId, 'sites', 'add']" class="btn-add">＋ 新增營位</a>
+      <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones']" class="btn-back">← 返回營區列表</a>
+      <a routerLink="/ownerCenter/camps" class="btn-back-camp">← 返回營地列表</a>
+    </div>
+  </div>
+
+  @if (loading) { <div class="loading">載入中...</div> }
+
+  @if (!loading) {
+    @if (sites.length === 0) {
+      <div class="empty-state">
+        <div class="empty-title">尚未新增任何營位</div>
+        <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', zoneId, 'sites', 'add']" class="btn-add-empty">＋ 新增營位</a>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>營位編號</th>
+            <th>容納人數</th>
+            <th>狀態</th>
+            <th>描述</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of sites; track s.id) {
+            <tr>
+              <td class="site-number">{{ s.siteNumber }}</td>
+              <td>{{ s.capacityPeople }} 人</td>
+              <td>
+                <span [class]="s.siteStatus === 1 ? 'status normal' : 'status maintenance'">
+                  {{ siteStatusName(s.siteStatus) }}
+                </span>
+              </td>
+              <td class="desc">{{ s.description || '—' }}</td>
+              <td class="actions">
+                <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones', zoneId, 'sites', s.id, 'edit']" class="btn-edit">修改</a>
+                <button (click)="delete(s.id, s.siteNumber)" class="btn-delete">刪除</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>
