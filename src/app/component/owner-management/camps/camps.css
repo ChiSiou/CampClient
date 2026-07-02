@@ -176,6 +176,17 @@ td {
   font-size: 0.85rem;
 }
 
+.btn-manage {
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid #4a7c59;
+  color: #4a7c59;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .btn-delete {
   padding: 4px 12px;
   background: transparent;

@@ -120,7 +120,7 @@ export class CampAdd implements AfterViewInit, OnDestroy {
       basePrice: +this.form.basePrice || 0,
     };
     this.campService.createCampground(dto).subscribe({
-      next: (res) => this.router.navigate(['/ownerCenter/camps', res.id]),
+      next: (res) => this.router.navigate(['/ownerCenter/camps', res.id, 'edit']),
       error: (err) => {
         this.error = err.error?.message ?? '建立失敗，請稍後再試';
         this.submitting = false;

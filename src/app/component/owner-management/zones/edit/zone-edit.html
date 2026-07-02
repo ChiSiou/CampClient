@@ -1,0 +1,67 @@
+<div class="zone-form-page">
+  <div class="page-header">
+    <div>
+      <h2>編輯營區</h2>
+      @if (campgroundName) { <span class="subtitle">{{ campgroundName }}@if (zoneName) { > {{ zoneName }} }</span> }
+    </div>
+    <a [routerLink]="['/ownerCenter/camps', campgroundId, 'zones']" class="btn-back">← 返回營區列表</a>
+  </div>
+
+  @if (loading) { <div class="loading">載入中...</div> }
+
+  @if (!loading) {
+    <form (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>營區名稱 <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="form.zoneName" name="zoneName" placeholder="例：A 區" />
+      </div>
+
+      <div class="form-group">
+        <label>描述</label>
+        <textarea [(ngModel)]="form.zoneDescription" name="zoneDescription" rows="3" placeholder="介紹這個營區..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>類型</label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="0" /> 自帶露營裝備</label>
+          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="1" /> 園區住宿</label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>平日價格（元/晚）</label>
+          <input type="number" [(ngModel)]="form.pricing.weekdayPrice" name="weekdayPrice" />
+        </div>
+        <div class="form-group">
+          <label>假日價格（元/晚）</label>
+          <input type="number" [(ngModel)]="form.pricing.weekendPrice" name="weekendPrice" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>圈選營區範圍（點地圖打點，至少 3 點）</label>
+        <div #mapContainer class="map-container"></div>
+        <div class="drawing-toolbar">
+          <span class="drawing-hint">
+            @if (drawnPointCount === 0) { 點擊地圖開始打點 }
+            @else if (drawnPointCount < 3) { 已打 {{ drawnPointCount }} 點，再打 {{ 3 - drawnPointCount }} 點可圍成多邊形 }
+            @else { 已打 {{ drawnPointCount }} 點，多邊形已成形 }
+          </span>
+          <div class="drawing-btns">
+            <button type="button" (click)="undoLastPoint()" [disabled]="drawnPointCount === 0" class="btn-undo">↩ 上一步</button>
+            <button type="button" (click)="clearDrawing()" [disabled]="drawnPointCount === 0" class="btn-clear">清除重畫</button>
+          </div>
+        </div>
+      </div>
+
+      @if (error) { <div class="error-msg">{{ error }}</div> }
+
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="btn-cancel">取消</button>
+        <button type="submit" [disabled]="submitting" class="btn-submit">{{ submitting ? '儲存中...' : '儲存變更' }}</button>
+      </div>
+    </form>
+  }
+</div>

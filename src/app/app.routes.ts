@@ -62,27 +62,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./component/layouts/owner-center/owner-center').then((m) => m.OwnerCenter),
         children: [
-          {
-            path: 'camps',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import('./component/owner-management/camps/camps').then((m) => m.Camps),
-          },
-          {
-            path: 'camps/add',
-            loadComponent: () =>
-              import('./component/owner-management/camps/add/camp-add').then((m) => m.CampAdd),
-          },
-          {
-            path: 'camps/:id',
-            loadComponent: () =>
-              import('./component/owner-management/camps/edit/camp-edit').then((m) => m.CampEdit),
-          },
-          {
-            path: '**',
-            loadComponent: () =>
-              import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile),
-          },
+          // Campground
+          { path: 'camps', pathMatch: 'full', loadComponent: () => import('./component/owner-management/camps/camps').then((m) => m.Camps) },
+          { path: 'camps/add', pathMatch: 'full', loadComponent: () => import('./component/owner-management/camps/add/camp-add').then((m) => m.CampAdd) },
+          { path: 'camps/:campId/edit', pathMatch: 'full', loadComponent: () => import('./component/owner-management/camps/edit/camp-edit').then((m) => m.CampEdit) },
+          // Zone
+          { path: 'camps/:campId/zones/add', pathMatch: 'full', loadComponent: () => import('./component/owner-management/zones/add/zone-add').then((m) => m.ZoneAdd) },
+          { path: 'camps/:campId/zones/:zoneId/edit', pathMatch: 'full', loadComponent: () => import('./component/owner-management/zones/edit/zone-edit').then((m) => m.ZoneEdit) },
+          { path: 'camps/:campId/zones', pathMatch: 'full', loadComponent: () => import('./component/owner-management/zones/zones').then((m) => m.Zones) },
+          // Site
+          { path: 'camps/:campId/zones/:zoneId/sites/add', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/add/site-add').then((m) => m.SiteAdd) },
+          { path: 'camps/:campId/zones/:zoneId/sites/:siteId/edit', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/edit/site-edit').then((m) => m.SiteEdit) },
+          { path: 'camps/:campId/zones/:zoneId/sites', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/sites').then((m) => m.Sites) },
+          { path: '**', loadComponent: () => import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile) },
         ],
       },
 
