@@ -366,3 +366,96 @@
     display: none;
   }
 }
+
+/* ===== 退款申請面板（行程卡內展開） ===== */
+.refund-panel {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.refund-panel__hint {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #6d776d;
+}
+
+.refund-panel__items {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.refund-panel__item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.refund-panel__dates {
+  color: #888;
+  font-size: 12px;
+}
+
+.refund-panel__calc {
+  margin: 12px 0;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.refund-panel__calc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #374151;
+}
+
+.refund-panel__unrefundable {
+  color: #a2aaa2;
+}
+
+.refund-panel__calc-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #ebebeb;
+}
+
+.refund-panel__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.refund-panel__error {
+  margin: 8px 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.refund-panel__done {
+  margin: 0;
+  padding: 10px 12px;
+  background: #e5f5ea;
+  border: 1px solid #b7e0c4;
+  border-radius: 8px;
+  color: #2f8f46;
+  font-size: 14px;
+}

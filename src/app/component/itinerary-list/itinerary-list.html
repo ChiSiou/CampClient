@@ -89,8 +89,81 @@
 
             <div class="trip-actions">
               <a class="trip-btn outline" [routerLink]="['/camp', item.campId]">詳情</a>
-              <button class="trip-btn danger" type="button">退款</button>
+              <button class="trip-btn danger" type="button" (click)="toggleRefundPanel(item)">
+                {{ refundItemKey === itemKey(item) ? '收合退款' : '退款' }}
+              </button>
             </div>
+
+            <!-- 退款申請面板：只在展開這張行程卡時顯示 -->
+            @if (refundItemKey === itemKey(item)) {
+              <div class="refund-panel">
+                @if (refundDoneMessage) {
+                  <p class="refund-panel__done">{{ refundDoneMessage }}</p>
+                } @else {
+                  <p class="refund-panel__hint">
+                    不去露營了嗎？勾選要退款的項目，系統會依退款政策試算可退金額：
+                  </p>
+
+                  <ul class="refund-panel__items">
+                    @for (detail of item.details; track detail.orderDetailId) {
+                      <li class="refund-panel__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            [checked]="isRefundItemChecked(detail.orderDetailId)"
+                            (change)="toggleRefundItem(detail.orderDetailId)"
+                          />
+                          {{ detail.campName }}
+                          <span class="refund-panel__dates">
+                            {{ detail.checkinDate }} ~ {{ detail.checkoutDate }}
+                          </span>
+                        </label>
+                      </li>
+                    }
+                  </ul>
+
+                  @if (refundCalc) {
+                    <div class="refund-panel__calc">
+                      @for (calcItem of refundCalc.items; track calcItem.orderDetailId) {
+                        <div class="refund-panel__calc-row">
+                          <span>{{ calcItem.itemName }}（{{ calcItem.matchedTierName }}）</span>
+                          <span [class.refund-panel__unrefundable]="!calcItem.isRefundable">
+                            {{ calcItem.isRefundable ? 'NT$ ' + (calcItem.refundAmount | number) : '不可退' }}
+                          </span>
+                        </div>
+                      }
+                      <div class="refund-panel__calc-total">
+                        <span>可退總額</span>
+                        <span>NT$ {{ refundCalc.totalRefundAmount | number }}</span>
+                      </div>
+                    </div>
+                  }
+
+                  @if (refundError) {
+                    <p class="refund-panel__error">{{ refundError }}</p>
+                  }
+
+                  <div class="refund-panel__actions">
+                    @if (!refundCalc) {
+                      <button class="trip-btn outline" [disabled]="refundLoading" (click)="calcRefund(item)">
+                        {{ refundLoading ? '試算中...' : '試算可退金額' }}
+                      </button>
+                    } @else {
+                      <button class="trip-btn outline" [disabled]="refundLoading" (click)="calcRefund(item)">
+                        重新試算
+                      </button>
+                      <button
+                        class="trip-btn danger"
+                        [disabled]="refundLoading || refundCalc.totalRefundAmount <= 0"
+                        (click)="submitRefund(item)"
+                      >
+                        {{ refundLoading ? '送出中...' : '確認退款' }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </div>
         </article>
       }

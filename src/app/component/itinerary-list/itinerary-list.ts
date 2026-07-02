@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MemberService } from '../member/Service/member-service';
 import { OrderDetail, OrderList } from '../member/interface/orderList';
+import { PaymentService } from '../../services/payment.service';
+import { RefundResultDto } from '../../interfaces/camp.interface';
 
 interface ItineraryItem {
   orderId: number;
@@ -32,7 +34,19 @@ export class ItineraryList implements OnInit {
   loading = true;
   errorMessage = '';
 
-  constructor(private memberService: MemberService) {}
+  // ===== 退款申請（行程卡內展開式面板）=====
+  // 一張訂單可能拆成多個行程卡（多營區），用 orderId-campId 當唯一 key 記住展開的是哪一張
+  refundItemKey: string | null = null;
+  refundSelectedIds = new Set<number>();
+  refundCalc: RefundResultDto | null = null;
+  refundLoading = false;
+  refundError = '';
+  refundDoneMessage = '';
+
+  constructor(
+    private memberService: MemberService,
+    private paymentService: PaymentService,
+  ) {}
 
   ngOnInit() {
     this.loadItineraries();
@@ -161,5 +175,85 @@ export class ItineraryList implements OnInit {
 
   getTripStatusClass(status: ItineraryItem['tripStatus']): string {
     return status;
+  }
+
+  // ===== 退款申請 =====
+
+  itemKey(item: ItineraryItem): string {
+    return `${item.orderId}-${item.campId}`;
+  }
+
+  // 展開/收合這張行程卡的退款面板。展開時預設把這張卡的明細全部勾選、清掉上次的試算/訊息。
+  toggleRefundPanel(item: ItineraryItem) {
+    const key = this.itemKey(item);
+    if (this.refundItemKey === key) {
+      this.refundItemKey = null;
+      return;
+    }
+    this.refundItemKey = key;
+    this.refundSelectedIds = new Set(item.details.map((d) => d.orderDetailId));
+    this.refundCalc = null;
+    this.refundError = '';
+    this.refundDoneMessage = '';
+  }
+
+  isRefundItemChecked(orderDetailId: number): boolean {
+    return this.refundSelectedIds.has(orderDetailId);
+  }
+
+  // 勾選變動就把舊的試算作廢（金額會變，要重新試算）
+  toggleRefundItem(orderDetailId: number) {
+    if (this.refundSelectedIds.has(orderDetailId)) {
+      this.refundSelectedIds.delete(orderDetailId);
+    } else {
+      this.refundSelectedIds.add(orderDetailId);
+    }
+    this.refundCalc = null;
+  }
+
+  // 試算可退金額（不動 DB）
+  calcRefund(item: ItineraryItem) {
+    if (this.refundSelectedIds.size === 0) {
+      this.refundError = '請至少勾選一個要退款的項目。';
+      return;
+    }
+    this.refundLoading = true;
+    this.refundError = '';
+    this.refundDoneMessage = '';
+
+    this.paymentService
+      .calculateRefund({ orderId: item.orderId, orderDetailIds: [...this.refundSelectedIds] })
+      .subscribe({
+        next: (res) => {
+          this.refundLoading = false;
+          this.refundCalc = res;
+        },
+        error: () => {
+          this.refundLoading = false;
+          this.refundError = '試算失敗，請稍後再試。';
+        },
+      });
+  }
+
+  // 確認送出退款。成功後重新載入行程（全退的訂單會因為狀態變成已退款而從「即將到來」清單消失）
+  submitRefund(item: ItineraryItem) {
+    if (!this.refundCalc || this.refundSelectedIds.size === 0) return;
+    this.refundLoading = true;
+    this.refundError = '';
+
+    this.paymentService
+      .submitRefund({ orderId: item.orderId, orderDetailIds: [...this.refundSelectedIds] })
+      .subscribe({
+        next: (res) => {
+          this.refundLoading = false;
+          this.refundDoneMessage = res.message;
+          this.refundCalc = null;
+          this.refundSelectedIds.clear();
+        },
+        error: () => {
+          this.refundLoading = false;
+          this.refundError = '退款送出失敗，請稍後再試。';
+        },
+      });
   }
 }
