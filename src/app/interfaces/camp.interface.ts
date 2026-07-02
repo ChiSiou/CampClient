@@ -354,6 +354,10 @@ export interface CheckoutSubmitDto {
   contactEmail: string;
   appliedPromotionId: number | null;
   shippingMethodId: number | null;
+  receiverName?: string | null;
+  receiverPhone?: string | null;
+  receiverZipCode?: string | null;
+  receiverAddress?: string | null;
 }
 
 export interface EquipmentSelectionItem {
@@ -437,6 +441,7 @@ export interface EquipmentBreakdownResultDto {
 export interface StoredEquipmentSelection {
   selectedEquipments: EquipmentSelectionItem[]; // -> CheckoutSubmitDto.selectedEquipments
   shippingMethodId: number | null; // -> CheckoutSubmitDto.shippingMethodId
+  shippingMethodCode: string | null; // 判斷是否為黑貓宅配需填地址
   equipments: EquipmentBreakdownItem[]; // -> CheckoutSummaryDto.equipments
   equipmentSubTotal: number; // -> CheckoutSummaryDto.equipmentSubTotal
 }
