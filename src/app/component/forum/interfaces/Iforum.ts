@@ -11,13 +11,23 @@ export interface IForum {
   postTag: string;
   templateId?: number | null;
   campId?: number | null;
+  attractionId?: number | null;
   isHaveImgs?: boolean | null;
   likeCount?: number;
   commentCount?: number;
   moreImages?: IMoreImage[];
+  campCard?: IPostEmbedCard | null;
+  attractionCard?: IPostEmbedCard | null;
 }
 
 export interface IMoreImage {
   fromId?: number | null;
   imageUrl?: string | null;
+}
+
+export interface IPostEmbedCard {
+  id: number;
+  name: string;
+  coverImageUrl?: string | null;
+  subtitle?: string | null;
 }

@@ -154,6 +154,165 @@
   }
 }
 
+// 內文代入卡片（營地／自然景點）
+.embed-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  margin: 0.5rem 0 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  img {
+    width: 76px;
+    height: 76px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .embed-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .embed-card-type {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6aaa3a;
+  }
+
+  .embed-card-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1a2e1a;
+  }
+
+  .embed-card-sub {
+    font-size: 0.85rem;
+    color: #718096;
+  }
+
+  .pi-chevron-right {
+    color: #a0aec0;
+  }
+}
+
+// 編輯貼文：代入營地／自然景點卡片挑選器
+.embed-type-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.embed-search {
+  position: relative;
+}
+
+.embed-result-list {
+  margin-top: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.embed-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #f6fbee;
+  }
+
+  + .embed-result-item {
+    border-top: 1px solid #f0f0f0;
+  }
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+}
+
+.embed-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.embed-result-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #2d3748;
+}
+
+.embed-result-sub {
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.embed-card-picker-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+
+  img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .embed-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .embed-card-type {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6aaa3a;
+  }
+
+  .embed-card-name {
+    font-weight: 700;
+    color: #2d3748;
+  }
+
+  .embed-card-sub {
+    font-size: 0.82rem;
+    color: #718096;
+  }
+}
+
 // 上傳檔案按鈕區
 .form-actions {
   margin-top: 0.6rem;

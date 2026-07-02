@@ -5,50 +5,46 @@
 }
 
 .posts-section {
-  margin: 1rem 2rem 0 0;
+  margin: 0;
 }
 
 .posts-section__inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px;
 }
 
 .section-title {
   font-size: 22px;
   font-weight: 700;
-  margin: 0 0 24px;
   color: #222;
 }
 
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.imgs {
-  height: 240px;
-}
-
-.card_img {
-  width: 300px;
-  height: 400px;
-  overflow: hidden;
-  object-fit: cover;
+.card-cover {
   position: relative;
-}
-
-.card_img .lc-block.p-4 {
-  position: relative;
-  background: inherit;
-}
-
-.card_img img {
+  cursor: pointer;
+  min-height: 320px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
   transition: transform 0.3s;
-  object-fit: cover;
 }
 
-.card_img:hover img {
-  transform: scale(1.04);
-  object-fit: cover;
+.card-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.card-cover:hover {
+  transform: scale(1.03);
+}
+
+.card-cover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.text-shadow-1 {
+  text-shadow: 0 .1rem .1rem rgba(0, 0, 0, .75);
 }

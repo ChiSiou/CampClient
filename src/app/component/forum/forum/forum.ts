@@ -5,10 +5,11 @@ import { Sforum } from '../service/sforum';
 import { SPostInteract } from '../service/sPostInteract';
 import { IForum } from '../interfaces/Iforum';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CardModule, Card } from 'primeng/card';
 
 @Component({
   selector: 'app-forum',
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, Card],
   templateUrl: './forum.html',
   styleUrl: './forum.css',
 })

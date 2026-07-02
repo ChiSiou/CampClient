@@ -13,33 +13,39 @@
     </div>
 
     <!-- 文章列表 -->
-    <div class="row">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 align-items-stretch g-4 py-3">
       @for (post of filteredPosts; track post.postId) {
-      <div class="col col-xl-3 col-md-6 col-sm-12 posts-section">
-        <button (click)="gotoPost(post.postId)" class=" border border-0 rounded">
-          <div class="lc-block bg-white shadow rounded-bottom rounded-top card_img">
-            <img [src]="getMainImage(post)" class="img-fluid imgs" width="1080" loading="lazy" [alt]="post.title">
-            <div class="lc-block p-4">
-              <small class="text-muted">{{ post.postCategoryName }}</small>
-              <h2 class="h5 mt-1">{{ post.title }}</h2>
-              <p class="text-truncate" style="max-width: 300px;"> {{ post.mainContent }} </p>
-              <div class="d-flex align-items-center justify-content-between mt-1">
-                <small class="text-muted">{{ post.postDate | date:'yyyy-MM-dd' }}</small>
-                <small class="text-muted" *ngIf="likeCountMap[post.postId]">
+      <div class="col">
+        <div class="lc-block card card-cover h-100 overflow-hidden text-white bg-dark rounded-5 shadow-lg"
+          [style.background-image]="'url(' + getMainImage(post) + ')'" (click)="gotoPost(post.postId)">
+          <div class="d-flex flex-column h-100 p-4 pb-3 text-white text-shadow-1">
+            <small class="lc-block text-uppercase">{{ post.postCategoryName }}</small>
+            <div class="lc-block mt-auto mb-2">
+              <h2 class="h5 lh-1 fw-bold">{{ post.title }}</h2>
+              <p class="text-truncate mb-0">{{ post.mainContent }}</p>
+            </div>
+            <ul class="lc-block d-flex align-items-center justify-content-between list-unstyled mb-0">
+              <li class="small d-flex align-items-center">
+                <span>{{ post.postDate | date:'yyyy-MM-dd' }}</span>
+                <span *ngIf="likeCountMap[post.postId]" class="ms-2">
                   <i class="pi pi-heart-fill" style="color:#e74c3c; font-size:0.75rem;"></i>
                   {{ likeCountMap[post.postId] }}
-                </small>
-              </div>
-            </div>
+                </span>
+              </li>
+              <li>
+                <a class="btn btn-link btn-sm text-white" href="javascript:void(0)"
+                  (click)="$event.stopPropagation(); gotoPost(post.postId)">閱讀更多</a>
+              </li>
+            </ul>
           </div>
-        </button>
+        </div>
       </div>
       }
-
-      @if (filteredPosts.length === 0) {
-      <p class="text-center text-muted py-5">目前沒有符合分類的文章</p>
-      }
     </div>
+
+    @if (filteredPosts.length === 0) {
+    <p class="text-center text-muted py-5">目前沒有符合分類的文章</p>
+    }
 
   </div>
 </section>

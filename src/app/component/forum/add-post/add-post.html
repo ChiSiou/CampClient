@@ -30,6 +30,46 @@
       </div>
 
       <div class="field">
+        <label>代入營地或自然景點（選填）</label>
+        <div class="embed-type-toggle">
+          <p-button label="營地" size="small" [outlined]="embedType !== 'camp'"
+            (onClick)="setEmbedType(embedType === 'camp' ? 'none' : 'camp')"></p-button>
+          <p-button label="自然景點" size="small" [outlined]="embedType !== 'attraction'"
+            (onClick)="setEmbedType(embedType === 'attraction' ? 'none' : 'attraction')"></p-button>
+        </div>
+
+        <div class="embed-search" *ngIf="embedType !== 'none' && !selectedEmbedCard">
+          <input pInputText type="text" [(ngModel)]="embedKeyword" name="embedKeyword" class="w-full"
+            [placeholder]="embedType === 'camp' ? '輸入營地名稱搜尋...' : '輸入自然景點名稱搜尋...'"
+            (ngModelChange)="onEmbedKeywordChange()" />
+
+          <div class="embed-result-list" *ngIf="embedResults.length > 0">
+            <div class="embed-result-item" *ngFor="let card of embedResults" (click)="selectEmbedCard(card)">
+              <img [src]="card.coverImageUrl || 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200'"
+                alt="" />
+              <div class="embed-result-info">
+                <span class="embed-result-name">{{ card.name }}</span>
+                <span class="embed-result-sub" *ngIf="card.subtitle">{{ card.subtitle }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="embed-card-preview" *ngIf="selectedEmbedCard">
+          <img
+            [src]="selectedEmbedCard.coverImageUrl || 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200'"
+            alt="" />
+          <div class="embed-card-info">
+            <span class="embed-card-type">{{ embedType === 'camp' ? '營地' : '自然景點' }}</span>
+            <span class="embed-card-name">{{ selectedEmbedCard.name }}</span>
+            <span class="embed-card-sub" *ngIf="selectedEmbedCard.subtitle">{{ selectedEmbedCard.subtitle }}</span>
+          </div>
+          <p-button icon="pi pi-times" text severity="secondary" size="small"
+            (onClick)="clearEmbedCard()"></p-button>
+        </div>
+      </div>
+
+      <div class="field">
         <label>附圖</label>
         <p-fileupload name="images[]" [customUpload]="true" (onSelect)="onSelect($event)" [auto]="false"
           [multiple]="true" accept="image/*" maxFileSize="5000000" mode="advanced" chooseLabel="選擇" cancelLabel="取消"
