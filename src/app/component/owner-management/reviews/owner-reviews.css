@@ -1,0 +1,128 @@
+.reviews-page {
+  padding: 24px;
+  max-width: 900px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.camp-select {
+  min-width: 200px;
+}
+
+.empty {
+  color: #888;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.review-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.review-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.review-user {
+  font-weight: 600;
+}
+
+.review-camp,
+.review-date {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.review-date {
+  margin-left: auto;
+}
+
+.review-comment {
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+}
+
+.review-images {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.review-images img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.owner-reply {
+  background: #f4f8f5;
+  border-left: 3px solid #4a7c59;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.owner-reply-title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #4a7c59;
+  margin-bottom: 4px;
+}
+
+.owner-reply-date {
+  font-weight: 400;
+  color: #888;
+}
+
+.owner-reply p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reported-tag {
+  color: #c0392b;
+  font-size: 0.85rem;
+}
+
+.field {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  color: #555;
+}

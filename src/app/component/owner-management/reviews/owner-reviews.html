@@ -1,0 +1,134 @@
+<div class="reviews-page">
+  <div class="page-header">
+    <h2>評價管理</h2>
+    <p-select
+      [options]="campOptions"
+      [(ngModel)]="selectedCampId"
+      (onChange)="onCampChange()"
+      optionLabel="label"
+      optionValue="value"
+      class="camp-select"
+    />
+  </div>
+
+  @if (loading) {
+    <div class="empty">載入中...</div>
+  } @else if (reviews.length === 0) {
+    <div class="empty">目前沒有任何評論。</div>
+  } @else {
+    <div class="review-list">
+      @for (review of reviews; track review.reviewId) {
+        <p-card class="review-card">
+          <div class="review-head">
+            <p-rating [ngModel]="review.rating" [readonly]="true" [style]="{ '--p-rating-icon-size': '18px' }" />
+            <span class="review-user">{{ review.userName || '使用者' }}</span>
+            <span class="review-camp">・{{ review.campName }}</span>
+            <span class="review-date">{{ review.createdAt | date: 'yyyy/MM/dd' }}</span>
+          </div>
+
+          <p class="review-comment">{{ review.commentText }}</p>
+
+          @if (review.imageUrls.length > 0) {
+            <div class="review-images">
+              @for (url of review.imageUrls; track url) {
+                <img [src]="url" alt="評論圖片" />
+              }
+            </div>
+          }
+
+          @if (review.ownerReplyContent) {
+            <div class="owner-reply">
+              <div class="owner-reply-title">
+                <span>營主回覆</span>
+                <span class="owner-reply-date">{{ review.ownerReplyAt | date: 'yyyy/MM/dd' }}</span>
+              </div>
+              <p>{{ review.ownerReplyContent }}</p>
+            </div>
+          }
+
+          <div class="review-actions">
+            <p-button
+              [label]="review.ownerReplyContent ? '編輯回覆' : '回覆'"
+              size="small"
+              [outlined]="true"
+              (onClick)="openReplyDialog(review)"
+            />
+            <p-button
+              label="檢舉"
+              size="small"
+              severity="danger"
+              [outlined]="true"
+              [disabled]="review.hasOpenReport"
+              (onClick)="openReportDialog(review)"
+            />
+            @if (review.hasOpenReport) {
+              <span class="reported-tag">已檢舉，審核中</span>
+            }
+          </div>
+        </p-card>
+      }
+    </div>
+
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="rows"
+      [totalRecords]="totalCount"
+      [rowsPerPageOptions]="[10, 20, 30]"
+    />
+  }
+</div>
+
+<p-toast />
+
+<!-- 回覆彈窗 -->
+<p-dialog [(visible)]="replyDialogVisible" [modal]="true" [style]="{ width: '28rem' }" header="回覆評論">
+  <textarea
+    pTextarea
+    [(ngModel)]="replyContent"
+    rows="4"
+    style="width: 100%;"
+    placeholder="輸入給這位訪客的回覆..."
+  ></textarea>
+  <ng-template #footer>
+    <p-button label="取消" [text]="true" severity="secondary" (onClick)="replyDialogVisible = false" />
+    <p-button
+      label="送出回覆"
+      [disabled]="!replyContent.trim() || replySubmitting"
+      (onClick)="submitReply()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- 檢舉彈窗 -->
+<p-dialog [(visible)]="reportDialogVisible" [modal]="true" [style]="{ width: '28rem' }" header="檢舉評論">
+  <div class="field">
+    <label>檢舉原因</label>
+    <p-select
+      [options]="reportReasonOptions"
+      [(ngModel)]="reportReasonType"
+      optionLabel="label"
+      optionValue="value"
+      style="width: 100%;"
+    />
+  </div>
+  <div class="field">
+    <label>補充說明（選填）</label>
+    <textarea
+      pTextarea
+      [(ngModel)]="reportReasonDetail"
+      rows="3"
+      style="width: 100%;"
+      placeholder="說明這則評論哪裡不當..."
+    ></textarea>
+  </div>
+  <ng-template #footer>
+    <p-button label="取消" [text]="true" severity="secondary" (onClick)="reportDialogVisible = false" />
+    <p-button
+      label="送出檢舉"
+      severity="danger"
+      [disabled]="reportSubmitting"
+      (onClick)="submitReport()"
+    />
+  </ng-template>
+</p-dialog>
