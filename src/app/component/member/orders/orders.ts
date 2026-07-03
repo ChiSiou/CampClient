@@ -200,7 +200,10 @@ export class Orders {
       },
       error: () => {
         this.processingOrderId = null;
-        this.pendingActionError = '繼續付款失敗，請確認訂單狀態後再試。';
+        // 404 幾乎都代表訂單在按下去的當下被背景排程判定逾時取消了，直接把畫面同步成已取消，
+        // 不然使用者看不出這筆訂單已經沒救了，會一直重複點同一顆按鈕。
+        order.status = 2;
+        this.pendingActionError = '訂單已逾時取消，請重新選位下單。';
       },
     });
   }
