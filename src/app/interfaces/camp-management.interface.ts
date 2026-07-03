@@ -74,11 +74,20 @@ export interface CampzoneListItemDto {
   siteCount: number;
 }
 
+export interface AccomTypeDto {
+  id: number;
+  category: number;
+  typeName: string;
+  maxCapacity: number;
+  description: string;
+}
+
 export interface CampsiteCreateDto {
   siteNumber: string;
   capacityPeople: number;
   description: string;
   facilityIds: number[];
+  accomTypeIds: number[];
 }
 
 export interface CampsiteUpdateDto {
@@ -87,6 +96,7 @@ export interface CampsiteUpdateDto {
   siteStatus: number;
   description: string;
   facilityIds: number[];
+  accomTypeIds: number[];
 }
 
 export interface CampsiteListItemDto {
@@ -96,6 +106,7 @@ export interface CampsiteListItemDto {
   capacityPeople: number;
   siteStatus: number;
   description: string;
+  accomTypeNames: string[];
 }
 
 export interface CampMediumDto {

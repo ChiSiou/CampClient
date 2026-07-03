@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {
+  AccomTypeDto,
   CampgroundCreateDto,
   CampgroundListItemDto,
   CampgroundOwnerDetailDto,
@@ -62,6 +63,11 @@ export class CampManagementService {
 
   deleteZone(zoneId: number) {
     return this.http.delete<void>(`${this.base}/zones/${zoneId}`);
+  }
+
+  // AccomType 字典
+  getAccomTypes(category: number) {
+    return this.http.get<AccomTypeDto[]>(`${this.base}/accomtypes?category=${category}`);
   }
 
   // Campsite

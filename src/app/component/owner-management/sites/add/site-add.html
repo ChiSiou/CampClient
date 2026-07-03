@@ -18,6 +18,35 @@
       <input type="number" [(ngModel)]="form.capacityPeople" name="capacityPeople" min="1" />
     </div>
 
+    @if (accomTypes.length > 0) {
+      <div class="form-group">
+        <label>住宿類型 <span class="required">*</span></label>
+
+        @if (zoneType === 1) {
+          <!-- 自備裝備：checkbox 多選 -->
+          <div class="accom-list">
+            @for (a of accomTypes; track a.id) {
+              <label class="accom-item">
+                <input type="checkbox" [checked]="isAccomTypeChecked(a.id)" (change)="toggleAccomType(a.id)" />
+                <span class="accom-name">{{ a.typeName }}</span>
+                <span class="accom-desc">{{ a.description }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        @if (zoneType === 2) {
+          <!-- 園區住宿：dropdown 單選 -->
+          <select [(ngModel)]="form.accomTypeIds[0]" name="accomTypeId" (ngModelChange)="form.accomTypeIds = [$event]">
+            <option [ngValue]="undefined" disabled>請選擇住宿類型</option>
+            @for (a of accomTypes; track a.id) {
+              <option [ngValue]="a.id">{{ a.typeName }}（{{ a.description }}）</option>
+            }
+          </select>
+        }
+      </div>
+    }
+
     <div class="form-group">
       <label>描述</label>
       <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="營位特色、備注..."></textarea>
