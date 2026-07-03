@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
 import { CampgroundCreateDto } from '../../../../interfaces/camp-management.interface';
+import { PhotoGallery } from '../../shared/photo-gallery/photo-gallery';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -15,7 +16,7 @@ L.Icon.Default.mergeOptions({
 
 @Component({
   selector: 'app-camp-edit',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PhotoGallery],
   templateUrl: './camp-edit.html',
   styleUrl: './camp-edit.css',
 })

@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
 import { AccomTypeDto, CampsiteUpdateDto } from '../../../../interfaces/camp-management.interface';
+import { PhotoGallery } from '../../shared/photo-gallery/photo-gallery';
 
 @Component({
   selector: 'app-site-edit',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PhotoGallery],
   templateUrl: './site-edit.html',
   styleUrl: './site-edit.css',
 })
