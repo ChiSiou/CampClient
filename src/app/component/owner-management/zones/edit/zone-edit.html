@@ -24,8 +24,8 @@
       <div class="form-group">
         <label>類型</label>
         <div class="radio-group">
-          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="0" /> 自帶露營裝備</label>
-          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="1" /> 園區住宿</label>
+          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="1" /> 自帶露營裝備</label>
+          <label class="radio-label"><input type="radio" [(ngModel)]="form.zoneType" name="zoneType" [value]="2" /> 園區住宿</label>
         </div>
       </div>
 
@@ -63,5 +63,9 @@
         <button type="submit" [disabled]="submitting" class="btn-submit">{{ submitting ? '儲存中...' : '儲存變更' }}</button>
       </div>
     </form>
+
+    @if (zoneId) {
+      <app-photo-gallery referenceType="zone" [referenceId]="zoneId" />
+    }
   }
 </div>

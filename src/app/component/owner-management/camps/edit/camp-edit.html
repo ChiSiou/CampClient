@@ -90,5 +90,9 @@
         <button type="submit" [disabled]="submitting" class="btn-submit">{{ submitting ? '儲存中...' : '儲存變更' }}</button>
       </div>
     </form>
+
+    @if (campgroundId) {
+      <app-photo-gallery referenceType="campground" [referenceId]="campgroundId" />
+    }
   }
 </div>

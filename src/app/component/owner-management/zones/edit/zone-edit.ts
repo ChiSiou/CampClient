@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
 import { CampzoneCreateDto } from '../../../../interfaces/camp-management.interface';
+import { PhotoGallery } from '../../shared/photo-gallery/photo-gallery';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -15,7 +16,7 @@ L.Icon.Default.mergeOptions({
 
 @Component({
   selector: 'app-zone-edit',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PhotoGallery],
   templateUrl: './zone-edit.html',
   styleUrl: './zone-edit.css',
 })
@@ -36,7 +37,7 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
   error = '';
 
   form: CampzoneCreateDto = {
-    zoneName: '', zoneDescription: '', geoJson: '', zoneType: 0,
+    zoneName: '', zoneDescription: '', geoJson: '', zoneType: 1,
     pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [],
   };
 

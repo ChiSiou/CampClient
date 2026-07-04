@@ -74,11 +74,20 @@ export interface CampzoneListItemDto {
   siteCount: number;
 }
 
+export interface AccomTypeDto {
+  id: number;
+  category: number;
+  typeName: string;
+  maxCapacity: number;
+  description: string;
+}
+
 export interface CampsiteCreateDto {
   siteNumber: string;
   capacityPeople: number;
   description: string;
   facilityIds: number[];
+  accomTypeIds: number[];
 }
 
 export interface CampsiteUpdateDto {
@@ -87,6 +96,7 @@ export interface CampsiteUpdateDto {
   siteStatus: number;
   description: string;
   facilityIds: number[];
+  accomTypeIds: number[];
 }
 
 export interface CampsiteListItemDto {
@@ -96,6 +106,7 @@ export interface CampsiteListItemDto {
   capacityPeople: number;
   siteStatus: number;
   description: string;
+  accomTypeNames: string[];
 }
 
 export interface CampMediumDto {
@@ -104,10 +115,10 @@ export interface CampMediumDto {
   isCover: boolean;
 }
 
-// 固定兩選項，對應後端 Common/CampzoneType.cs
+// 固定兩選項，對應後端 Common/CampzoneType.cs（值與 AccomType.Category 相同）
 export enum CampzoneType {
-  BringOwnGear = 0,        // 自帶露營裝備
-  OnSiteAccommodation = 1, // 園區住宿
+  BringOwnGear = 1,        // 自帶露營裝備，對應 AccomType.Category = 1
+  OnSiteAccommodation = 2, // 園區住宿，對應 AccomType.Category = 2
 }
 
 // 對應後端 CampManagementService 的狀態常數

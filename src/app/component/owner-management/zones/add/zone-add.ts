@@ -34,7 +34,7 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
   error = '';
 
   form: CampzoneCreateDto = {
-    zoneName: '', zoneDescription: '', geoJson: '', zoneType: 0,
+    zoneName: '', zoneDescription: '', geoJson: '', zoneType: 1,
     pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [],
   };
 

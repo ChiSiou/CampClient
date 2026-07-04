@@ -1,0 +1,30 @@
+<div class="photo-gallery">
+  <div class="gallery-header">
+    <h3>圖片相簿</h3>
+    <label class="btn-upload" [class.uploading]="uploading">
+      {{ uploading ? '上傳中...' : '+ 上傳圖片' }}
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading" hidden />
+    </label>
+  </div>
+
+  @if (photos.length === 0) {
+    <div class="gallery-empty">尚未上傳任何圖片</div>
+  }
+
+  <div class="photo-grid">
+    @for (photo of photos; track photo.id) {
+      <div class="photo-card">
+        <img [src]="host + photo.url" alt="照片" />
+        @if (photo.isCover) {
+          <span class="cover-badge">封面</span>
+        }
+        <div class="photo-actions">
+          @if (!photo.isCover) {
+            <button (click)="setCover(photo.id)" class="btn-set-cover">設為封面</button>
+          }
+          <button (click)="deletePhoto(photo.id)" class="btn-delete">刪除</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
