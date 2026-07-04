@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MemberService } from '../Service/member-service';
 import { ChatService } from '../../../services/chat.service';
 import { OwnerOrderList } from '../interface/ownerOrderList';
+import { CampManagementService } from '../../../services/camp-management.service';
 
 @Component({
   selector: 'app-owner-profile',
@@ -17,13 +18,16 @@ export class OwnerProfile {
   ownerprofilephoto = '';
   imageLoadFailed = false;
   createdAt = '';
+  status = false;
   recentOrders: OwnerOrderList[] = [];
-
+  campcount = 0;
+  recentordercount = 0;
   private readonly apiOrigin = 'https://localhost:7011';
 
   constructor(
     private memberservice: MemberService,
     private chatService: ChatService,
+    private campManagementService: CampManagementService
   ) {}
 
   ngOnInit(): void {
@@ -31,11 +35,10 @@ export class OwnerProfile {
       next: (res) => {
         const profile = res.profileData ?? res.ProfileData;
         const ownerProfile = profile?.ownerProfile ?? profile?.OwnerProfile;
-
         this.name = profile?.name ?? profile?.Name ?? '';
         this.email = profile?.email ?? profile?.Email ?? '';
         this.createdAt = ownerProfile?.createdAt ?? ownerProfile?.CreatedAt ?? '';
-
+        if(res.profileData.roles.includes("Owner")){this.status = true}
         const licenseImage = ownerProfile?.licenseImage ?? ownerProfile?.LicenseImage;
         if (licenseImage) {
           this.setOwnerPhoto(licenseImage);
@@ -45,7 +48,7 @@ export class OwnerProfile {
 
     this.memberservice.OwnerGetPhoto().subscribe({
       next: (res) => {
-        this.setOwnerPhoto(res.url ?? (res as any).Url);
+        this.setOwnerPhoto(res.url);
       },
       error: (err) => {
         console.log('err', err.message);
@@ -53,9 +56,24 @@ export class OwnerProfile {
     });
 
     this.memberservice.getOwnerRecentOrders().subscribe({
-      next: (res) => (this.recentOrders = res),
-      error: (err) => console.log(err.message),
+      next: (res) => 
+        {
+          this.recentOrders = res,
+          this.recentordercount = res.length
+        },
+      error: (err) => 
+        {
+          console.log(err.message)
+        },
     });
+    this.campManagementService.listMine().subscribe({
+      next:(res)=>{
+      this.campcount = res.length;
+      },
+      error:(err)=>{
+        console.log(err.message)
+      }
+    })
   }
 
   onAvatarError() {

@@ -7,7 +7,7 @@
     </div>
 
     <div class="hero-actions">
-      <button class="primary-btn" routerLink="/owner/camps/add">新增營地</button>
+      <button class="primary-btn" routerLink="/ownerCenter/camps/add">新增營地</button>
       <button class="secondary-btn" routerLink="/ownerCenter/profileEdit">編輯營主資料</button>
     </div>
   </section>
@@ -24,7 +24,7 @@
     <div class="owner-info">
       <h2>{{ name || '營主' }}</h2>
       <p>{{email ||'owner@example.com'}}</p>
-      <span class="status-badge">已完成驗證</span>
+      <span class="status-badge">{{status?"已完成驗證":"未完成驗證"}}</span>
     </div>
 
     <div class="owner-meta">
@@ -34,7 +34,7 @@
       </div>
       <div>
         <span>營地數量</span>
-        <strong>3 間</strong>
+        <strong>{{campcount}} 間</strong>
       </div>
     </div>
   </section>
@@ -44,7 +44,7 @@
 
     <div class="stat-card">
       <span>待處理訂單</span>
-      <h3>8 筆</h3>
+      <h3>{{recentordercount}} 筆</h3>
       <p>請盡快確認</p>
     </div>
 
@@ -56,7 +56,7 @@
 
     <div class="stat-card">
       <span>上架營地</span>
-      <h3>3 間</h3>
+      <h3>{{campcount}} 間</h3>
       <p>目前正常顯示</p>
     </div>
   </section>
@@ -65,7 +65,7 @@
     <div class="panel">
       <div class="panel-header">
         <h2>我的營地</h2>
-        <button class="text-btn" routerLink="/owner/camps">查看全部</button>
+        <button class="text-btn" routerLink="/ownerCenter/camps">查看全部</button>
       </div>
 
       <div class="camp-list">
@@ -105,7 +105,7 @@
   <section class="panel order-panel">
     <div class="panel-header">
       <h2>近期訂單</h2>
-      <button class="text-btn" routerLink="/owner/orders">查看全部</button>
+      <button class="text-btn" routerLink="/ownerCenter/orders">查看全部</button>
     </div>
 
     <div class="order-table">
