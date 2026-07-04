@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Sforum } from '../service/sforum';
@@ -6,12 +6,16 @@ import { SPostInteract } from '../service/sPostInteract';
 import { IForum } from '../interfaces/Iforum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardModule, Card } from 'primeng/card';
+import { MemberService } from '../../member/Service/member-service';
+import { MessageService } from 'primeng/api';
+import { Toast } from "primeng/toast";
 
 @Component({
   selector: 'app-forum',
-  imports: [CommonModule, ButtonModule, Card],
+  imports: [CommonModule, ButtonModule, Card, Toast],
   templateUrl: './forum.html',
   styleUrl: './forum.css',
+  providers: [MessageService],
 })
 export class Forum implements OnInit {
   posts: IForum[] = [];
@@ -20,9 +24,15 @@ export class Forum implements OnInit {
   likeCountMap: Record<number, number> = {};
   // commentCountMap: Record<number, number> = {};
 
-  categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區'];
+  categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區', '日常分享'];
 
-  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private router: Router) { }
+
+  private messageService = inject(MessageService);
+  isLogin: boolean = false;
+
+  constructor(private sforumService: Sforum, private sPostInteractService: SPostInteract, private router: Router, private sMember: MemberService) {
+    this.isLogin = this.sMember.getid();
+  }
 
   ngOnInit(): void {
     this.sforumService.getPosts().subscribe({
@@ -66,7 +76,20 @@ export class Forum implements OnInit {
   }
 
   addPost() {
-    this.router.navigate(['post']);
+    if (this.isLogin) {
+      this.router.navigate(['post']);
+      return;
+    }
+    this.messageService.add({
+      severity: 'warn',
+      summary: '尚未登入',
+      detail: '請先登入後再發文。',
+      life: 3000,
+    });
+  }
+
+  toLogin() {
+    this.router.navigate(['login']);
   }
 
 }

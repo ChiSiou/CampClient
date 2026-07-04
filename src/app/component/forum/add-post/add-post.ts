@@ -65,6 +65,7 @@ export class AddPost {
     { id: 7, name: '露營裝備' },
     { id: 8, name: '天氣分享' },
     { id: 9, name: '抱怨專區' },
+    { id: 10, name: '日常分享' },
   ];
 
   // 使用者傳圖
@@ -84,6 +85,15 @@ export class AddPost {
 
   ngOnInit(): void {
     this.new_userId = this.sforumService.getUserId();
+    if (!this.new_userId) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: '尚未登入',
+        detail: '請先登入後再發文。',
+        life: 3000,
+      });
+      this.router.navigate(['login']);
+    }
   }
 
   onSelect(event: UploadEvent) {
