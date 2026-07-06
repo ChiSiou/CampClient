@@ -32,6 +32,8 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
   loading = true;
   submitting = false;
   error = '';
+  selectedFiles: File[] = [];
+  previewUrls: string[] = [];
 
   tags: TagDto[] = [];
   tagsByCategory: { category: string; items: TagDto[] }[] = [];
@@ -141,7 +143,24 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
     this.form.geoJson = '';
   }
 
-  submit() {
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = Array.from(input.files);
+    this.selectedFiles.push(...files);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = (e) => this.previewUrls.push(e.target!.result as string);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  removeFile(i: number) {
+    this.selectedFiles.splice(i, 1);
+    this.previewUrls.splice(i, 1);
+  }
+
+  async submit() {
     if (!this.form.zoneName.trim()) { this.error = '請填寫營區名稱'; return; }
     this.submitting = true;
     this.error = '';
@@ -149,10 +168,17 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
       ...this.form,
       pricing: { ...this.form.pricing, weekdayPrice: +this.form.pricing.weekdayPrice || 0, weekendPrice: +this.form.pricing.weekendPrice || 0 },
     };
-    this.campService.createZone(this.campgroundId, dto).subscribe({
-      next: () => this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']),
-      error: (err) => { this.error = err.error?.message ?? '建立失敗'; this.submitting = false; },
-    });
+    try {
+      const res = await this.campService.createZone(this.campgroundId, dto).toPromise();
+      const id = res!.id;
+      for (const file of this.selectedFiles) {
+        await this.campService.uploadZonePhoto(id, file).toPromise();
+      }
+      this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']);
+    } catch (err: any) {
+      this.error = err.error?.message ?? '建立失敗';
+      this.submitting = false;
+    }
   }
 
   cancel() { this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']); }
