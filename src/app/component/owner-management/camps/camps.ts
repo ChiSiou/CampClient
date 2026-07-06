@@ -38,6 +38,16 @@ export class Camps implements OnInit {
     });
   }
 
+  toggleStatus(id: number, currentStatus: number) {
+    const newStatus = currentStatus === CampgroundStatus.Active ? CampgroundStatus.Draft : CampgroundStatus.Active;
+    const msg = newStatus === CampgroundStatus.Active ? '確定要上架此營地？（需通過 KYC 驗證且至少有一個營區/營位）' : '確定要下架此營地？';
+    if (!confirm(msg)) return;
+    this.campService.updateCampgroundStatus(id, newStatus).subscribe({
+      next: () => this.load(),
+      error: (err) => alert(err.error?.message ?? '狀態更新失敗'),
+    });
+  }
+
   delete(id: number, name: string) {
     if (!confirm(`確定要刪除「${name}」嗎？`)) return;
     this.campService.deleteCampground(id).subscribe({
