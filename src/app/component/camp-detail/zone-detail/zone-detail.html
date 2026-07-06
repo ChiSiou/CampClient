@@ -17,7 +17,7 @@
     <div class="zone-intro__photos">
       @for (img of zoneDetail.photoUrls.slice(0, 4); track img; let i = $index) {
       <div class="zone-intro__photo" (click)="openZoneLightbox(i)">
-        <img [src]="img" [alt]="zoneDetail.zoneName" />
+        <img [src]="resolveUrl(img)" [alt]="zoneDetail.zoneName" />
         @if (i === 3 && zoneDetail.photoUrls.length > 4) {
         <button class="zone-intro__view-all-btn" (click)="$event.stopPropagation(); openZoneLightbox(3)">
           查看全部 {{ zoneDetail.photoUrls.length }} 張
@@ -26,7 +26,7 @@
       </div>
       }
     </div>
-    <app-lightbox [images]="zoneDetail.photoUrls" [(visible)]="showZoneLightbox" [(activeIndex)]="zoneLightboxIndex" />
+    <app-lightbox [images]="resolveUrls(zoneDetail.photoUrls)" [(visible)]="showZoneLightbox" [(activeIndex)]="zoneLightboxIndex" />
     }
 
     @if (zoneDetail.zoneDescription) {
@@ -39,7 +39,7 @@
       @for (f of zoneDetail.facilities; track f.facilityId) {
       <span class="zone-intro__facility">
         @if (f.iconUrl) {
-        <img [src]="f.iconUrl" class="zone-intro__facility-icon" alt="" />
+        <img [src]="resolveUrl(f.iconUrl)" class="zone-intro__facility-icon" alt="" />
         } @else {
         <i class="pi pi-check-circle zone-intro__facility-icon-fallback"></i>
         }
@@ -111,7 +111,7 @@
       [class.unit-card--disabled]="!unit.isAvailable || isAlreadyBookedElsewhere(unit)" (click)="toggleUnit(unit)">
       <div class="unit-card__img-wrap">
         @if (unit.photoUrls?.[0]) {
-        <img [src]="unit.photoUrls[0]" [alt]="unit.siteNumber" class="unit-card__img" />
+        <img [src]="resolveUrl(unit.photoUrls[0])" [alt]="unit.siteNumber" class="unit-card__img" />
         } @else {
         <div class="unit-card__no-img"></div>
         }
@@ -172,11 +172,11 @@
       <div class="unit-detail__photos">
         @for (img of detailUnit.photoUrls; track img; let i = $index) {
         <div class="unit-detail__photo" (click)="openUnitLightbox(i)">
-          <img [src]="img" [alt]="detailUnit.siteNumber" />
+          <img [src]="resolveUrl(img)" [alt]="detailUnit.siteNumber" />
         </div>
         }
       </div>
-      <app-lightbox [images]="detailUnit.photoUrls" [(visible)]="showUnitLightbox"
+      <app-lightbox [images]="resolveUrls(detailUnit.photoUrls)" [(visible)]="showUnitLightbox"
         [(activeIndex)]="unitLightboxIndex" />
       } @else {
       <div class="unit-detail__no-img">尚無照片</div>
@@ -198,7 +198,7 @@
         @for (f of detailUnit.facilities; track f.facilityId) {
         <span class="zone-intro__facility">
           @if (f.iconUrl) {
-          <img [src]="f.iconUrl" class="zone-intro__facility-icon" alt="" />
+          <img [src]="resolveUrl(f.iconUrl)" class="zone-intro__facility-icon" alt="" />
           } @else {
           <i class="pi pi-check-circle zone-intro__facility-icon-fallback"></i>
           }

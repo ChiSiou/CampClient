@@ -10,6 +10,7 @@ import { SearchBar, SearchBarInitial } from '../shared/search-bar/search-bar';
 import { SearchFilters } from '../shared/search-filters/search-filters';
 import { SearchService } from '../../services/search.service';
 import { TENT_ICON_SVG } from '../../shared/map-icons';
+import { environment } from '../../../environments/environment';
 import {
   CampSearchRequest,
   CampSearchResultDto,
@@ -33,6 +34,8 @@ export class Search implements OnInit, AfterViewInit {
   markers: CampMapMarkerDto[] = [];
   totalCount = 0;
   loading = true;
+
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   pageSize = 20;
   pageNumber = 1;
@@ -160,8 +163,15 @@ export class Search implements OnInit, AfterViewInit {
     });
   }
 
+  private resolveImageUrl(imageUrl: string | null | undefined): string | null {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
+  }
+
   private buildPopupHtml(m: CampMapMarkerDto): string {
-    const cover = m.coverImageUrl || 'assets/placeholder.jpg';
+    const cover = this.resolveImageUrl(m.coverImageUrl) || 'assets/placeholder.jpg';
     return `
       <a href="/camp/${m.id}" class="camp-popup__card">
         <div class="camp-popup__img-wrap">

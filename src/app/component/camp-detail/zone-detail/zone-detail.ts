@@ -9,6 +9,7 @@ import { CalendarService } from '../../../services/calendar.service';
 import { CampSelectionService, CampSelectionEntry } from '../../../services/camp-selection.service';
 import { CampZoneCalendarDto, CampZoneDetailDto, UnitCard } from '../../../interfaces/camp.interface';
 import { Lightbox } from '../../shared/lightbox/lightbox';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-zone-detail',
@@ -35,6 +36,8 @@ export class ZoneDetail implements OnInit {
   submitting = false;
   errorMessage = '';
 
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
+
   // Zone 介紹照片格宮的 Lightbox
   showZoneLightbox = false;
   zoneLightboxIndex = 0;
@@ -60,6 +63,20 @@ export class ZoneDetail implements OnInit {
       next: res => (this.zoneDetail = res),
       error: () => {},
     });
+  }
+
+  resolveUrl(url: string): string;
+  resolveUrl(url: string | null | undefined): string | null;
+  resolveUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `${this.apiHost}${url}`;
+    return url;
+  }
+
+  // Lightbox 元件只吃處理好的網址陣列，不會自己補 host
+  resolveUrls(urls: string[] | null | undefined): string[] {
+    return (urls ?? []).map(u => this.resolveUrl(u));
   }
 
   openZoneLightbox(index: number) {

@@ -141,10 +141,7 @@
 }
 
 .meta-item--address {
-  max-width: 280px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 /* .nav-badge 已移至 styles.css */

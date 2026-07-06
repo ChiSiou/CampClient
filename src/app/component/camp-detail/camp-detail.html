@@ -78,7 +78,7 @@
         </span>
         @if (location?.fullAddress) {
         <a [href]="googleMapsNavUrl" target="_blank" rel="noopener noreferrer"
-          class="meta-item meta-item--link meta-item--address">
+          class="meta-item meta-item--link meta-item--address" [title]="location?.fullAddress ?? ''">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
