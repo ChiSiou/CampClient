@@ -83,6 +83,25 @@
         <input type="text" [(ngModel)]="form.website" name="website" placeholder="https://..." />
       </div>
 
+      @if (tagsByCategory.length > 0) {
+        <div class="form-group">
+          <label>標籤</label>
+          @for (group of tagsByCategory; track group.category) {
+            <div class="tag-category">
+              <div class="tag-category-name">{{ group.category }}</div>
+              <div class="check-list">
+                @for (t of group.items; track t.id) {
+                  <label class="check-item" [class.selected]="isTagSelected(t.id)">
+                    <input type="checkbox" [checked]="isTagSelected(t.id)" (change)="toggleTag(t.id)" />
+                    {{ t.tagName }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
       @if (error) { <div class="error-msg">{{ error }}</div> }
 
       <div class="form-actions">

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
-import { CampgroundCreateDto } from '../../../../interfaces/camp-management.interface';
+import { CampgroundCreateDto, TagDto } from '../../../../interfaces/camp-management.interface';
 import { PhotoGallery } from '../../shared/photo-gallery/photo-gallery';
 import * as L from 'leaflet';
 
@@ -34,6 +34,9 @@ export class CampEdit implements AfterViewInit, OnDestroy {
   error = '';
   highlightInput = '';
 
+  tags: TagDto[] = [];
+  tagsByCategory: { category: string; items: TagDto[] }[] = [];
+
   form: CampgroundCreateDto = {
     name: '', phone: '', elevation: 0, description: '', website: '',
     basePrice: 0, area: '', latitude: 0, longitude: 0, rules: '',
@@ -48,8 +51,26 @@ export class CampEdit implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.campgroundId = +this.route.snapshot.paramMap.get('campId')!;
+    this.campService.getTags().subscribe({
+      next: (tags) => {
+        this.tags = tags;
+        const grouped = new Map<string, TagDto[]>();
+        tags.forEach(t => {
+          if (!grouped.has(t.category)) grouped.set(t.category, []);
+          grouped.get(t.category)!.push(t);
+        });
+        this.tagsByCategory = Array.from(grouped.entries()).map(([category, items]) => ({ category, items }));
+      }
+    });
     this.loadCampground();
   }
+
+  toggleTag(id: number) {
+    const idx = this.form.tagIds.indexOf(id);
+    if (idx >= 0) this.form.tagIds.splice(idx, 1);
+    else this.form.tagIds.push(id);
+  }
+  isTagSelected(id: number) { return this.form.tagIds.includes(id); }
 
   ngOnDestroy() { this.map?.remove(); }
 

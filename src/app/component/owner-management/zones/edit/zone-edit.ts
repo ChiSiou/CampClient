@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
-import { CampzoneCreateDto } from '../../../../interfaces/camp-management.interface';
+import { CampzoneCreateDto, TagDto, FacilityDto } from '../../../../interfaces/camp-management.interface';
 import { PhotoGallery } from '../../shared/photo-gallery/photo-gallery';
 import * as L from 'leaflet';
 
@@ -36,9 +36,13 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
   submitting = false;
   error = '';
 
+  tags: TagDto[] = [];
+  tagsByCategory: { category: string; items: TagDto[] }[] = [];
+  facilities: FacilityDto[] = [];
+
   form: CampzoneCreateDto = {
     zoneName: '', zoneDescription: '', geoJson: '', zoneType: 1,
-    pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [],
+    pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [], tagIds: [],
   };
 
   private otherZones: { geoJson: string; zoneName: string }[] = [];
@@ -48,6 +52,20 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.campgroundId = +this.route.snapshot.paramMap.get('campId')!;
     this.zoneId = +this.route.snapshot.paramMap.get('zoneId')!;
+
+    this.campService.getFacilities().subscribe({ next: (f) => this.facilities = f });
+    this.campService.getTags().subscribe({
+      next: (tags) => {
+        this.tags = tags;
+        const grouped = new Map<string, TagDto[]>();
+        tags.forEach(t => {
+          if (!grouped.has(t.category)) grouped.set(t.category, []);
+          grouped.get(t.category)!.push(t);
+        });
+        this.tagsByCategory = Array.from(grouped.entries()).map(([category, items]) => ({ category, items }));
+      }
+    });
+
     this.campService.getCampground(this.campgroundId).subscribe({
       next: (data) => {
         this.campgroundName = data.name;
@@ -60,7 +78,8 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
           geoJson: zone.geoJson,
           zoneType: zone.zoneType,
           pricing: zone.pricing ?? { id: 0, weekdayPrice: 0, weekendPrice: 0 },
-          facilityIds: [],
+          facilityIds: [...(zone.facilityIds ?? [])],
+          tagIds: [...(zone.tagIds ?? [])],
         };
         this.otherZones = (data.zones ?? [])
           .filter(z => z.id !== this.zoneId && z.geoJson)
@@ -124,6 +143,20 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
     const ring = [...this.drawnPoints.map(p => [p.lng, p.lat]), [this.drawnPoints[0].lng, this.drawnPoints[0].lat]];
     this.form.geoJson = JSON.stringify({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} });
   }
+
+  toggleTag(id: number) {
+    const idx = this.form.tagIds.indexOf(id);
+    if (idx >= 0) this.form.tagIds.splice(idx, 1);
+    else this.form.tagIds.push(id);
+  }
+  isTagSelected(id: number) { return this.form.tagIds.includes(id); }
+
+  toggleFacility(id: number) {
+    const idx = this.form.facilityIds.indexOf(id);
+    if (idx >= 0) this.form.facilityIds.splice(idx, 1);
+    else this.form.facilityIds.push(id);
+  }
+  isFacilitySelected(id: number) { return this.form.facilityIds.includes(id); }
 
   get drawnPointCount() { return this.drawnPoints.length; }
 

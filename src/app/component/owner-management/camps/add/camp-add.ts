@@ -1,9 +1,9 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
-import { CampgroundCreateDto } from '../../../../interfaces/camp-management.interface';
+import { CampgroundCreateDto, TagDto } from '../../../../interfaces/camp-management.interface';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -19,7 +19,7 @@ L.Icon.Default.mergeOptions({
   templateUrl: './camp-add.html',
   styleUrl: './camp-add.css',
 })
-export class CampAdd implements AfterViewInit, OnDestroy {
+export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private map?: L.Map;
@@ -45,7 +45,31 @@ export class CampAdd implements AfterViewInit, OnDestroy {
   locating = false;
   error = '';
 
+  tags: TagDto[] = [];
+  tagsByCategory: { category: string; items: TagDto[] }[] = [];
+
   constructor(private campService: CampManagementService, private router: Router) {}
+
+  ngOnInit() {
+    this.campService.getTags().subscribe({
+      next: (tags) => {
+        this.tags = tags;
+        const grouped = new Map<string, TagDto[]>();
+        tags.forEach(t => {
+          if (!grouped.has(t.category)) grouped.set(t.category, []);
+          grouped.get(t.category)!.push(t);
+        });
+        this.tagsByCategory = Array.from(grouped.entries()).map(([category, items]) => ({ category, items }));
+      }
+    });
+  }
+
+  toggleTag(id: number) {
+    const idx = this.form.tagIds.indexOf(id);
+    if (idx >= 0) this.form.tagIds.splice(idx, 1);
+    else this.form.tagIds.push(id);
+  }
+  isTagSelected(id: number) { return this.form.tagIds.includes(id); }
 
   addHighlight() {
     const text = this.highlightInput.trim();
