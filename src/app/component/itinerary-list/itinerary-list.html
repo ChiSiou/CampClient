@@ -43,7 +43,7 @@
       @for (item of itineraries; track item.orderId + '-' + item.campId) {
         <article class="itinerary-card">
           <a class="image-wrap" [routerLink]="['/camp', item.campId]">
-            <img [src]="item.campImageUrl || 'assets/placeholder.jpg'" [alt]="item.campName" />
+            <img [src]="resolveImageUrl(item.campImageUrl)" [alt]="item.campName" />
           </a>
 
           <div class="trip-content">

@@ -3,7 +3,7 @@
     <div>
       <p class="page-label">Owner Center</p>
       <h1>營主中心</h1>
-      <p class="hero-text">管理你的營地、訂單、收入與顧客訊息。</p>
+      <p class="hero-text">快速掌握營地、訂單與營運狀態。</p>
     </div>
 
     <div class="hero-actions">
@@ -15,49 +15,47 @@
   <section class="owner-profile-card">
     <div class="owner-avatar">
       @if (ownerprofilephoto && !imageLoadFailed) {
-        <img [src]="ownerprofilephoto" alt="營主大頭貼" (error)="onAvatarError()" />
+        <img [src]="ownerprofilephoto" alt="營主照片" (error)="onAvatarError()" />
       } @else {
-        <img src="https://placehold.co/120x120" alt="營主大頭貼預設圖" />
+        <img src="https://placehold.co/120x120" alt="尚未上傳營主照片" />
       }
     </div>
 
     <div class="owner-info">
       <h2>{{ name || '營主' }}</h2>
-      <p>{{email ||'owner@example.com'}}</p>
-      <span class="status-badge">{{status?"已完成驗證":"未完成驗證"}}</span>
+      <p>{{ email || 'owner@example.com' }}</p>
+      <span class="status-badge">{{ status ? '已啟用營主身分' : '尚未啟用營主身分' }}</span>
     </div>
 
     <div class="owner-meta">
       <div>
         <span>加入日期</span>
-        <strong>{{createdAt|date}}</strong>
+        <strong>{{ createdAt | date }}</strong>
       </div>
       <div>
         <span>營地數量</span>
-        <strong>{{campcount}} 間</strong>
+        <strong>{{ campcount }} 座</strong>
       </div>
     </div>
   </section>
 
   <section class="stats-grid">
-
-
     <div class="stat-card">
-      <span>待處理訂單</span>
-      <h3>{{recentordercount}} 筆</h3>
-      <p>請盡快確認</p>
+      <span>近期訂單</span>
+      <h3>{{ recentordercount }} 筆</h3>
+      <p>最近收到的營地訂單</p>
     </div>
 
     <div class="stat-card">
-      <span>累積評價</span>
-      <h3>126 則</h3>
-      <p>平均 4.8 星</p>
+      <span>平均評分</span>
+      <h3>--</h3>
+      <p>評論功能串接後顯示</p>
     </div>
 
     <div class="stat-card">
-      <span>上架營地</span>
-      <h3>{{campcount}} 間</h3>
-      <p>目前正常顯示</p>
+      <span>目前營地</span>
+      <h3>{{ campcount }} 座</h3>
+      <p>草稿與上架中的營地總數</p>
     </div>
   </section>
 
@@ -69,33 +67,30 @@
       </div>
 
       <div class="camp-list">
-        <div class="camp-item">
-          <img src="https://placehold.co/120x90" alt="營地圖片" />
+        <div class="camp-item" *ngFor="let camp of campgrounds">
+          <img [src]="campgroundCoverUrl(camp.coverImageUrl)" [alt]="camp.name" />
 
           <div class="camp-info">
-            <h3>山谷露營區</h3>
-            <p>新北市烏來區</p>
-            <span class="camp-status active">上架中</span>
+            <h3>{{ camp.name }}</h3>
+            <p>{{ camp.zoneCount }} 個營區 / {{ camp.siteCount }} 個營位</p>
+            <span class="camp-status" [ngClass]="campgroundStatusClass(camp.status)">
+              {{ campgroundStatusLabel(camp.status) }}
+            </span>
           </div>
 
           <div class="camp-actions">
-            <button routerLink="/ownerCenter/profileEdit">編輯</button>
-            <button routerLink="/owner/orders">查看訂單</button>
+            <button [routerLink]="['/ownerCenter/camps', camp.id, 'edit']">編輯</button>
+            <button [routerLink]="['/ownerCenter/camps', camp.id, 'zones']">管理營區</button>
           </div>
         </div>
 
-        <div class="camp-item">
-          <img src="https://placehold.co/120x90" alt="營地圖片" />
-
+        <div class="camp-item empty-camp" *ngIf="!campgrounds.length">
           <div class="camp-info">
-            <h3>森林小屋營地</h3>
-            <p>宜蘭縣冬山鄉</p>
-            <span class="camp-status active">上架中</span>
+            <h3>尚未建立營地</h3>
+            <p>新增第一個營地後，這裡會顯示營地狀態、營區數與營位數。</p>
           </div>
-
           <div class="camp-actions">
-            <button routerLink="/ownerCenter/profileEdit">編輯</button>
-            <button routerLink="/owner/orders">查看訂單</button>
+            <button routerLink="/ownerCenter/camps/add">新增營地</button>
           </div>
         </div>
       </div>
@@ -123,13 +118,14 @@
         <span>{{ order.campName }}</span>
         <span>{{ order.checkInDate | date }}</span>
         <span>NT$ {{ order.totalAmount | number }}</span>
-        <span class="order-status"
-          [ngClass]="orderStatusClass(order.status)">{{ orderStatusLabel(order.status) }}</span>
+        <span class="order-status" [ngClass]="orderStatusClass(order.status)">
+          {{ orderStatusLabel(order.status) }}
+        </span>
         <button class="text-btn" (click)="contactCustomer(order.customerId, order.customerName)">聯絡顧客</button>
       </div>
 
       <div class="table-row" *ngIf="!recentOrders.length">
-        <span>目前尚無訂單</span>
+        <span>目前沒有近期訂單</span>
       </div>
     </div>
   </section>

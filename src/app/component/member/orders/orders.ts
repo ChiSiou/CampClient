@@ -10,6 +10,7 @@ import { CampSearchResultDto } from '../../../interfaces/camp.interface';
 import { CampCard } from '../../shared/camp-card/camp-card';
 import { ChatService } from '../../../services/chat.service';
 import { Popup } from '../../reviews/popup/popup';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'orders',
@@ -28,6 +29,7 @@ export class Orders {
   processingOrderId: number | null = null;
   pendingActionError = '';
   activeTab: number | 'all' = 'all';
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   orderStatusMap: { [key: number]: string } = {
     0: '待付款',
@@ -184,6 +186,13 @@ export class Orders {
 
   getOrderStatusText(status: number): string {
     return this.orderStatusMap[status] ?? '未知狀態';
+  }
+
+  resolveImageUrl(imageUrl: string | null | undefined): string {
+    if (!imageUrl) return 'assets/placeholder.jpg';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
   }
 
   resumePayment(order: OrderList) {

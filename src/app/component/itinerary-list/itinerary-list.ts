@@ -5,6 +5,7 @@ import { MemberService } from '../member/Service/member-service';
 import { OrderDetail, OrderList } from '../member/interface/orderList';
 import { PaymentService } from '../../services/payment.service';
 import { RefundResultDto } from '../../interfaces/camp.interface';
+import { environment } from '../../../environments/environment';
 
 interface ItineraryItem {
   orderId: number;
@@ -33,6 +34,7 @@ export class ItineraryList implements OnInit {
   itineraries: ItineraryItem[] = [];
   loading = true;
   errorMessage = '';
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   // ===== 退款申請（行程卡內展開式面板）=====
   // 一張訂單可能拆成多個行程卡（多營區），用 orderId-campId 當唯一 key 記住展開的是哪一張
@@ -183,6 +185,13 @@ export class ItineraryList implements OnInit {
 
   getTripStatusClass(status: ItineraryItem['tripStatus']): string {
     return status;
+  }
+
+  resolveImageUrl(imageUrl: string | null | undefined): string {
+    if (!imageUrl) return 'assets/placeholder.jpg';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
   }
 
   // ===== 退款申請 =====

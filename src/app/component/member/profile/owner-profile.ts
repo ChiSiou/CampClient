@@ -5,6 +5,7 @@ import { MemberService } from '../Service/member-service';
 import { ChatService } from '../../../services/chat.service';
 import { OwnerOrderList } from '../interface/ownerOrderList';
 import { CampManagementService } from '../../../services/camp-management.service';
+import { CampgroundListItemDto } from '../../../interfaces/camp-management.interface';
 
 @Component({
   selector: 'app-owner-profile',
@@ -20,6 +21,7 @@ export class OwnerProfile {
   createdAt = '';
   status = false;
   recentOrders: OwnerOrderList[] = [];
+  campgrounds: CampgroundListItemDto[] = [];
   campcount = 0;
   recentordercount = 0;
   private readonly apiOrigin = 'https://localhost:7011';
@@ -68,6 +70,7 @@ export class OwnerProfile {
     });
     this.campManagementService.listMine().subscribe({
       next:(res)=>{
+      this.campgrounds = res;
       this.campcount = res.length;
       },
       error:(err)=>{
@@ -91,6 +94,18 @@ export class OwnerProfile {
 
   orderStatusClass(status: number): string {
     return ({ 0: 'pending', 1: 'paid', 2: 'cancel', 3: 'pending' } as Record<number, string>)[status] ?? '';
+  }
+
+  campgroundStatusLabel(status: number): string {
+    return ({ 0: '草稿', 1: '上架中' } as Record<number, string>)[status] ?? '未知狀態';
+  }
+
+  campgroundStatusClass(status: number): string {
+    return status === 1 ? 'active' : 'pending';
+  }
+
+  campgroundCoverUrl(url?: string | null): string {
+    return this.toAbsoluteImageUrl(url) || 'https://placehold.co/120x90';
   }
 
   private setOwnerPhoto(url?: string | null) {

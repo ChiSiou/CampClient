@@ -32,6 +32,7 @@ import {
 } from '../../interfaces/camp.interface';
 
 import { ChatService } from '../../services/chat.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-camp-detail',
@@ -59,6 +60,7 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
   private attractionMarkers = new Map<number, L.Marker>();
   private mapReady = false;
   private routeSub?: Subscription;
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   constructor(
     private route: ActivatedRoute,
@@ -125,9 +127,22 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
       zones: this.campDetailService.getZones(this.campId),
     }).subscribe({
       next: ({ detail, location, explore, zones }) => {
-        this.detail = detail;
+        this.detail = {
+          ...detail,
+          imageUrls: detail.imageUrls.map((url) => this.resolveImageUrl(url)),
+        };
         this.location = location;
-        this.explore = explore;
+        this.explore = {
+          ...explore,
+          nearbyAttractions: explore.nearbyAttractions.map((attr) => ({
+            ...attr,
+            coverImageUrl: this.resolveImageUrl(attr.coverImageUrl),
+          })),
+          nearbyCamps: explore.nearbyCamps.map((camp) => ({
+            ...camp,
+            coverImageUrl: this.resolveImageUrl(camp.coverImageUrl),
+          })),
+        };
         this.zones = zones;
         this.loading = false;
         if (this.mapReady) this.updateMapMarkers();
@@ -155,6 +170,15 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
 
   get smallImages(): string[] {
     return this.gridImages.slice(1);
+  }
+
+  private resolveImageUrl(imageUrl: string): string;
+  private resolveImageUrl(imageUrl: string | null | undefined): string | null;
+  private resolveImageUrl(imageUrl: string | null | undefined): string | null {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
   }
 
   get nearbyCamps(): NearbyCampItem[] {

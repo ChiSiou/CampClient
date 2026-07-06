@@ -82,7 +82,9 @@
         <label>官方網站</label>
         <input type="text" [(ngModel)]="form.website" name="website" placeholder="https://..." />
       </div>
-
+  @if (campgroundId) {
+      <app-photo-gallery referenceType="campground" [referenceId]="campgroundId" />
+    }
       @if (error) { <div class="error-msg">{{ error }}</div> }
 
       <div class="form-actions">
@@ -91,8 +93,6 @@
       </div>
     </form>
 
-    @if (campgroundId) {
-      <app-photo-gallery referenceType="campground" [referenceId]="campgroundId" />
-    }
+  
   }
 </div>

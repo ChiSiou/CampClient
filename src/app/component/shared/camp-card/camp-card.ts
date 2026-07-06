@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { HttpClient } from '@angular/common/http';
 import { CampSearchResultDto } from '../../../interfaces/camp.interface';
 import { MemberService } from '../../member/Service/member-service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-camp-card',
@@ -22,6 +23,7 @@ export class CampCard {
   likeLoading = false;
 
   private readonly campLikeUrl = 'https://localhost:7011/api/CampLike';
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   constructor(
     private http: HttpClient,
@@ -48,6 +50,14 @@ export class CampCard {
 
   get displayRating(): number {
     return Math.round(this.camp.averageRating);
+  }
+
+  get currentImageUrl(): string {
+    const imageUrl = this.camp.imageUrls[this.currentImageIndex];
+    if (!imageUrl) return 'assets/placeholder.jpg';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
   }
 
   prevImage(e: Event) {
