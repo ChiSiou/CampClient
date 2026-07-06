@@ -96,6 +96,137 @@
 .summary-card.primary p {
   color: #fff;
 }
+
+/* ===== 錢包卡片：小豬圖示（右側置中裝飾）+ 提領按鈕 ===== */
+.wallet-card {
+  position: relative;
+  overflow: hidden;
+  padding-right: 110px;
+}
+.wallet-pig {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 84px;
+  height: auto;
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+}
+.wallet-card-body {
+  position: relative;
+  z-index: 1;
+}
+.withdraw-toggle-btn {
+  margin-top: 14px;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  background: #fff;
+  color: #5f7f4f;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.withdraw-toggle-btn:hover {
+  background: #eef5e8;
+}
+
+/* ===== 提領表單面板 ===== */
+.withdraw-panel {
+  margin-bottom: 24px;
+}
+.withdraw-panel .panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.withdraw-panel-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.close-btn {
+  border: none;
+  background: none;
+  color: #8b9686;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.close-btn:hover {
+  color: #3d4a3b;
+}
+.withdraw-form {
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+}
+.withdraw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.withdraw-field span {
+  color: #7d8a77;
+  font-size: 13px;
+  font-weight: 700;
+}
+.withdraw-field input {
+  padding: 12px 14px;
+  border: 1px solid #dde5d6;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #2f3e2f;
+}
+.withdraw-field input:focus {
+  outline: none;
+  border-color: #5f7f4f;
+}
+.withdraw-field input.withdraw-input--error {
+  border-color: #d97a7a;
+}
+.withdraw-field-error {
+  color: #b94242;
+  font-size: 12px;
+  font-weight: 700;
+}
+.withdraw-hint {
+  margin: 0;
+  color: #7d8a77;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.withdraw-message {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.withdraw-message.error {
+  background: #fde6e6;
+  color: #b94242;
+}
+.withdraw-message.success {
+  background: #e7f5dc;
+  color: #4f7c38;
+}
+.submit-withdraw-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  background: #5f7f4f;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}
+.submit-withdraw-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);

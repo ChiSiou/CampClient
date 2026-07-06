@@ -3,9 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { SliderModule } from 'primeng/slider';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ButtonModule } from 'primeng/button';
 import { SearchService } from '../../../services/search.service';
 import { FilterTagItem } from '../../../interfaces/camp.interface';
 
@@ -13,7 +10,7 @@ import { FilterTagItem } from '../../../interfaces/camp.interface';
   selector: 'app-search-filters',
   templateUrl: './search-filters.html',
   styleUrl: './search-filters.css',
-  imports: [FormsModule, DialogModule, SliderModule, RadioButtonModule, CheckboxModule, ButtonModule],
+  imports: [FormsModule, DialogModule, SliderModule],
 })
 export class SearchFilters implements OnInit {
   @Input() initialTagIds: number[] = [];

@@ -16,10 +16,16 @@
     <section class="state-panel error">{{ errorMessage }}</section>
   } @else if (dashboard) {
     <section class="summary-grid">
-      <article class="summary-card primary">
-        <span>可提領餘額</span>
-        <strong>{{ formatCurrency(dashboard.balance) }}</strong>
-        <p>處理中提領：{{ formatCurrency(dashboard.pendingWithdrawalAmount) }}</p>
+      <article class="summary-card primary wallet-card">
+        <img src="assets/wallet/wallet-pig.svg" alt="營主錢包" class="wallet-pig" />
+        <div class="wallet-card-body">
+          <span>可提領餘額</span>
+          <strong>{{ formatCurrency(dashboard.balance) }}</strong>
+          <p>處理中提領：{{ formatCurrency(dashboard.pendingWithdrawalAmount) }}</p>
+          <button type="button" class="withdraw-toggle-btn" (click)="toggleWithdrawForm()">
+            {{ showWithdrawForm ? '取消提領' : '申請提領' }}
+          </button>
+        </div>
       </article>
       <article class="summary-card">
         <span>本月總收入</span>
@@ -37,6 +43,66 @@
         <p>最後結算：{{ dashboard.lastSettledAt ? (dashboard.lastSettledAt | date: 'yyyy/MM/dd') : '尚無紀錄' }}</p>
       </article>
     </section>
+
+    @if (showWithdrawForm) {
+      <section class="panel withdraw-panel">
+        <div class="panel-header">
+          <h2><img src="assets/wallet/wallet-pig.svg" alt="" class="withdraw-panel-icon" />申請提領</h2>
+          <button type="button" class="close-btn" (click)="toggleWithdrawForm()">✕</button>
+        </div>
+
+        <div class="withdraw-form">
+          <label class="withdraw-field">
+            <span>提領金額</span>
+            <input
+              type="number"
+              name="withdrawAmount"
+              [(ngModel)]="withdrawAmount"
+              [min]="dashboard.withdrawalPolicy.minWithdrawalAmount"
+              [max]="dashboard.withdrawalPolicy.maxWithdrawalAmount"
+              placeholder="輸入提領金額"
+            />
+          </label>
+          <label class="withdraw-field">
+            <span>收款銀行帳號</span>
+            <input
+              type="text"
+              name="withdrawBankAccount"
+              [(ngModel)]="withdrawBankAccount"
+              [class.withdraw-input--error]="bankAccountInvalid"
+              placeholder="輸入收款銀行帳號（10~16 碼數字，不需要加 -）"
+            />
+            @if (bankAccountInvalid) {
+              <span class="withdraw-field-error">帳號格式不正確，請輸入 10~16 碼數字，不要加「-」或其他符號。</span>
+            }
+          </label>
+
+          <p class="withdraw-hint">
+            單次可提領 {{ formatCurrency(dashboard.withdrawalPolicy.minWithdrawalAmount) }} ~
+            {{ formatCurrency(dashboard.withdrawalPolicy.maxWithdrawalAmount) }}，本月剩餘
+            {{ dashboard.withdrawalPolicy.remainingFreeTimes }} / {{ dashboard.withdrawalPolicy.monthlyFreeTimes }}
+            次免手續費（超過每次收取 {{ formatCurrency(dashboard.withdrawalPolicy.interbankFee) }}），
+            預計 {{ dashboard.withdrawalPolicy.clearanceDays }} 個工作天入帳。
+          </p>
+
+          @if (withdrawError) {
+            <p class="withdraw-message error">{{ withdrawError }}</p>
+          }
+          @if (withdrawSuccessMessage) {
+            <p class="withdraw-message success">{{ withdrawSuccessMessage }}</p>
+          }
+
+          <button
+            type="button"
+            class="submit-withdraw-btn"
+            [disabled]="!canSubmitWithdraw()"
+            (click)="submitWithdraw()"
+          >
+            {{ withdrawing ? '送出中...' : '確認提領' }}
+          </button>
+        </div>
+      </section>
+    }
 
     <section class="content-grid">
       <article class="panel chart-panel">

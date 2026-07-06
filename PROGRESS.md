@@ -2,17 +2,19 @@
 
 > 這份文件給「換電腦時的新 Claude Code 對話」或自己回顧用。
 > 開新對話時說：
-> 「前端進度在 C:\Users\User\Desktop\CampClient\CampClient\PROGRESS.md，後端文件在
-> C:\Users\User\slnCampApi\slnCampApi\API_REFERENCE.md 和 PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
+> 「前端進度在 C:\Users\User\CampClient\CampClient\PROGRESS.md，後端文件在
+> C:\Users\User\SlnCampApi\API_REFERENCE.md 和 PROGRESS.md，請先讀這些，我們接著做 [某個功能]」
 >
-> **注意：後端專案路徑是 `C:\Users\User\slnCampApi\slnCampApi\`（有兩層 slnCampApi），前端是 `C:\Users\User\Desktop\CampClient\CampClient\`**
+> **注意：後端根目錄是 `C:\Users\User\SlnCampApi\`（.sln 檔位置，API 專案在底下的 `CampApi\` 子資料夾），前端是 `C:\Users\User\CampClient\CampClient\`**
 >
 > **⚠️ 這份文件容易跟實際進度脫節，尤其是「正在進行中」的功能。每次回來繼續做之前，先用 Glob/Read 確認程式碼實際內容，不要只信這份文件的文字描述。**
+>
+> **⚠️ 這段路徑說明之前被改對過一次，後來又被覆蓋回錯的版本（可能是合併/另一個對話存回舊內容），2026-07-02 再修一次——如果又發現路徑不對，直接修，不用大驚小怪。**
 
 ## 專案背景
 - C2C 露營訂位平台前端，Angular 21 + PrimeNG v21（Aura 主題，綠色系自訂 `CampPreset`）
-- 後端 API 文件：`C:\Users\User\slnCampApi\slnCampApi\API_REFERENCE.md`
-- 後端開發進度：`C:\Users\User\slnCampApi\slnCampApi\PROGRESS.md`
+- 後端 API 文件：`C:\Users\User\SlnCampApi\API_REFERENCE.md`
+- 後端開發進度：`C:\Users\User\SlnCampApi\PROGRESS.md`
 
 ## Angular / PrimeNG 語法注意事項（已踩過的坑）
 
@@ -35,8 +37,8 @@
   - `calendar.service.ts`（甘特圖/選位）
   - `camp-selection.service.ts`：管理甘特圖選位狀態，跨 `gantt-calendar`/`zone-detail`/`checkout` 共用，含 `setCampground()`/`campgroundId` getter（結帳頁靠這個知道要送哪個營區）
   - `checkout.service.ts`（結帳，含 `redirectToPayment()`，**已在 `/checkout` 頁面實際使用，Phase F6 完成**）
-  - `payment.service.ts`（付款狀態/退款，**尚未在畫面上使用**，Phase F7 待做）
-  - `owner-wallet.service.ts`（營主錢包，**尚未在畫面上使用**，Phase F8 待做）
+  - `payment.service.ts`（付款狀態/退款，`getStatus()`/`calculateRefund()`/`submitRefund()`/`getReceipt()` 都已在 `payment-result`、`itinerary-list` 頁面實際使用，**Phase F7 完成**）
+  - `owner-wallet.service.ts`（營主錢包，`getDashboard()` 已在 `income-dashboard` 使用，但 `withdraw()` 還沒有對應畫面，**Phase F8 大部分完成，提領表單待做**，見下方 Phase F8 章節）
   - `equipment-rental.service.ts` / `equipment-cart.service.ts`（裝備出租，同仁負責）
 - `src/app/shared/map-icons.ts`：Leaflet 用的 SVG 圖示字串常數（`TENT_ICON_SVG`、`HOME_ICON_SVG`），多個地圖元件共用
 
@@ -51,11 +53,11 @@
 /camp/:id/rental/equipment/:productId  裝備明細（同仁）
 /attraction/:id                景點詳細頁
 /checkout                      結帳（✅ 已完成，Phase F6）
-/payment/result                付款結果（空殼，未實作，Phase F7）
+/payment/result                付款結果+收據（✅ 已完成，Phase F7）
 /review, /review/add           評論（同仁）
 /forum, /post, /post/:id       論壇（同仁）
 /member-center (+children: orders, memberEdit, 預設 profile)   會員中心（同仁，有 authGuard）
-/ownerCenter                   營主中心（同仁，有 authGuard，已有 owner-profile 子路由，不再是純空殼）
+/ownerCenter                   營主中心（有 authGuard，✅ 營地/營區/營位管理、評價管理、收入報表都完成，⚠️ 提領表單、訂單管理未做，見 Phase F8 章節）
 /register, /login, /verify-email, /resend-verify-email, /forgot-password, /reset-password, /owner-register   會員註冊登入（同仁）
 ```
 
@@ -333,9 +335,9 @@
 4. ~~`gantt-calendar.ts` 的 `jumpToDate()` 沒接線~~ **已完成**（見上方 2026-07-02 E）。
 5. **部署上雲端要換的設定**（現在不用做）：關 `SimulateRefund`、綠界 URL/金鑰換正式、`environment.prod.ts` 的 apiUrl、CORS 收緊、ngrok/ReturnUrl。都是換設定值，不動邏輯。
 
-### 🟡 Phase F7：付款確認/退款 — 付款結果頁完成，退款流程未開始
+### ✅ Phase F7：付款確認/退款 — 完成（含收據與完整退款流程）
 
-**問題根源**：後端 `PaymentController.PaymentResult`（接綠界 `OrderResultUrl` 的 POST 回調）原本寫死導回 `/checkout?orderNumber=xxx`，是 Phase F6 做完後留的暫時做法（程式碼裡原本就有 TODO 註解標明）。`/checkout` 頁面從來沒有處理過 `orderNumber` 這個 query param，使用者付完款回來看到的是「找不到選位資料」（因為 `CampSelectionService` 早就在送出訂單時被清空了），不是付款結果。
+**問題根源（歷史記錄，問題已解決）**：後端 `PaymentController.PaymentResult`（接綠界 `OrderResultUrl` 的 POST 回調）原本寫死導回 `/checkout?orderNumber=xxx`，是 Phase F6 做完後留的暫時做法（程式碼裡原本就有 TODO 註解標明）。`/checkout` 頁面從來沒有處理過 `orderNumber` 這個 query param，使用者付完款回來看到的是「找不到選位資料」（因為 `CampSelectionService` 早就在送出訂單時被清空了），不是付款結果。
 
 **已完成**：
 - 後端 `CampApi/Controllers/PaymentController.cs`：`PaymentResult` 導回目標改成 `{frontendBase}/payment/result?orderNumber={merchantTradeNo}`
@@ -344,14 +346,26 @@
   - 輪詢 `PaymentService.getStatus(orderNumber)`，**每 3 秒一次**，狀態變成非 `Processing`（`Success`/`Failed`）就停止輪詢
   - **逾時保護**：輪詢超過 30 秒還是 `Processing` 就自動停止，顯示「確認中」+ 手動「重新檢查」按鈕（`retryCheck()`），不會無限輪詢打 API
   - 成功/失敗畫面都有「查看訂單」（連到 `/member-center/orders`，同仁的會員中心）和「回首頁」連結
+  - 拿到確定結果後打 `GET /api/Payment/receipt/{orderNumber}` 顯示訂單收據（見 2026-07-02 章節）
+- **退款流程已完成**（見上方 2026-07-02「退款 UI + 收據 + 表單驗證 + jumpToDate」章節）：UI 放在行程清單 `itinerary-list`（不是會員訂單頁），`calculateRefund()`/`submitRefund()` 都已串接，含模擬退款開關供本機測試
+- 本機測試 ECPay webhook 打不到 `localhost` 的問題**已有替代方案**（`OrderResultUrl` 同步驗證，見後端 PROGRESS.md），不再是阻塞項
 
-**還沒做**：
-- 退款流程（`calculateRefund()`/`submitRefund()` 已經在 `payment.service.ts` 寫好，但畫面完全沒做，應該是會員中心訂單頁面（同仁負責）要加「申請退款」按鈕串過來，這塊要跟同仁協調）
-- 本機測試還卡在 ECPay webhook 打不到 `localhost`（PROGRESS.md 上面提過，等使用者 ngrok 設定好）
+### 🟡 Phase F8：營主後台 — 主體已完成，剩提領表單 + 訂單管理兩塊（2026-07-03 確認）
 
-### ⬜ Phase F8：營主後台/錢包 — 未開始
-- `/ownerCenter` 路由（同仁負責，`component/layouts/owner-center/`）已經有 `owner-profile` 子路由在用，不是純空殼，但**錢包功能還沒人接**
-- `owner-wallet.service.ts` 已寫好（`getWallet()`、`withdraw()`）
+**之前這裡寫「未開始」是文件沒跟上，實際上 `component/owner-management/` 底下已經是完整功能，不是空殼**：
+
+- ✅ **營地管理**（`owner-management/camps/`）：列表（含搜尋/篩選）、新增、編輯，都真的呼叫 `camp-management.service.ts` 的 `listMine()`/`createCampground()`/`updateCampground()`/`deleteCampground()`
+- ✅ **營區管理**（`owner-management/zones/`）：列表、新增、編輯，新增/編輯頁含 Leaflet + Esri 衛星圖層手繪 GeoJSON 多邊形
+- ✅ **營位管理**（`owner-management/sites/`）：列表、新增、編輯，串 `listSites()`/`createSite()`/`updateSite()`
+- ✅ **評價管理**（`owner-management/reviews/owner-reviews.ts`）：列表（分頁）、回覆、檢舉，都真的打 API
+- ✅ **收入報表**（`owner-management/income-dashboard/`）：`getDashboard()` 打 API，顯示月度圖表、結算明細、提領紀錄——**這部分是「讀取顯示」，不是提領功能本身**（見下方缺口）
+
+**還沒做的兩個缺口（`owner-wallet.service.ts` 已經有對應方法，只是沒有畫面）**：
+
+1. **提領（withdraw）表單完全沒做**：`owner-wallet.service.ts` 的 `withdraw(body: WithdrawalRequestDto)` 定義了但沒有任何元件呼叫它；`income-dashboard` 只顯示「近期提領紀錄」清單，沒有「輸入金額/銀行帳號→送出申請」的表單/按鈕。
+2. **營主查看自己營區的訂單管理沒做**：`owner-center.html` 側邊欄有「訂單管理」按鈕連去 `/ownerCenter/orders`，但 `app.routes.ts` 完全沒有定義這個路由——**這是一個死連結**，點了沒反應。（跟 `/member-center/orders` 不是同一個東西，那是會員自己的訂單歷史，不是營主管理視角。）
+
+**順手記錄的小瑕疵（不影響功能，之後有空再清）**：`app.routes.ts` 裡 `/ownerCenter/camps`、`/ownerCenter/camps/add` 各自重複定義了兩次；`/camps/:id`（編輯）用了兩種不同的路由參數命名（`:id` 跟 `:campId/edit`）都指向同一個功能。
 
 ## JWT 認證機制
 

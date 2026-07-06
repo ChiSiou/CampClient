@@ -2,16 +2,22 @@
   <div class="container">
 
     <!-- 分類篩選按鈕 -->
+
     <div class="justify-align-center py-4">
-      <p-button (click)="addPost()" label="我要發文" class="mx-2" />
+      @if(isLogin){
+      <p-button (click)="addPost()" label="我要發文" class="mx-1" />
+      }
+      @else {
+      <p-button (click)="toLogin()" label="登入發文" class="mx-1" />
+      }
+
       @for (cat of categories; track cat) {
       <p-button [label]="cat" variant="outlined"
         [severity]="selectedCategory === cat || (cat === '全部' && !selectedCategory) ? 'success' : 'secondary'"
-        class="mx-2" (onClick)="filterByCategory(cat)">
+        class="mx-1" (onClick)="filterByCategory(cat)">
       </p-button>
       }
     </div>
-
     <!-- 文章列表 -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 align-items-stretch g-4 py-3">
       @for (post of filteredPosts; track post.postId) {
@@ -52,3 +58,4 @@
 
   </div>
 </section>
+<p-toast />
