@@ -44,6 +44,8 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
   submitting = false;
   locating = false;
   error = '';
+  selectedFiles: File[] = [];
+  previewUrls: string[] = [];
 
   tags: TagDto[] = [];
   tagsByCategory: { category: string; items: TagDto[] }[] = [];
@@ -129,7 +131,24 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  submit() {
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = Array.from(input.files);
+    this.selectedFiles.push(...files);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = (e) => this.previewUrls.push(e.target!.result as string);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  removeFile(i: number) {
+    this.selectedFiles.splice(i, 1);
+    this.previewUrls.splice(i, 1);
+  }
+
+  async submit() {
     if (!this.form.name.trim() || !this.form.area.trim()) {
       this.error = '請填寫必填欄位（名稱、地區）';
       return;
@@ -143,13 +162,17 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
       elevation: +this.form.elevation || 0,
       basePrice: +this.form.basePrice || 0,
     };
-    this.campService.createCampground(dto).subscribe({
-      next: (res) => this.router.navigate(['/ownerCenter/camps', res.id, 'edit']),
-      error: (err) => {
-        this.error = err.error?.message ?? '建立失敗，請稍後再試';
-        this.submitting = false;
-      },
-    });
+    try {
+      const res = await this.campService.createCampground(dto).toPromise();
+      const id = res!.id;
+      for (const file of this.selectedFiles) {
+        await this.campService.uploadCampgroundPhoto(id, file).toPromise();
+      }
+      this.router.navigate(['/ownerCenter/camps']);
+    } catch (err: any) {
+      this.error = err.error?.message ?? '建立失敗，請稍後再試';
+      this.submitting = false;
+    }
   }
 
   cancel() {
