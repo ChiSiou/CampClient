@@ -10,86 +10,73 @@
   [(visible)]="visible"
   header="篩選條件"
   [modal]="true"
-  [style]="{ width: '720px' }"
+  [style]="{ width: '640px' }"
+  [breakpoints]="{ '760px': '92vw' }"
   [draggable]="false"
 >
   <div class="filters-dialog">
 
-    <!-- 海拔高度 + 營區評價 -->
-    <div class="filters-row">
-      <div class="filters-elevation">
-        <div class="filters-section__title">海拔高度</div>
-        <div class="filters-elevation__slider">
-          <span class="filters-elevation__label">高海拔</span>
-          <p-slider [(ngModel)]="minElevation" [min]="0" [max]="3000" [step]="100" orientation="vertical" />
-          <span class="filters-elevation__label">平地</span>
-        </div>
-        <div class="filters-elevation__value">{{ minElevation }}m 以上</div>
+    <!-- 海拔高度：水平滑桿，右側顯示目前值 -->
+    <div class="filters-section">
+      <div class="filters-section__title">
+        海拔高度
+        <span class="filters-elevation__value">{{ minElevation > 0 ? minElevation + 'm 以上' : '不限' }}</span>
       </div>
-
-      <div class="filters-rating">
-        <div class="filters-section__title">營區評價</div>
-        <div class="filters-rating__options">
-          <label class="filters-radio">
-            <p-radioButton name="rating" [value]="4.5" [(ngModel)]="minRating" />
-            4.5星以上
-          </label>
-          <label class="filters-radio">
-            <p-radioButton name="rating" [value]="4" [(ngModel)]="minRating" />
-            4星以上
-          </label>
-          <label class="filters-radio">
-            <p-radioButton name="rating" [value]="3" [(ngModel)]="minRating" />
-            3星以上
-          </label>
-          <label class="filters-radio">
-            <p-radioButton name="rating" [value]="null" [(ngModel)]="minRating" />
-            不限
-          </label>
-        </div>
+      <div class="filters-elevation__slider">
+        <span class="filters-elevation__label">平地</span>
+        <p-slider [(ngModel)]="minElevation" [min]="0" [max]="3000" [step]="100" />
+        <span class="filters-elevation__label">高海拔 3000m</span>
       </div>
     </div>
 
-    <!-- 環境 -->
+    <!-- 營區評價：pill 單選 -->
+    <div class="filters-section">
+      <div class="filters-section__title">營區評價</div>
+      <div class="filters-pills">
+        <button type="button" class="filters-pill" [class.filters-pill--active]="minRating === null" (click)="minRating = null">不限</button>
+        <button type="button" class="filters-pill" [class.filters-pill--active]="minRating === 3" (click)="minRating = 3"><span class="filters-pill__star">★</span>3 以上</button>
+        <button type="button" class="filters-pill" [class.filters-pill--active]="minRating === 4" (click)="minRating = 4"><span class="filters-pill__star">★</span>4 以上</button>
+        <button type="button" class="filters-pill" [class.filters-pill--active]="minRating === 4.5" (click)="minRating = 4.5"><span class="filters-pill__star">★</span>4.5 以上</button>
+      </div>
+    </div>
+
+    <!-- 環境：pill 多選 -->
     <div class="filters-section">
       <div class="filters-section__title">環境</div>
-      <div class="filters-section__items">
+      <div class="filters-pills">
         @for (tag of environmentTags; track tag.tagId) {
-          <label class="filters-checkbox">
-            <p-checkbox [binary]="true" [ngModel]="selectedTagIds.has(tag.tagId)" (ngModelChange)="toggleTag(tag.tagId)" />
+          <button type="button" class="filters-pill" [class.filters-pill--active]="selectedTagIds.has(tag.tagId)" (click)="toggleTag(tag.tagId)">
             @if (tag.iconUrl) { <img [src]="tag.iconUrl" class="filters-tag-icon" alt="" /> }
             @else if (tag.iconClass) { <i [class]="tag.iconClass"></i> }
             {{ tag.tagName }}
-          </label>
+          </button>
         }
       </div>
     </div>
 
-    <!-- 政策 -->
+    <!-- 政策：pill 多選 -->
     <div class="filters-section">
       <div class="filters-section__title">政策</div>
-      <div class="filters-section__items">
+      <div class="filters-pills">
         @for (tag of policyTags; track tag.tagId) {
-          <label class="filters-checkbox">
-            <p-checkbox [binary]="true" [ngModel]="selectedTagIds.has(tag.tagId)" (ngModelChange)="toggleTag(tag.tagId)" />
+          <button type="button" class="filters-pill" [class.filters-pill--active]="selectedTagIds.has(tag.tagId)" (click)="toggleTag(tag.tagId)">
             @if (tag.iconUrl) { <img [src]="tag.iconUrl" class="filters-tag-icon" alt="" /> }
             @else if (tag.iconClass) { <i [class]="tag.iconClass"></i> }
             {{ tag.tagName }}
-          </label>
+          </button>
         }
       </div>
     </div>
 
-    <!-- 設備 -->
+    <!-- 設備：pill 多選 -->
     <div class="filters-section">
       <div class="filters-section__title">設備</div>
-      <div class="filters-section__items">
+      <div class="filters-pills">
         @for (facility of facilityTags; track facility.tagId) {
-          <label class="filters-checkbox">
-            <p-checkbox [binary]="true" [ngModel]="selectedFacilityIds.has(facility.tagId)" (ngModelChange)="toggleFacility(facility.tagId)" />
+          <button type="button" class="filters-pill" [class.filters-pill--active]="selectedFacilityIds.has(facility.tagId)" (click)="toggleFacility(facility.tagId)">
             @if (facility.iconClass) { <i [class]="facility.iconClass"></i> }
             {{ facility.tagName }}
-          </label>
+          </button>
         }
       </div>
     </div>
