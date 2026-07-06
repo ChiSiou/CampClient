@@ -45,7 +45,7 @@ export class Orders {
     private checkoutService: CheckoutService,
     private explorationService: ExplorationService,
     private chatService: ChatService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadPopularCamps();
@@ -62,7 +62,8 @@ export class Orders {
 
   contactOwner(detail: OrderDetail) {
     if (detail.ownerId && detail.ownerName) {
-      this.chatService.openChatWith(detail.ownerId, detail.ownerName);
+      // this.chatService.openChatWith(detail.ownerId, detail.ownerName);
+      this.chatService.openChatWith(detail.ownerId, detail.campName, detail.campImageUrl);
     }
   }
 
