@@ -56,6 +56,57 @@
         </div>
       </div>
 
+      @if (facilities.length > 0) {
+        <div class="form-group">
+          <label>設施</label>
+          <div class="check-list">
+            @for (f of facilities; track f.id) {
+              <label class="check-item" [class.selected]="isFacilitySelected(f.id)">
+                <input type="checkbox" [checked]="isFacilitySelected(f.id)" (change)="toggleFacility(f.id)" />
+                {{ f.facilityName }}
+              </label>
+            }
+          </div>
+        </div>
+      }
+
+      @if (tagsByCategory.length > 0) {
+        <div class="form-group">
+          <label>標籤</label>
+          @for (group of tagsByCategory; track group.category) {
+            <div class="tag-category">
+              <div class="tag-category-name">{{ group.category }}</div>
+              <div class="check-list">
+                @for (t of group.items; track t.id) {
+                  <label class="check-item" [class.selected]="isTagSelected(t.id)">
+                    <input type="checkbox" [checked]="isTagSelected(t.id)" (change)="toggleTag(t.id)" />
+                    {{ t.tagName }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="form-group">
+        <label>營區照片</label>
+        <label class="photo-upload-area">
+          <input type="file" accept="image/*" multiple (change)="onFilesSelected($event)" hidden />
+          ＋ 點此選擇照片（可多選）
+        </label>
+        @if (previewUrls.length > 0) {
+          <div class="photo-preview-list">
+            @for (url of previewUrls; track $index) {
+              <div class="photo-preview-item">
+                <img [src]="url" />
+                <button type="button" (click)="removeFile($index)">×</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       @if (error) { <div class="error-msg">{{ error }}</div> }
 
       <div class="form-actions">

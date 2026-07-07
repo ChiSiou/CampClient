@@ -11,6 +11,7 @@ import { IForum } from '../forum/interfaces/Iforum';
 import { IPostInteract } from '../forum/interfaces/IPostInteract';
 import { MemberService } from '../member/Service/member-service';
 import { CampTagItem } from '../../interfaces/camp.interface';
+import { environment } from '../../../environments/environment';
 
 export interface LikedItem {
   id: string;
@@ -61,6 +62,17 @@ export class Liked implements OnInit {
   displayCount = 5;
   currentPage = 1;
 
+  // 後端存的圖片路徑可能是完整外部網址（Unsplash）或後端本機上傳的相對路徑（/uploads/...），
+  // 相對路徑要補上後端網域，不然瀏覽器會拿前端(4200)的網域去要，一定 404。
+  // 跟 camp-card.ts / camp-detail.ts 用同一套判斷邏輯。
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
+  private resolveImageUrl(imageUrl: string | null): string | null {
+    if (!imageUrl) return null;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
+  }
+
   constructor(
     private http: HttpClient,
     private memberService: MemberService,
@@ -83,7 +95,7 @@ export class Liked implements OnInit {
           type: 'camp',
           refId: c.campId,
           title: c.campName,
-          imageUrl: c.imageUrl,
+          imageUrl: this.resolveImageUrl(c.imageUrl),
           likedAt: c.likedAt,
           area: c.area,
           elevation: c.elevation,

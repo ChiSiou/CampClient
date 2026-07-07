@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
-import { CampzoneCreateDto } from '../../../../interfaces/camp-management.interface';
+import { CampzoneCreateDto, TagDto, FacilityDto } from '../../../../interfaces/camp-management.interface';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,10 +32,16 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
   loading = true;
   submitting = false;
   error = '';
+  selectedFiles: File[] = [];
+  previewUrls: string[] = [];
+
+  tags: TagDto[] = [];
+  tagsByCategory: { category: string; items: TagDto[] }[] = [];
+  facilities: FacilityDto[] = [];
 
   form: CampzoneCreateDto = {
     zoneName: '', zoneDescription: '', geoJson: '', zoneType: 1,
-    pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [],
+    pricing: { id: 0, weekdayPrice: 0, weekendPrice: 0 }, facilityIds: [], tagIds: [],
   };
 
   private existingZones: { geoJson: string; zoneName: string }[] = [];
@@ -44,6 +50,20 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.campgroundId = +this.route.snapshot.paramMap.get('campId')!;
+
+    this.campService.getFacilities().subscribe({ next: (f) => this.facilities = f });
+    this.campService.getTags().subscribe({
+      next: (tags) => {
+        this.tags = tags;
+        const grouped = new Map<string, TagDto[]>();
+        tags.forEach(t => {
+          if (!grouped.has(t.category)) grouped.set(t.category, []);
+          grouped.get(t.category)!.push(t);
+        });
+        this.tagsByCategory = Array.from(grouped.entries()).map(([category, items]) => ({ category, items }));
+      }
+    });
+
     this.campService.getCampground(this.campgroundId).subscribe({
       next: (data) => {
         this.campgroundName = data.name;
@@ -98,6 +118,20 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
     this.form.geoJson = JSON.stringify({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} });
   }
 
+  toggleTag(id: number) {
+    const idx = this.form.tagIds.indexOf(id);
+    if (idx >= 0) this.form.tagIds.splice(idx, 1);
+    else this.form.tagIds.push(id);
+  }
+  isTagSelected(id: number) { return this.form.tagIds.includes(id); }
+
+  toggleFacility(id: number) {
+    const idx = this.form.facilityIds.indexOf(id);
+    if (idx >= 0) this.form.facilityIds.splice(idx, 1);
+    else this.form.facilityIds.push(id);
+  }
+  isFacilitySelected(id: number) { return this.form.facilityIds.includes(id); }
+
   get drawnPointCount() { return this.drawnPoints.length; }
 
   undoLastPoint() { if (this.drawnPoints.length > 0) { this.drawnPoints.pop(); this.updateDrawing(); } }
@@ -109,7 +143,24 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
     this.form.geoJson = '';
   }
 
-  submit() {
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = Array.from(input.files);
+    this.selectedFiles.push(...files);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = (e) => this.previewUrls.push(e.target!.result as string);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  removeFile(i: number) {
+    this.selectedFiles.splice(i, 1);
+    this.previewUrls.splice(i, 1);
+  }
+
+  async submit() {
     if (!this.form.zoneName.trim()) { this.error = '請填寫營區名稱'; return; }
     this.submitting = true;
     this.error = '';
@@ -117,10 +168,17 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
       ...this.form,
       pricing: { ...this.form.pricing, weekdayPrice: +this.form.pricing.weekdayPrice || 0, weekendPrice: +this.form.pricing.weekendPrice || 0 },
     };
-    this.campService.createZone(this.campgroundId, dto).subscribe({
-      next: () => this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']),
-      error: (err) => { this.error = err.error?.message ?? '建立失敗'; this.submitting = false; },
-    });
+    try {
+      const res = await this.campService.createZone(this.campgroundId, dto).toPromise();
+      const id = res!.id;
+      for (const file of this.selectedFiles) {
+        await this.campService.uploadZonePhoto(id, file).toPromise();
+      }
+      this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']);
+    } catch (err: any) {
+      this.error = err.error?.message ?? '建立失敗';
+      this.submitting = false;
+    }
   }
 
   cancel() { this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']); }

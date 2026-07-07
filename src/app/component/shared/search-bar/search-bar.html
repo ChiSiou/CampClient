@@ -1,12 +1,12 @@
 <div class="search-bar" [class.search-bar--compact]="compact">
 
-  <!-- 地點 -->
+  <!-- 地點 / 營區名稱：同一個框，後端會同時比對地區與營區名稱 -->
   <div class="search-bar__field">
-    <label class="search-bar__label">地點</label>
+    <label class="search-bar__label">地點 / 營區</label>
     <input
       class="search-bar__input"
       [(ngModel)]="area"
-      placeholder="搜尋目的地"
+      placeholder="搜尋目的地或營區名稱"
     />
   </div>
 

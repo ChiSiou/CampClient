@@ -187,6 +187,26 @@ td {
   cursor: pointer;
 }
 
+.btn-publish {
+  padding: 4px 12px;
+  background: #4a7c59;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-unpublish {
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid #888;
+  color: #888;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
 .btn-delete {
   padding: 4px 12px;
   background: transparent;

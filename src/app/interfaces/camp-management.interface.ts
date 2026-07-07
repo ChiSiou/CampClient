@@ -1,5 +1,18 @@
 // ===== CampManagement：業主上架管理 =====
 
+export interface TagDto {
+  id: number;
+  tagName: string;
+  category: string;
+  iconUrl?: string;
+}
+
+export interface FacilityDto {
+  id: number;
+  facilityName: string;
+  iconUrl?: string;
+}
+
 export interface CampgroundCreateDto {
   name: string;
   phone: string;
@@ -61,6 +74,7 @@ export interface CampzoneCreateDto {
   zoneType: number; // 見下方 CampzoneType
   pricing: CampPricingDto;
   facilityIds: number[];
+  tagIds: number[];
 }
 
 export interface CampzoneListItemDto {
@@ -72,6 +86,8 @@ export interface CampzoneListItemDto {
   zoneType: number;
   pricing: CampPricingDto | null;
   siteCount: number;
+  facilityIds: number[];
+  tagIds: number[];
 }
 
 export interface AccomTypeDto {

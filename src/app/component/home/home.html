@@ -81,6 +81,12 @@
         @for (camp of feed!.highElevationCamps; track camp.id) {
           <app-camp-card [camp]="camp" />
         }
+        <a routerLink="/search" [queryParams]="{ sortBy: 'ElevationDesc', minElevation: 1000 }" class="view-all-card">
+          <div class="view-all-card__inner">
+            <span>瀏覽全部</span>
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </a>
       </div>
     </div>
   </section>
@@ -101,6 +107,12 @@
         @for (camp of feed!.newestCamps; track camp.id) {
           <app-camp-card [camp]="camp" />
         }
+        <a routerLink="/search" [queryParams]="{ sortBy: 'NewestDesc' }" class="view-all-card">
+          <div class="view-all-card__inner">
+            <span>瀏覽全部</span>
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </a>
       </div>
     </div>
   </section>
@@ -121,6 +133,12 @@
         @for (camp of feed!.themedCamps; track camp.id) {
           <app-camp-card [camp]="camp" />
         }
+        <a routerLink="/search" [queryParams]="{ tagIds: feed!.themedTagId }" class="view-all-card">
+          <div class="view-all-card__inner">
+            <span>瀏覽全部</span>
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </a>
       </div>
     </div>
   </section>

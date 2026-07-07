@@ -1,0 +1,103 @@
+<div class="order-list-page">
+  <div class="page-header">
+    <div>
+      <h2>訂單管理</h2>
+      <span class="subtitle">Order Management</span>
+    </div>
+  </div>
+
+  <!-- 篩選列 -->
+  <div class="filter-bar">
+    <div class="filter-item">
+      <label>狀態</label>
+      <select [(ngModel)]="filterStatus">
+        <option [ngValue]="null">全部</option>
+        <option [ngValue]="0">待付款</option>
+        <option [ngValue]="1">已付款</option>
+        <option [ngValue]="2">已取消</option>
+        <option [ngValue]="3">申訴中</option>
+      </select>
+    </div>
+    <div class="filter-item">
+      <label>關鍵字</label>
+      <input type="text" [(ngModel)]="filterKeyword" placeholder="訂單編號 / 聯絡人" />
+    </div>
+    <div class="filter-item">
+      <label>入住起</label>
+      <input type="date" [(ngModel)]="filterCheckInFrom" />
+    </div>
+    <div class="filter-item">
+      <label>入住迄</label>
+      <input type="date" [(ngModel)]="filterCheckInTo" />
+    </div>
+    <div class="filter-actions">
+      <button (click)="search()" class="btn-search">搜尋</button>
+      <button (click)="reset()" class="btn-reset">重設</button>
+    </div>
+  </div>
+
+  <!-- 載入中 -->
+  @if (loading) {
+    <div class="loading">載入中...</div>
+  }
+
+  <!-- 空狀態 -->
+  @if (!loading && orders.length === 0) {
+    <div class="empty-state">
+      <div class="empty-title">沒有符合條件的訂單</div>
+    </div>
+  }
+
+  <!-- 訂單表格 -->
+  @if (!loading && orders.length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>訂單編號</th>
+            <th>聯絡人</th>
+            <th>營地</th>
+            <th>入住期間</th>
+            <th>營位</th>
+            <th>金額</th>
+            <th>狀態</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of orders; track o.orderId) {
+            <tr>
+              <td class="order-number">{{ o.orderNumber }}</td>
+              <td>
+                <div>{{ o.contactName }}</div>
+                <div class="meta">{{ o.contactPhone }}</div>
+              </td>
+              <td>{{ o.campgroundName }}</td>
+              <td>
+                @if (o.earliestCheckIn) {
+                  <div>{{ o.earliestCheckIn }} ~</div>
+                  <div>{{ o.latestCheckOut }}</div>
+                }
+              </td>
+              <td class="site-summary">{{ o.siteSummary }}</td>
+              <td class="amount">NT$ {{ o.totalAmount | number }}</td>
+              <td>
+                <span [class]="'status ' + statusClass(o.status)">{{ statusLabel(o.status) }}</span>
+              </td>
+              <td>
+                <a [routerLink]="['/ownerCenter/orders', o.orderId]" class="btn-detail">詳情</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 分頁 -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page === 1" class="btn-page">上一頁</button>
+      <span>第 {{ page }} / {{ totalPages }} 頁（共 {{ totalCount }} 筆）</span>
+      <button (click)="nextPage()" [disabled]="page >= totalPages" class="btn-page">下一頁</button>
+    </div>
+  }
+</div>

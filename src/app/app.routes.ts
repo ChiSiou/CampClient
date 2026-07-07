@@ -124,6 +124,9 @@ export const routes: Routes = [
           { path: 'camps/:campId/zones/:zoneId/sites/add', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/add/site-add').then((m) => m.SiteAdd) },
           { path: 'camps/:campId/zones/:zoneId/sites/:siteId/edit', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/edit/site-edit').then((m) => m.SiteEdit) },
           { path: 'camps/:campId/zones/:zoneId/sites', pathMatch: 'full', loadComponent: () => import('./component/owner-management/sites/sites').then((m) => m.Sites) },
+          // Order Management
+          { path: 'orders', pathMatch: 'full', loadComponent: () => import('./component/owner-management/orders/order-list/order-list').then((m) => m.OrderList) },
+          { path: 'orders/:orderId', pathMatch: 'full', loadComponent: () => import('./component/owner-management/orders/order-detail/order-detail').then((m) => m.OrderDetail) },
           { path: '**', loadComponent: () => import('./component/member/profile/owner-profile').then((m) => m.OwnerProfile) },
         ],
       },

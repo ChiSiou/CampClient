@@ -65,7 +65,7 @@
         </div>
 
         @if (isHomeDelivery) {
-          <div class="checkout__section-title">🚚 {{ equipmentData?.shippingMethodCode === 'LALAMOVE' ? 'Lalamove 快遞' : '黑貓宅配' }}收件資料</div>
+          <div class="checkout__section-title">🚚 Lalamove 快遞收件資料</div>
           <div class="checkout__field">
             <label class="checkout__label">收件人姓名</label>
             <input class="checkout__input" [(ngModel)]="receiverName" placeholder="請輸入收件人姓名（2-5 個中文字）" />

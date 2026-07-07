@@ -1,0 +1,205 @@
+.order-detail-page {
+  padding: 24px;
+  max-width: 1000px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  margin: 0 0 2px 0;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #888;
+  font-family: monospace;
+}
+
+.btn-back {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #555;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.loading {
+  text-align: center;
+  color: #aaa;
+  padding: 40px;
+}
+
+.error-msg {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+/* 訂單資訊卡 */
+.info-card {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+
+.info-label {
+  width: 90px;
+  color: #888;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.discount { color: #c0392b; }
+.total { font-weight: 700; font-size: 1rem; }
+
+/* 區塊 */
+.section {
+  margin-bottom: 28px;
+}
+
+.section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #333;
+  border-left: 3px solid #4a7c59;
+  padding-left: 8px;
+}
+
+/* 明細/記錄 table */
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.88rem;
+}
+
+.detail-table thead tr {
+  background: #fafafa;
+}
+
+.detail-table th {
+  padding: 9px 12px;
+  text-align: left;
+  color: #666;
+  font-size: 0.83rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.selected-row {
+  background: #f0f7f2;
+}
+
+.txn-id {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* 明細狀態 badge */
+.detail-status {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.detail-status.paid      { background: #d4edda; color: #155724; }
+.detail-status.refunded  { background: #f0f0f0; color: #666; }
+.detail-status.reviewing { background: #fff3cd; color: #856404; }
+
+/* 訂單狀態 badge */
+.status {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status.pending   { background: #fff3cd; color: #856404; }
+.status.paid      { background: #d4edda; color: #155724; }
+.status.cancelled { background: #f0f0f0; color: #666; }
+.status.dispute   { background: #f8d7da; color: #721c24; }
+
+/* 退款操作區 */
+.cancel-section {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.btn-cancel-order {
+  padding: 8px 20px;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-cancel-order:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.cancel-note {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+/* 退款結果 */
+.refund-result {
+  background: #f0f7f2;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.refund-msg {
+  font-size: 0.9rem;
+  color: #155724;
+  margin: 0 0 12px 0;
+}
+
+.refund-total {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: right;
+  color: #155724;
+}
