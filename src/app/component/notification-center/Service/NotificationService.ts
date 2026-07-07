@@ -46,6 +46,11 @@ export class NotificationService {
       .delete(`${this.apiUrl}/${notificationId}`)
       .pipe(switchMap(() => this.refreshUnreadCount()));
   }
+  deleteAllNotifications(): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/all`).pipe(
+      tap(() => this.unreadCountSubject.next(0)),
+    );
+  }
   createNotification(payload: {
     userId: number;
     recipientRole: string;

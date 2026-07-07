@@ -17,6 +17,7 @@ export class NotificationCenter implements OnInit {
   errorMessage = '';
   markingAll = false;
   deletingNotificationId: number | null = null;
+  deletingAll = false;
 
   constructor(
     private notificationService: NotificationService,
@@ -100,10 +101,31 @@ export class NotificationCenter implements OnInit {
     });
   }
 
+  deleteAllNotifications() {
+    if (this.notifications.length === 0 || this.deletingAll) return;
+
+    const confirmed = window.confirm('確定要刪除全部通知嗎？');
+    if (!confirmed) return;
+
+    this.deletingAll = true;
+    this.errorMessage = '';
+
+    this.notificationService.deleteAllNotifications().subscribe({
+      next: () => {
+        this.notifications = [];
+        this.deletingAll = false;
+        this.activeFilter = 'all';
+      },
+      error: () => {
+        this.errorMessage = '全部通知刪除失敗，請稍後再試。';
+        this.deletingAll = false;
+      },
+    });
+  }
   deleteNotification(item: NotificationItem, event: Event) {
     event.stopPropagation();
 
-    if (this.deletingNotificationId !== null) return;
+    if (this.deletingNotificationId !== null || this.deletingAll) return;
 
     this.deletingNotificationId = item.notificationId;
     this.errorMessage = '';

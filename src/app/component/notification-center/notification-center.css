@@ -43,7 +43,16 @@
   margin: 10px 0 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .mark-all-btn,
+.delete-all-btn,
 .filter-chip,
 .icon-btn {
   border: 0;
@@ -51,7 +60,8 @@
   font: inherit;
 }
 
-.mark-all-btn {
+.mark-all-btn,
+.delete-all-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -64,7 +74,17 @@
   white-space: nowrap;
 }
 
-.mark-all-btn:disabled {
+.delete-all-btn {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.delete-all-btn:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.mark-all-btn:disabled,
+.delete-all-btn:disabled {
   background: #c8d2c3;
   cursor: not-allowed;
 }
@@ -309,8 +329,14 @@ time {
     flex-direction: column;
   }
 
-  .mark-all-btn {
+  .header-actions {
+    justify-content: stretch;
+  }
+
+  .mark-all-btn,
+  .delete-all-btn {
     justify-content: center;
+    width: 100%;
   }
 
   .notification-card {

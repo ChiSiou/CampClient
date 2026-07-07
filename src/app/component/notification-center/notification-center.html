@@ -7,15 +7,27 @@
         <p class="header-copy">查看訂單、付款與系統通知，重要消息會優先標示為未讀。</p>
       </div>
 
-      <button
-        class="mark-all-btn"
-        type="button"
-        [disabled]="unreadCount === 0 || markingAll"
-        (click)="markAllAsRead()"
-      >
-        <i class="pi pi-check-circle"></i>
-        <span>{{ markingAll ? '處理中' : '全部已讀' }}</span>
-      </button>
+      <div class="header-actions">
+        <button
+          class="mark-all-btn"
+          type="button"
+          [disabled]="unreadCount === 0 || markingAll || deletingAll"
+          (click)="markAllAsRead()"
+        >
+          <i class="pi pi-check-circle"></i>
+          <span>{{ markingAll ? '處理中...' : '全部已讀' }}</span>
+        </button>
+
+        <button
+          class="delete-all-btn"
+          type="button"
+          [disabled]="notifications.length === 0 || deletingAll"
+          (click)="deleteAllNotifications()"
+        >
+          <i class="pi" [ngClass]="deletingAll ? 'pi-spin pi-spinner' : 'pi-trash'"></i>
+          <span>{{ deletingAll ? '刪除中...' : '刪除全部通知' }}</span>
+        </button>
+      </div>
     </header>
 
     <div class="summary-row">
@@ -82,7 +94,7 @@
                 class="icon-btn danger"
                 type="button"
                 title="刪除通知"
-                [disabled]="deletingNotificationId === item.notificationId"
+                [disabled]="deletingNotificationId === item.notificationId || deletingAll"
                 (click)="deleteNotification(item, $event)"
               >
                 <i class="pi" [ngClass]="deletingNotificationId === item.notificationId ? 'pi-spin pi-spinner' : 'pi-trash'"></i>

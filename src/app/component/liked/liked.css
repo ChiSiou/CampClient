@@ -81,7 +81,6 @@
   color: #5f6f5f;
   padding: 10px 20px;
   border-radius: 999px;
-  cursor: pointer;
   font-size: 15px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   transition: 0.2s;
@@ -177,45 +176,11 @@
   transition: background 0.2s;
 }
 
-.like-summary:hover {
-  background: #f4f7f2;
-}
-
 .like-summary-side {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-}
-
-.accordion-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #edf5ee;
-  color: #3f6b45;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.accordion-icon::before {
-  content: '';
-  width: 9px;
-  height: 9px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg) translate(-1px, -1px);
-}
-
-.like-summary:hover .accordion-icon {
-  background: #dfece1;
-}
-
-.accordion-icon.open {
-  transform: rotate(180deg);
 }
 
 .like-panel {
