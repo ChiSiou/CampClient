@@ -16,6 +16,7 @@ import {
   OwnerReviewListItem,
   REPORT_REASON_OPTIONS,
 } from '../../../interfaces/owner-review.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-owner-reviews',
@@ -60,7 +61,8 @@ export class OwnerReviews implements OnInit {
   constructor(
     private ownerReviewService: OwnerReviewService,
     private messageService: MessageService,
-  ) {}
+    private router: Router,
+  ) { }
 
   ngOnInit() {
     this.ownerReviewService.getCampgrounds().subscribe({
@@ -101,6 +103,10 @@ export class OwnerReviews implements OnInit {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 10;
     this.loadReviews();
+  }
+
+  gotoCampReview(cid: number | null) {
+    this.router.navigate([`camp/${cid}`]);
   }
 
   openReplyDialog(review: OwnerReviewListItem) {
