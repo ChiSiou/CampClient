@@ -62,3 +62,30 @@
   font-size: 0.85rem;
   color: #888;
 }
+
+.owner-reply {
+  background: #f4f8f5;
+  border-left: 3px solid #4a7c59;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
+.owner-reply-title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #4a7c59;
+  margin-bottom: 4px;
+}
+
+.owner-reply-date {
+  font-weight: 400;
+  color: #888;
+}
+
+.owner-reply p {
+  margin: 0;
+  white-space: pre-wrap;
+}

@@ -48,7 +48,8 @@
   <div class="orders-list">
     @for (data of displayedOrders; track data.orderId) {
     <div class="order-card" [class.expanded]="isOrderExpanded(data.orderId)">
-      <button class="order-summary" type="button" (click)="toggleOrder(data.orderId)" [attr.aria-expanded]="isOrderExpanded(data.orderId)">
+      <button class="order-summary" type="button" (click)="toggleOrder(data.orderId)"
+        [attr.aria-expanded]="isOrderExpanded(data.orderId)">
         <div>
           <span class="order-no">訂單編號：{{ data.orderNumber }}</span>
           <p class="order-date">下單日期：{{ data.orderDate | date: 'yyyy-MM-dd' }}</p>
@@ -65,75 +66,91 @@
       @if (isOrderExpanded(data.orderId)) {
       <div class="order-panel">
 
-      @for (detail of data.details; track detail.orderDetailId) {
-      <div class="order-content">
-        <img [src]="resolveImageUrl(detail.campImageUrl)" [alt]="detail.campName" class="camp-img" />
+        @for (detail of data.details; track detail.orderDetailId) {
+        <div class="order-content">
+          <img [src]="resolveImageUrl(detail.campImageUrl)" [alt]="detail.campName" class="camp-img" />
 
-        <div class="order-info">
-          <h3>{{ detail.campName }}</h3>
+          <div class="order-info">
+            <h3>{{ detail.campName }}</h3>
 
-          @if (detail.itemType === 'camp') {
-          <div class="info-row">
-            <span>入住日期</span>
-            <strong>{{ detail.checkinDate }}</strong>
+            @if (detail.itemType === 'camp') {
+            <div class="info-row">
+              <span>入住日期</span>
+              <strong>{{ detail.checkinDate }}</strong>
+            </div>
+
+            <div class="info-row">
+              <span>退房日期</span>
+              <strong>{{ detail.checkoutDate }}</strong>
+            </div>
+            }
+
+            <div class="info-row">
+              <span>{{ detail.itemType === 'camp' ? '住宿類型' : '裝備規格' }}</span>
+              <strong>{{ detail.accomType || '-' }}</strong>
+            </div>
+
+            <!-- @if (data.status === 4) {
+                @if (getCampId(detail); as campId) {
+                  <app-popup [campId]="campId" [orderId]="data.orderId" />
+                }
+              } -->
           </div>
-
-          <div class="info-row">
-            <span>退房日期</span>
-            <strong>{{ detail.checkoutDate }}</strong>
-          </div>
-          }
-
-          <div class="info-row">
-            <span>{{ detail.itemType === 'camp' ? '住宿類型' : '裝備規格' }}</span>
-            <strong>{{ detail.accomType || '-' }}</strong>
-          </div>
-
-          @if (data.status === 4) {
-          @if (getCampId(detail); as campId) {
-          <app-popup [campId]="campId" [orderId]="data.orderId" />
-          }
-          }
         </div>
-      </div>
-      <hr />
-      }
-
-      <div class="order-bottom">
-        <div class="price">
-          訂單金額
-          <strong>NT{{ data.totalAmount }}</strong>
-        </div>
-
-        @if (data.status === 0) {
-        <div class="actions">
-          <button class="btn outline" [disabled]="processingOrderId === data.orderId" (click)="cancelOrder(data)">
-            {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
-          </button>
-          <button class="btn primary" [disabled]="processingOrderId === data.orderId" (click)="resumePayment(data)">
-            {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
-          </button>
-        </div>
-        } @else {
-        <div class="actions">
-          @if (getPrimaryDetail(data); as primaryDetail) {
-          @if (getDetailLink(primaryDetail); as detailLink) {
-          <button class="btn outline" [routerLink]="detailLink">查看詳情</button>
-          }
-          }
-
-          @if (getContactDetail(data); as contactDetail) {
-          <button class="btn primary" (click)="contactOwner(contactDetail)">聯絡營主</button>
-          } @else {
-          <button class="btn primary" disabled>聯絡營主</button>
-          }
-        </div>
+        <hr />
         }
-      </div>
 
-      @if (pendingActionError && processingOrderId === null) {
-      <p class="order-action-error">{{ pendingActionError }}</p>
-      }
+        <div class="order-bottom">
+          <div class="price">
+            訂單金額
+            <strong>NT{{ data.totalAmount }}</strong>
+          </div>
+        </div>
+        <hr />
+
+
+        <div class="order-bottom">
+          <div class="price">
+            訂單金額
+            <strong>NT{{ data.totalAmount }}</strong>
+          </div>
+
+          @if (data.status === 0) {
+          <div class="actions">
+            <button class="btn outline" [disabled]="processingOrderId === data.orderId" (click)="cancelOrder(data)">
+              {{ processingOrderId === data.orderId ? '處理中...' : '取消訂單' }}
+            </button>
+            <button class="btn primary" [disabled]="processingOrderId === data.orderId" (click)="resumePayment(data)">
+              {{ processingOrderId === data.orderId ? '處理中...' : '繼續付款' }}
+            </button>
+          </div>
+          } @else {
+          <div class="actions">
+
+            @if (data.status === 4) {
+            @if (getReviewCampId(data); as campId) {
+            <app-popup [campId]="campId" [orderId]="data.orderId" />
+            }
+            }
+
+            @if (getPrimaryDetail(data); as primaryDetail) {
+            @if (getDetailLink(primaryDetail); as detailLink) {
+            <button class="btn outline" [routerLink]="detailLink">查看詳情</button>
+            }
+            }
+
+            @if (getContactDetail(data); as contactDetail) {
+            <button class="btn primary" (click)="contactOwner(contactDetail)">聯絡營主</button>
+            } @else {
+            <button class="btn primary" disabled>聯絡營主</button>
+            }
+          </div>
+          }
+        </div>
+
+        @if (pendingActionError && processingOrderId === null) {
+        <p class="order-action-error">{{ pendingActionError }}</p>
+        }
       </div>
       }
     </div>

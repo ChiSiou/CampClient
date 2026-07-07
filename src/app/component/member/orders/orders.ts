@@ -96,6 +96,11 @@ export class Orders {
     return detail.itemType === 'camp' && detail.campId ? detail.campId : null;
   }
 
+  getReviewCampId(order: OrderList): number | null {
+    const detail = order.details.find((detail) => detail.itemType === 'camp' && !!detail.campId);
+    return detail ? this.getCampId(detail) : null;
+  }
+
   getContactDetail(order: OrderList): OrderDetail | null {
     return order.details.find((detail) => !!detail.ownerId && !!detail.ownerName) ?? null;
   }

@@ -1,5 +1,6 @@
 import { Member } from '../../layouts/member/member';
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { SReview } from '../service/sreview';
 import { IReview } from '../interfaces/IReview';
 import { RatingModule, Rating } from 'primeng/rating';
@@ -24,7 +25,7 @@ import { date } from '@primeuix/themes/aura/datepicker';
 
 @Component({
   selector: 'app-review',
-  imports: [Rating, FormsModule, PaginatorModule, AvatarModule, ButtonModule, MenuModule, PanelModule, CardModule, GalleriaModule, Dialog, Toast, Message, FloatLabel, FileUpload],
+  imports: [Rating, FormsModule, PaginatorModule, AvatarModule, ButtonModule, MenuModule, PanelModule, CardModule, GalleriaModule, Dialog, Toast, Message, FloatLabel, FileUpload, DatePipe],
   templateUrl: './review.html',
   styleUrl: './review.css',
   providers: [MessageService],

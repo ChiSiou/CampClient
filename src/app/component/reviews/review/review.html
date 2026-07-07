@@ -62,6 +62,16 @@
     <p class="m-0">
       {{review.commentText}}
     </p>
+
+    @if (review.ownerReplyContent) {
+      <div class="owner-reply">
+        <div class="owner-reply-title">
+          <span>營主回覆</span>
+          <span class="owner-reply-date">{{ review.ownerReplyAt | date: 'yyyy/MM/dd' }}</span>
+        </div>
+        <p>{{ review.ownerReplyContent }}</p>
+      </div>
+    }
   </p-card>
 </div>
 }@empty {
