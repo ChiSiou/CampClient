@@ -41,9 +41,8 @@ export class OwnerProfile {
         this.name = profile?.name ?? profile?.Name ?? '';
         this.email = profile?.email ?? profile?.Email ?? '';
         this.createdAt = ownerProfile?.createdAt ?? ownerProfile?.CreatedAt ?? '';
-        if (res.profileData.roles.includes('Owner')) {
-          this.status = true;
-        }
+        const roles = profile?.roles ?? profile?.Roles ?? [];
+        this.status = roles.includes('Owner');
         const licenseImage = ownerProfile?.licenseImage ?? ownerProfile?.LicenseImage;
         if (licenseImage) {
           this.setOwnerPhoto(licenseImage);

@@ -60,7 +60,6 @@ export class HeaderWMenu implements OnDestroy {
   }
 
   readonly menu = viewChild.required<Menu>('menu');
-
   readonly menuItems: MenuItem[] = [
     { label: '我的收藏', icon: 'pi pi-heart', routerLink: '/member-center/liked' },
     { label: '訂單', icon: 'pi pi-receipt', routerLink: '/orders' },

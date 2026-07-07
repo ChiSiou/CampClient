@@ -191,8 +191,72 @@
 .order-card {
   background: #ffffff;
   border-radius: 18px;
-  padding: 20px;
+  padding: 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.order-card.expanded {
+  box-shadow: 0 12px 30px rgba(47, 62, 47, 0.14);
+}
+
+.order-summary {
+  width: 100%;
+  border: none;
+  background: #ffffff;
+  padding: 20px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  transition: background 0.2s;
+}
+
+.order-summary:hover {
+  background: #f4f7f2;
+}
+
+.order-summary-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.accordion-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #edf5ee;
+  color: #3f6b45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.accordion-icon::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.order-summary:hover .accordion-icon {
+  background: #dfece1;
+}
+
+.accordion-icon.open {
+  transform: rotate(180deg);
+}
+
+.order-panel {
+  padding: 0 20px 20px;
 }
 
 .order-top {
@@ -421,4 +485,15 @@
   border-radius: 8px;
   color: #b91c1c;
   font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .order-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .order-summary-side {
+    justify-content: space-between;
+  }
 }

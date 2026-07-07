@@ -29,6 +29,7 @@ export class Orders {
   processingOrderId: number | null = null;
   pendingActionError = '';
   activeTab: number | 'all' = 'all';
+  expandedOrderId: number | null = null;
   private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   orderStatusMap: { [key: number]: string } = {
@@ -45,7 +46,7 @@ export class Orders {
     private checkoutService: CheckoutService,
     private explorationService: ExplorationService,
     private chatService: ChatService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadPopularCamps();
@@ -147,6 +148,15 @@ export class Orders {
   setActiveTab(status: number | 'all') {
     this.activeTab = status;
     this.currentPage = 1;
+    this.expandedOrderId = null;
+  }
+
+  toggleOrder(orderId: number) {
+    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+  }
+
+  isOrderExpanded(orderId: number) {
+    return this.expandedOrderId === orderId;
   }
 
   onDisplayCountChange() {
@@ -157,12 +167,14 @@ export class Orders {
   goToPreviousPage() {
     if (this.currentPage > 1) {
       this.currentPage -= 1;
+      this.expandedOrderId = null;
     }
   }
 
   goToNextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage += 1;
+      this.expandedOrderId = null;
     }
   }
 
