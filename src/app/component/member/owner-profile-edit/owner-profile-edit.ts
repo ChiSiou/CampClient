@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MemberService } from '../Service/member-service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-owner-profile-edit',
@@ -30,6 +31,7 @@ export class OwnerProfileEdit implements OnInit {
   constructor(
     private memberService: MemberService,
     private router: Router,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -103,14 +105,39 @@ export class OwnerProfileEdit implements OnInit {
 
     this.memberService.ownerEdit(formData).subscribe({
       next: () => {
+        this.memberService.updateCurrentProfile({
+          name: this.ownerData.realName.trim(),
+          phone: this.ownerData.contactPhone.trim(),
+          profilePictureUrl: this.avatarPreviewUrl,
+        });
+        this.memberService.getProfile().subscribe({
+          next: () => {
+            this.memberService.updateCurrentProfile({
+              name: this.ownerData.realName.trim(),
+              phone: this.ownerData.contactPhone.trim(),
+              profilePictureUrl: this.avatarPreviewUrl,
+            });
+          },
+        });
         this.submitting = false;
         this.messageType = 'success';
         this.message = '營主資料已更新';
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'success',
+          summary: '成功',
+          detail: '營主資料已更新',
+        });
         setTimeout(() => this.router.navigate(['/ownerCenter']), 600);
       },
       error: (err) => {
         this.submitting = false;
-        this.setError(err.error?.message ?? '營主資料更新失敗');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: err.error?.message || '請稍後再試',
+        });
       },
     });
   }
@@ -122,13 +149,23 @@ export class OwnerProfileEdit implements OnInit {
         const ownerProfile = profile?.ownerProfile ?? profile?.OwnerProfile;
 
         this.ownerData.companyName = ownerProfile?.companyName ?? ownerProfile?.CompanyName ?? '';
-        this.ownerData.realName = ownerProfile?.realname ?? ownerProfile?.realName ?? ownerProfile?.Realname ?? this.memberService.getname() ?? '';
+        this.ownerData.realName =
+          ownerProfile?.realname ??
+          ownerProfile?.realName ??
+          ownerProfile?.Realname ??
+          this.memberService.getname() ??
+          '';
         this.ownerData.idNumber = ownerProfile?.idNumber ?? ownerProfile?.IdNumber ?? '';
-        this.ownerData.contactPhone = ownerProfile?.contactPhone ?? ownerProfile?.ContactPhone ?? this.memberService.getphone() ?? '';
+        this.ownerData.contactPhone =
+          ownerProfile?.contactPhone ??
+          ownerProfile?.ContactPhone ??
+          this.memberService.getphone() ??
+          '';
         this.ownerData.address = ownerProfile?.address ?? ownerProfile?.Address ?? '';
         this.ownerData.bankName = ownerProfile?.bankName ?? ownerProfile?.BankName ?? '';
         this.ownerData.bankAccount = ownerProfile?.bankAccount ?? ownerProfile?.BankAccount ?? '';
-        this.ownerData.bankAccountName = ownerProfile?.bankAccountName ?? ownerProfile?.BankAccountName ?? '';
+        this.ownerData.bankAccountName =
+          ownerProfile?.bankAccountName ?? ownerProfile?.BankAccountName ?? '';
         this.avatarPreviewUrl = ownerProfile?.licenseImage ?? ownerProfile?.LicenseImage ?? '';
         this.loadAvatarFallback();
       },

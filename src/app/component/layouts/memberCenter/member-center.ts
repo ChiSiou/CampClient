@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { MemberService } from '../../member/Service/member-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'member-center',
@@ -14,12 +15,34 @@ export class MemberCenter {
   imageLoadFailed = false;
 
   private readonly apiOrigin = 'https://localhost:7011';
+  private profileSubscription?: Subscription;
 
   constructor(private memberservice: MemberService) {}
 
   ngOnInit(): void {
-    this.name = this.memberservice.getname() ?? '會員';
+    this.profileSubscription = this.memberservice.currentProfile$.subscribe((profile) => {
+      if (profile?.name) {
+        this.name = profile.name;
+      }
+      if (profile?.profilePictureUrl) {
+        this.profilePhotoUrl = this.toAbsoluteImageUrl(profile.profilePictureUrl);
+        this.imageLoadFailed = !this.profilePhotoUrl;
+      }
+    });
+
+    this.memberservice.getProfile().subscribe({
+      next: (res) => {
+        const profile = res.profileData ?? res.ProfileData;
+        this.name = profile?.name ?? profile?.Name ?? this.memberservice.getname() ?? '會員';
+      },
+      error: (err) => {},
+    });
+
     this.loadProfilePhoto();
+  }
+
+  ngOnDestroy(): void {
+    this.profileSubscription?.unsubscribe();
   }
 
   loadProfilePhoto() {

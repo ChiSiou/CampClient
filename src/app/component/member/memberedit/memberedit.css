@@ -27,9 +27,31 @@
 
 /* 標題 */
 .edit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 32px;
   padding-bottom: 20px;
   border-bottom: 1px solid #e5ebdf;
+}
+
+.edit-header__back {
+  flex: 0 0 auto;
+  border: 1px solid #d9e5d2;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: #ffffff;
+  color: #5f7f4f;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-header__back:hover {
+  background: #eef5e8;
+  transform: translateY(-2px);
 }
 
 .edit-header h2 {
@@ -239,8 +261,16 @@
     border-radius: 20px;
   }
 
+  .edit-header {
+    flex-direction: column;
+  }
+
   .edit-header h2 {
     font-size: 26px;
+  }
+
+  .edit-header__back {
+    width: 100%;
   }
 
   .avatar-section {

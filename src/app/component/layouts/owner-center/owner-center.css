@@ -52,6 +52,43 @@
   font-size: 13px;
 }
 
+
+.owner-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px 24px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8faf6;
+  border: 1px solid #e4eadf;
+}
+
+.owner-sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.owner-sidebar-avatar--placeholder {
+  display: grid;
+  place-items: center;
+  background: #5f7f4f;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.owner-sidebar-profile strong {
+  min-width: 0;
+  color: #2f3e2f;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sidebar-menu {
   display: flex;
   flex-direction: column;

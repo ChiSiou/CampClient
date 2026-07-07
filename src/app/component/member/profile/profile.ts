@@ -5,6 +5,7 @@ import { NotificationService } from '../../notification-center/Service/Notificat
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { SPostInteract } from '../../forum/service/sPostInteract';
 
 interface LikedCampDto {
@@ -26,6 +27,7 @@ export class Profile {
   unreadCount = 0;
   ordercount = 0;
   likedcount = 0;
+  private profileSubscription?: Subscription;
   constructor(
     private memberService: MemberService,
     private notification: NotificationService,
@@ -34,6 +36,16 @@ export class Profile {
   ) {}
 
   ngOnInit(): void {
+    this.profileSubscription = this.memberService.currentProfile$.subscribe((profile) => {
+      if (profile) {
+        this.profile = {
+          name: profile.name ?? this.profile.name,
+          email: profile.email ?? this.profile.email,
+          phone: profile.phone ?? this.profile.phone,
+        };
+      }
+    });
+
     this.notification.getUnreadCount().subscribe({
       next: (count) => {
         this.unreadCount = Number(count) || 0;
@@ -47,6 +59,7 @@ export class Profile {
         const profile = res.profileData ?? res.ProfileData;
         this.profile = {
           name: profile?.name ?? profile?.Name ?? this.memberService.getname() ?? '',
+
           email: profile?.email ?? profile?.Email ?? this.memberService.getemail() ?? '',
           phone: profile?.phone ?? profile?.Phone ?? this.memberService.getphone() ?? '',
         };
@@ -69,6 +82,10 @@ export class Profile {
     });
     this.loadLikedCount();
   }
+  ngOnDestroy(): void {
+    this.profileSubscription?.unsubscribe();
+  }
+
   MemberEdit() {
     this.memberService.memberEdit;
   }
@@ -87,7 +104,9 @@ export class Profile {
     );
 
     const postLikes$ = this.sPostInteract.getPostInteracts(undefined, userId, 1, 1000).pipe(
-      map((items) => (Array.isArray(items) ? items.filter((item) => item.likePostId != null).length : 0)),
+      map((items) =>
+        Array.isArray(items) ? items.filter((item) => item.likePostId != null).length : 0,
+      ),
       catchError(() => of(0)),
     );
 

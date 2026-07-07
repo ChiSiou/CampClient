@@ -1,8 +1,11 @@
 <div class="edit-page">
   <div class="edit-card">
     <div class="edit-header">
-      <h2>編輯會員資料</h2>
-      <p>更新你的基本資料、大頭貼與密碼。</p>
+      <div>
+        <h2>編輯會員資料</h2>
+        <p>更新你的基本資料、大頭貼與密碼。</p>
+      </div>
+      <button type="button" class="edit-header__back" routerLink="/member-center">返回會員中心</button>
     </div>
 
     @if (message) {
@@ -109,7 +112,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="cancel-btn" routerLink="/member-center">取消</button>
+        <button type="button" class="cancel-btn" routerLink="/member-center">返回會員中心</button>
         <button type="submit" class="save-btn" [disabled]="submitting">
           {{ submitting ? '儲存中...' : '儲存變更' }}
         </button>
