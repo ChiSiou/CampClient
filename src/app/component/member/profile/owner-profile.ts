@@ -29,22 +29,27 @@ export class OwnerProfile {
   constructor(
     private memberservice: MemberService,
     private chatService: ChatService,
-    private campManagementService: CampManagementService
+    private campManagementService: CampManagementService,
   ) {}
 
   ngOnInit(): void {
     this.memberservice.getProfile().subscribe({
       next: (res) => {
+        console.log('res', res);
         const profile = res.profileData ?? res.ProfileData;
         const ownerProfile = profile?.ownerProfile ?? profile?.OwnerProfile;
         this.name = profile?.name ?? profile?.Name ?? '';
         this.email = profile?.email ?? profile?.Email ?? '';
         this.createdAt = ownerProfile?.createdAt ?? ownerProfile?.CreatedAt ?? '';
-        if(res.profileData.roles.includes("Owner")){this.status = true}
+        const roles = profile?.roles ?? profile?.Roles ?? [];
+        this.status = roles.includes('Owner');
         const licenseImage = ownerProfile?.licenseImage ?? ownerProfile?.LicenseImage;
         if (licenseImage) {
           this.setOwnerPhoto(licenseImage);
         }
+      },
+      error: (err) => {
+        console.log('err', err.message);
       },
     });
 
@@ -58,25 +63,22 @@ export class OwnerProfile {
     });
 
     this.memberservice.getOwnerRecentOrders().subscribe({
-      next: (res) => 
-        {
-          this.recentOrders = res,
-          this.recentordercount = res.length
-        },
-      error: (err) => 
-        {
-          console.log(err.message)
-        },
+      next: (res) => {
+        ((this.recentOrders = res), (this.recentordercount = res.length));
+      },
+      error: (err) => {
+        console.log(err.message);
+      },
     });
     this.campManagementService.listMine().subscribe({
-      next:(res)=>{
-      this.campgrounds = res;
-      this.campcount = res.length;
+      next: (res) => {
+        this.campgrounds = res;
+        this.campcount = res.length;
       },
-      error:(err)=>{
-        console.log(err.message)
-      }
-    })
+      error: (err) => {
+        console.log(err.message);
+      },
+    });
   }
 
   onAvatarError() {
@@ -89,11 +91,17 @@ export class OwnerProfile {
   }
 
   orderStatusLabel(status: number): string {
-    return ({ 0: '待付款', 1: '已付款', 2: '已取消', 3: '退款中' } as Record<number, string>)[status] ?? '未知';
+    return (
+      ({ 0: '待付款', 1: '已付款', 2: '已取消', 3: '退款中' } as Record<number, string>)[status] ??
+      '未知'
+    );
   }
 
   orderStatusClass(status: number): string {
-    return ({ 0: 'pending', 1: 'paid', 2: 'cancel', 3: 'pending' } as Record<number, string>)[status] ?? '';
+    return (
+      ({ 0: 'pending', 1: 'paid', 2: 'cancel', 3: 'pending' } as Record<number, string>)[status] ??
+      ''
+    );
   }
 
   campgroundStatusLabel(status: number): string {
@@ -127,7 +135,11 @@ export class OwnerProfile {
 
     if (!trimmedUrl) return '';
 
-    if (trimmedUrl.startsWith('data:') || trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+    if (
+      trimmedUrl.startsWith('data:') ||
+      trimmedUrl.startsWith('http://') ||
+      trimmedUrl.startsWith('https://')
+    ) {
       return trimmedUrl;
     }
 

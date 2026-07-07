@@ -1,9 +1,15 @@
-import { Message } from 'primeng/message';
 import { MemberService } from './../Service/member-service';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NotificationService } from '../../notification-center/Service/NotificationService';
-import { Liked } from '../../liked/liked';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { SPostInteract } from '../../forum/service/sPostInteract';
+
+interface LikedCampDto {
+  campId: number;
+}
 
 @Component({
   selector: 'profile',
@@ -23,38 +29,70 @@ export class Profile {
   constructor(
     private memberService: MemberService,
     private notification: NotificationService,
-    // private liked: Liked,
+    private http: HttpClient,
+    private sPostInteract: SPostInteract,
   ) {}
 
   ngOnInit(): void {
-    // this.likedcount = this.liked.displayedItems.length;
     this.notification.getUnreadCount().subscribe({
-      next: (res) => {
-        this.unreadCount = res;
+      next: (count) => {
+        this.unreadCount = Number(count) || 0;
       },
-      error: (err) => {
-        console.log(err.Message);
+      error: () => {
+        this.unreadCount = 0;
       },
     });
     this.memberService.getProfile().subscribe({
       next: (res) => {
-        this.profile = res.profileData;
-        console.log(res);
+        const profile = res.profileData ?? res.ProfileData;
+        this.profile = {
+          name: profile?.name ?? profile?.Name ?? this.memberService.getname() ?? '',
+          email: profile?.email ?? profile?.Email ?? this.memberService.getemail() ?? '',
+          phone: profile?.phone ?? profile?.Phone ?? this.memberService.getphone() ?? '',
+        };
       },
-      error: (err) => {
-        console.log('message:', err.message);
+      error: () => {
+        this.profile = {
+          name: this.memberService.getname() ?? '',
+          email: this.memberService.getemail() ?? '',
+          phone: this.memberService.getphone() ?? '',
+        };
       },
     });
     this.memberService.getorder().subscribe({
       next: (res) => {
-        this.ordercount = res.length;
+        this.ordercount = Array.isArray(res) ? res.length : 0;
       },
-      error: (err) => {
-        console.log(err.message);
+      error: () => {
+        this.ordercount = 0;
       },
     });
+    this.loadLikedCount();
   }
   MemberEdit() {
     this.memberService.memberEdit;
+  }
+
+  private loadLikedCount() {
+    const userId = Number(this.memberService.getid());
+
+    if (!userId) {
+      this.likedcount = 0;
+      return;
+    }
+
+    const campLikes$ = this.http.get<LikedCampDto[]>('https://localhost:7011/api/CampLike').pipe(
+      map((items) => (Array.isArray(items) ? items.length : 0)),
+      catchError(() => of(0)),
+    );
+
+    const postLikes$ = this.sPostInteract.getPostInteracts(undefined, userId, 1, 1000).pipe(
+      map((items) => (Array.isArray(items) ? items.filter((item) => item.likePostId != null).length : 0)),
+      catchError(() => of(0)),
+    );
+
+    forkJoin([campLikes$, postLikes$]).subscribe(([campCount, postCount]) => {
+      this.likedcount = campCount + postCount;
+    });
   }
 }

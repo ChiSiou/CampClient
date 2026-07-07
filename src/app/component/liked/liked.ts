@@ -60,6 +60,7 @@ export class Liked implements OnInit {
   activeTab: 'all' | 'camp' | 'post' = 'all';
   displayCount = 5;
   currentPage = 1;
+  expandedItemId: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -137,6 +138,15 @@ export class Liked implements OnInit {
   setActiveTab(tab: 'all' | 'camp' | 'post') {
     this.activeTab = tab;
     this.currentPage = 1;
+    this.expandedItemId = null;
+  }
+
+  toggleItem(itemId: string) {
+    this.expandedItemId = this.expandedItemId === itemId ? null : itemId;
+  }
+
+  isItemExpanded(itemId: string) {
+    return this.expandedItemId === itemId;
   }
 
   unlike(item: LikedItem) {
@@ -146,6 +156,7 @@ export class Liked implements OnInit {
         .pipe(catchError(() => of(null)))
         .subscribe(() => {
           this.allItems = this.allItems.filter((i) => i.id !== item.id);
+          this.expandedItemId = this.expandedItemId === item.id ? null : this.expandedItemId;
           this.currentPage = Math.min(this.currentPage, this.totalPages);
         });
     } else {
@@ -155,6 +166,7 @@ export class Liked implements OnInit {
         .pipe(catchError(() => of(null)))
         .subscribe(() => {
           this.allItems = this.allItems.filter((i) => i.id !== item.id);
+          this.expandedItemId = this.expandedItemId === item.id ? null : this.expandedItemId;
           this.currentPage = Math.min(this.currentPage, this.totalPages);
         });
     }
@@ -199,11 +211,17 @@ export class Liked implements OnInit {
   }
 
   goToPreviousPage() {
-    if (this.currentPage > 1) this.currentPage--;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.expandedItemId = null;
+    }
   }
 
   goToNextPage() {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.expandedItemId = null;
+    }
   }
 
   gotoPost(id: number) {
