@@ -13,4 +13,6 @@ export interface IReview {
   userRole: number,
   reviewImages?: { imageUrl: string }[],
   userName?: string,
+  ownerReplyContent?: string | null,
+  ownerReplyAt?: Date | null,
 }
