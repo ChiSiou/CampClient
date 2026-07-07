@@ -40,8 +40,7 @@ export class Checkout implements OnInit, OnDestroy {
   receiverAddress = '';
 
   get isHomeDelivery(): boolean {
-    const code = this.equipmentData?.shippingMethodCode;
-    return (code === 'TCAT_HOME' || code === 'LALAMOVE') &&
+    return this.equipmentData?.shippingMethodCode === 'LALAMOVE' &&
       (this.summary?.equipmentSubTotal ?? 0) > 0;
   }
 
