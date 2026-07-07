@@ -118,6 +118,10 @@ export class Login {
     });
   }
 
+  guestLogin() {
+    this.router.navigate(['/']);
+  }
+
   login(data: loginData) {
     this.memberService.login(data).subscribe({
       next: (res) => {

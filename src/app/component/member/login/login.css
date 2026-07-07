@@ -258,3 +258,37 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.guest-login-btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.guest-login-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+
+.guest-link-btn {
+  border: none;
+  background: transparent;
+  color: #b7e4c7;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.guest-link-btn:hover {
+  text-decoration: underline;
+}
+

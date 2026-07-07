@@ -48,7 +48,7 @@ export class ItineraryList implements OnInit {
   constructor(
     private memberService: MemberService,
     private paymentService: PaymentService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadItineraries();
