@@ -48,6 +48,7 @@
                     class="gantt__cell"
                     [ngClass]="{
                       'gantt__cell--unavailable': cellStatus(row, dateIndex) === 'U',
+                      'gantt__cell--past': isPastDate(dateIndex),
                       'gantt__cell--selected': isSelected(row, dateIndex),
                       'gantt__cell--dragging': isDragging(rowIndex, dateIndex),
                       'gantt__cell--range-start': isRangeStart(row, dateIndex),

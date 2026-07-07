@@ -8,6 +8,7 @@ export interface HomeFeedDto {
   newestCamps: CampSearchResultDto[];
   themedCamps: CampSearchResultDto[];
   themedTagName: string;
+  themedTagId: number;
 }
 
 export interface AnnouncementItem {
@@ -57,7 +58,7 @@ export interface CampSearchRequest {
   facilityIds?: number[];
   minElevation?: number;
   minRating?: number;
-  sortBy?: 'Recommended' | 'PriceAsc' | 'PriceDesc' | 'RatingDesc' | 'ElevationAsc' | 'ElevationDesc';
+  sortBy?: 'Recommended' | 'PriceAsc' | 'PriceDesc' | 'RatingDesc' | 'ElevationAsc' | 'ElevationDesc' | 'NewestDesc';
   pageNumber?: number;
   pageSize?: number;
 }

@@ -122,6 +122,12 @@
   cursor: not-allowed;
 }
 
+/* 今天以前的日期：不能選，用斜線紋路跟「已訂」的純灰底做區隔，避免使用者誤以為是被訂走 */
+.gantt__cell--past {
+  background: repeating-linear-gradient(45deg, #f3f4f6, #f3f4f6 6px, #e5e7eb 6px, #e5e7eb 12px);
+  cursor: not-allowed;
+}
+
 .gantt__cell-label {
   font-size: 10px;
   color: #9ca3af;

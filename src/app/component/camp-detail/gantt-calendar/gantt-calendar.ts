@@ -46,6 +46,7 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
   startDate = this.formatDate(new Date());
   days = 10;
+  private readonly todayStr = this.formatDate(new Date());
 
   drag: DragState | null = null;
 
@@ -119,10 +120,17 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
       });
 
       entries.forEach(entry => {
-        // 找一列「目前還沒有跟這筆選位日期重疊」的，不重疊就可以共用同一列
+        // 找一列「目前還沒有跟這筆選位日期重疊」且「這段期間本身真的是空的（沒被別人訂走）」的列，
+        // 兩個條件都要滿足才能用——只檢查「不跟其他選位重疊」不夠，還要檢查真實庫存狀態，
+        // 不然可能挑到一列剛好在這段日期裡有別人真實訂走的天數（'U'），
+        // 畫面上就會把選位反白疊在「已訂」格子上，看起來很像 bug（實際送出訂單時後端會另外正確分配，
+        // 這裡純粹是「畫面要反白哪一列」選錯，屬於視覺呈現問題）。
         const row = rowsInZone.find(r => {
           const assigned = rowAssignments.get(r.campsiteId) ?? [];
-          return !assigned.some(a => a.checkIn < entry.checkOutDate && entry.checkInDate < a.checkOut);
+          const noOverlapWithOtherSelections = !assigned.some(
+            a => a.checkIn < entry.checkOutDate && entry.checkInDate < a.checkOut
+          );
+          return noOverlapWithOtherSelections && this.isRowFullyAvailable(r, entry.checkInDate, entry.checkOutDate);
         });
         if (!row) return; // 沒有空列了（正常情況下 maxAvailableQuantity 已經會擋掉，不該發生）
 
@@ -132,6 +140,16 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
         ranges.push({ checkIn: entry.checkInDate, checkOut: entry.checkOutDate });
         this.genericHighlightRanges.set(row.campsiteId, ranges);
       });
+    });
+  }
+
+  // 這一列在 [checkIn, checkOut) 這段期間，是否每一天的真實庫存狀態都是可訂（'A'）。
+  // 只檢查目前甘特圖視窗內看得到的日期；範圍外（例如換頁後才看得到）的日期無法驗證，視為可通過，
+  // 跟原本的行為一致（這只是「畫面要反白哪一列」的視覺挑選，不是實際訂位判斷）。
+  private isRowFullyAvailable(row: GanttRowItem, checkIn: string, checkOut: string): boolean {
+    return this.matrixDates.every((date, idx) => {
+      if (date < checkIn || date >= checkOut) return true; // 不在這段期間內，不用檢查
+      return this.cellStatus(row, idx) === 'A';
     });
   }
 
@@ -302,7 +320,14 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  // 後端「已訂/可訂」判斷只看有沒有真的被訂走，不管日期是不是已經過去——今天以前的日期沒被訂過
+  // 一樣會回傳可訂('A')，所以過去日期要在前端另外擋，不能只靠 cellStatus。
+  isPastDate(dateIndex: number): boolean {
+    return this.matrixDates[dateIndex] < this.todayStr;
+  }
+
   onCellMouseDown(rowIndex: number, dateIndex: number, row: GanttRowItem) {
+    if (this.isPastDate(dateIndex)) return; // 今天以前不能選
     if (this.cellStatus(row, dateIndex) !== 'A') return;
     if (this.isSelected(row, dateIndex)) return; // 已選的格子不能拖，要先點掉移除
     this.drag = { rowIndex, startDateIndex: dateIndex, endDateIndex: dateIndex };
@@ -310,6 +335,7 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
   onCellMouseEnter(rowIndex: number, dateIndex: number, row: GanttRowItem) {
     if (!this.drag || this.drag.rowIndex !== rowIndex) return;
+    if (this.isPastDate(dateIndex)) return; // 拖到過去日期就不延伸過去
     if (this.cellStatus(row, dateIndex) !== 'A') return; // 拖到不可訂的格子就不延伸過去
     this.drag.endDateIndex = dateIndex;
   }
