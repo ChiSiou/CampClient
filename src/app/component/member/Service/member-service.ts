@@ -62,9 +62,9 @@ export class MemberService {
     }
 
     try {
-      const decoded = jwtDecode(token);
+      const decoded = this.decodeToken();
 
-      if (!decoded.exp) {
+      if (!decoded?.exp) {
         this.clearLoginData();
         return false;
       }
@@ -101,9 +101,9 @@ export class MemberService {
     if (!token) return;
 
     try {
-      const decoded = jwtDecode(token);
+      const decoded = this.decodeToken();
 
-      if (!decoded.exp) {
+      if (!decoded?.exp) {
         this.logout();
         return;
       }
@@ -133,8 +133,8 @@ export class MemberService {
       return false;
     } else {
       try {
-        const decoded = jwtDecode(token);
-        if (!decoded.exp) {
+        const decoded = this.decodeToken();
+        if (!decoded?.exp) {
           this.logout();
           return false;
         }
@@ -262,45 +262,60 @@ export class MemberService {
   getActiveRole() {
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['activeRole'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['activeRole'];
     }
   }
   getemail() {
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
     }
   }
   getphone() {
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
     }
   }
   getid() {
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
     }
   }
   getname() {
     //取得存在localstotage的token反譯出的名字
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
     }
   }
   getrole() {
     //取得存在localstotage的token反譯出的身分
     const token = localStorage.getItem('token');
     if (token) {
-      const decoded: any = jwtDecode(token);
-      return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      const decoded: any = this.decodeToken();
+      return decoded?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    }
+  }
+
+  private decodeToken(): any | undefined {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return undefined;
+    }
+
+    try {
+      return jwtDecode(token);
+    } catch {
+      this.clearLoginData();
+      return undefined;
     }
   }
 }
