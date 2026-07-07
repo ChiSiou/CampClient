@@ -3,6 +3,11 @@
 export interface HomeFeedDto {
   announcements: AnnouncementItem[];
   featuredCamps: CampSearchResultDto[];
+  // 其他推薦區塊
+  highElevationCamps: CampSearchResultDto[];
+  newestCamps: CampSearchResultDto[];
+  themedCamps: CampSearchResultDto[];
+  themedTagName: string;
 }
 
 export interface AnnouncementItem {

@@ -1,6 +1,7 @@
 .camp-card {
   display: flex;
   flex-direction: column;
+  height: 100%; /* 填滿被 flex 拉高的外框，讓同一排卡片等高 */
   border-radius: 12px;
   border: 1px solid #ebebeb;
   overflow: hidden;
@@ -150,6 +151,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1; /* 撐開剩餘高度，配合 footer 的 margin-top:auto 把價格列壓到底部、各卡對齊 */
 }
 
 .camp-card__header {

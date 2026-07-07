@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarouselModule } from 'primeng/carousel';
 import { ButtonModule } from 'primeng/button';
@@ -25,12 +25,11 @@ export class Home implements OnInit {
   feed: HomeFeedDto | null = null;
   loading = true;
 
-  @ViewChild('campsRow') campsRow!: ElementRef<HTMLDivElement>;
-
   constructor(private explorationService: ExplorationService) {}
 
-  scrollCamps(direction: 1 | -1) {
-    this.campsRow.nativeElement.scrollBy({ left: direction * 400, behavior: 'smooth' });
+  // 每個推薦區塊各自捲動：把該列的 DOM 元素從模板直接傳進來，不用為每列開一個 ViewChild
+  scrollRow(row: HTMLElement, direction: 1 | -1) {
+    row.scrollBy({ left: direction * 400, behavior: 'smooth' });
   }
 
   ngOnInit() {
