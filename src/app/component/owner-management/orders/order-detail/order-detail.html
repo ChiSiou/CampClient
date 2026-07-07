@@ -1,0 +1,176 @@
+<div class="order-detail-page">
+  <div class="page-header">
+    <div>
+      <h2>訂單詳情</h2>
+      @if (order) {
+        <span class="subtitle">{{ order.orderNumber }}</span>
+      }
+    </div>
+    <a routerLink="/ownerCenter/orders" class="btn-back">← 返回訂單列表</a>
+  </div>
+
+  @if (loading) { <div class="loading">載入中...</div> }
+  @if (error) { <div class="error-msg">{{ error }}</div> }
+
+  @if (!loading && order) {
+
+    <!-- 訂單基本資訊 -->
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">訂單狀態</span>
+        <span [class]="'status ' + statusClass(order.status)">{{ statusLabel(order.status) }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">聯絡人</span>
+        <span>{{ order.contactName }}・{{ order.contactPhone }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span>{{ order.contactEmail }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">建立時間</span>
+        <span>{{ order.createdTime | date:'yyyy/MM/dd HH:mm' }}</span>
+      </div>
+      @if (order.paidTime) {
+        <div class="info-row">
+          <span class="info-label">付款時間</span>
+          <span>{{ order.paidTime | date:'yyyy/MM/dd HH:mm' }}</span>
+        </div>
+      }
+      @if (order.promotionDiscountAmount) {
+        <div class="info-row">
+          <span class="info-label">折扣金額</span>
+          <span class="discount">- NT$ {{ order.promotionDiscountAmount | number }}</span>
+        </div>
+      }
+      <div class="info-row">
+        <span class="info-label">訂單總額</span>
+        <span class="total">NT$ {{ totalAmount | number }}</span>
+      </div>
+    </div>
+
+    <!-- 明細列表 -->
+    <div class="section">
+      <h3>訂單明細</h3>
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>勾選</th>
+            <th>類型</th>
+            <th>項目</th>
+            <th>入住日期</th>
+            <th>退出日期</th>
+            <th>數量</th>
+            <th>金額</th>
+            <th>退款金額</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of order.details; track d.orderDetailId) {
+            <tr [class.selected-row]="isSelected(d.orderDetailId)">
+              <td>
+                @if (canCancel(d)) {
+                  <input type="checkbox"
+                    [checked]="isSelected(d.orderDetailId)"
+                    (change)="toggleSelect(d.orderDetailId)" />
+                }
+              </td>
+              <td>{{ d.itemType === 'Campsite' ? '營位' : '裝備' }}</td>
+              <td>
+                @if (d.itemType === 'Campsite') {
+                  <span>{{ d.zoneName }} / {{ d.siteNumber }}</span>
+                } @else {
+                  <span>{{ d.equipmentName }}</span>
+                }
+              </td>
+              <td>{{ d.checkInDate ?? '-' }}</td>
+              <td>{{ d.checkOutDate ?? '-' }}</td>
+              <td>{{ d.quantity }}</td>
+              <td>NT$ {{ d.price | number }}</td>
+              <td>{{ d.actualRefund != null ? 'NT$ ' + (d.actualRefund | number) : '-' }}</td>
+              <td>
+                <span [class]="'detail-status ' + detailStatusClass(d.status)">
+                  {{ detailStatusLabel(d.status) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- 退款操作區 -->
+      @if (order.status === 1 || order.status === 3) {
+        <div class="cancel-section">
+          @if (cancelError) { <div class="error-msg">{{ cancelError }}</div> }
+          <button (click)="submitCancel()" [disabled]="cancelling || selectedDetailIds.length === 0" class="btn-cancel-order">
+            {{ cancelling ? '處理中...' : '申請取消/退款（' + selectedDetailIds.length + ' 筆）' }}
+          </button>
+          <p class="cancel-note">送出後立即執行退款，無法撤回。</p>
+        </div>
+      }
+    </div>
+
+    <!-- 退款結果 -->
+    @if (refundResult) {
+      <div class="section refund-result">
+        <h3>退款結果</h3>
+        <p class="refund-msg">{{ refundResult.message }}</p>
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>入住日期</th>
+              <th>提前天數</th>
+              <th>退款級距</th>
+              <th>可退款</th>
+              <th>退款金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of refundResult.items; track item.orderDetailId) {
+              <tr>
+                <td>{{ item.itemName }}</td>
+                <td>{{ item.checkInDate }}</td>
+                <td>{{ item.daysBeforeCheckIn }} 天</td>
+                <td>{{ item.isTyphoonOverride ? '颱風天災全額退款' : item.matchedTierName }}</td>
+                <td>{{ item.isRefundable ? '是' : '否' }}</td>
+                <td>NT$ {{ item.refundAmount | number }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="refund-total">合計退款：NT$ {{ refundResult.totalRefundAmount | number }}</div>
+      </div>
+    }
+
+    <!-- 付款記錄 -->
+    @if (order.paymentLogs.length > 0) {
+      <div class="section">
+        <h3>付款記錄</h3>
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>類型</th>
+              <th>交易編號</th>
+              <th>金額</th>
+              <th>退款原因</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of order.paymentLogs; track log.logId) {
+              <tr>
+                <td>{{ logActionLabel(log.actionType) }}</td>
+                <td class="txn-id">{{ log.transactionId }}</td>
+                <td>NT$ {{ log.amount | number }}</td>
+                <td>{{ log.refundReason ?? '-' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  }
+</div>

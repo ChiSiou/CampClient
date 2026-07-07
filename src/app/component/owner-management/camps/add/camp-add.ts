@@ -1,9 +1,9 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CampManagementService } from '../../../../services/camp-management.service';
-import { CampgroundCreateDto } from '../../../../interfaces/camp-management.interface';
+import { CampgroundCreateDto, TagDto } from '../../../../interfaces/camp-management.interface';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -19,7 +19,7 @@ L.Icon.Default.mergeOptions({
   templateUrl: './camp-add.html',
   styleUrl: './camp-add.css',
 })
-export class CampAdd implements AfterViewInit, OnDestroy {
+export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private map?: L.Map;
@@ -44,8 +44,34 @@ export class CampAdd implements AfterViewInit, OnDestroy {
   submitting = false;
   locating = false;
   error = '';
+  selectedFiles: File[] = [];
+  previewUrls: string[] = [];
+
+  tags: TagDto[] = [];
+  tagsByCategory: { category: string; items: TagDto[] }[] = [];
 
   constructor(private campService: CampManagementService, private router: Router) {}
+
+  ngOnInit() {
+    this.campService.getTags().subscribe({
+      next: (tags) => {
+        this.tags = tags;
+        const grouped = new Map<string, TagDto[]>();
+        tags.forEach(t => {
+          if (!grouped.has(t.category)) grouped.set(t.category, []);
+          grouped.get(t.category)!.push(t);
+        });
+        this.tagsByCategory = Array.from(grouped.entries()).map(([category, items]) => ({ category, items }));
+      }
+    });
+  }
+
+  toggleTag(id: number) {
+    const idx = this.form.tagIds.indexOf(id);
+    if (idx >= 0) this.form.tagIds.splice(idx, 1);
+    else this.form.tagIds.push(id);
+  }
+  isTagSelected(id: number) { return this.form.tagIds.includes(id); }
 
   addHighlight() {
     const text = this.highlightInput.trim();
@@ -105,7 +131,24 @@ export class CampAdd implements AfterViewInit, OnDestroy {
     }
   }
 
-  submit() {
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = Array.from(input.files);
+    this.selectedFiles.push(...files);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = (e) => this.previewUrls.push(e.target!.result as string);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  removeFile(i: number) {
+    this.selectedFiles.splice(i, 1);
+    this.previewUrls.splice(i, 1);
+  }
+
+  async submit() {
     if (!this.form.name.trim() || !this.form.area.trim()) {
       this.error = '請填寫必填欄位（名稱、地區）';
       return;
@@ -119,13 +162,17 @@ export class CampAdd implements AfterViewInit, OnDestroy {
       elevation: +this.form.elevation || 0,
       basePrice: +this.form.basePrice || 0,
     };
-    this.campService.createCampground(dto).subscribe({
-      next: (res) => this.router.navigate(['/ownerCenter/camps', res.id, 'edit']),
-      error: (err) => {
-        this.error = err.error?.message ?? '建立失敗，請稍後再試';
-        this.submitting = false;
-      },
-    });
+    try {
+      const res = await this.campService.createCampground(dto).toPromise();
+      const id = res!.id;
+      for (const file of this.selectedFiles) {
+        await this.campService.uploadCampgroundPhoto(id, file).toPromise();
+      }
+      this.router.navigate(['/ownerCenter/camps']);
+    } catch (err: any) {
+      this.error = err.error?.message ?? '建立失敗，請稍後再試';
+      this.submitting = false;
+    }
   }
 
   cancel() {

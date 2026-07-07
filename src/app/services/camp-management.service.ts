@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {
   AccomTypeDto,
+  TagDto,
+  FacilityDto,
   CampgroundCreateDto,
   CampgroundListItemDto,
   CampgroundOwnerDetailDto,
@@ -63,6 +65,16 @@ export class CampManagementService {
 
   deleteZone(zoneId: number) {
     return this.http.delete<void>(`${this.base}/zones/${zoneId}`);
+  }
+
+  // Facility 字典
+  getFacilities() {
+    return this.http.get<FacilityDto[]>(`${this.base}/facilities`);
+  }
+
+  // Tag 字典
+  getTags() {
+    return this.http.get<TagDto[]>(`${this.base}/tags`);
   }
 
   // AccomType 字典

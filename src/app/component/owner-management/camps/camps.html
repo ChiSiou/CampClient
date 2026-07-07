@@ -72,6 +72,10 @@
               </span>
             </td>
             <td class="actions">
+              <button (click)="toggleStatus(c.id, c.status)"
+                [class]="c.status === CampgroundStatus.Active ? 'btn-unpublish' : 'btn-publish'">
+                {{ c.status === CampgroundStatus.Active ? '下架' : '上架' }}
+              </button>
               <a [routerLink]="['/ownerCenter/camps', c.id, 'edit']" class="btn-edit">修改</a>
               <a [routerLink]="['/ownerCenter/camps', c.id, 'zones']" class="btn-manage">管理營區</a>
               <button (click)="delete(c.id, c.name)" class="btn-delete">刪除</button>

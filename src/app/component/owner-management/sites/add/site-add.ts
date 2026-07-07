@@ -19,6 +19,8 @@ export class SiteAdd implements OnInit {
   zoneType = 0;
   submitting = false;
   error = '';
+  selectedFiles: File[] = [];
+  previewUrls: string[] = [];
 
   accomTypes: AccomTypeDto[] = [];
   selectedAccomTypeId: number | null = null; // 園區住宿（單選）
@@ -56,7 +58,24 @@ export class SiteAdd implements OnInit {
     return this.form.accomTypeIds.includes(id);
   }
 
-  submit() {
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = Array.from(input.files);
+    this.selectedFiles.push(...files);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = (e) => this.previewUrls.push(e.target!.result as string);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  removeFile(i: number) {
+    this.selectedFiles.splice(i, 1);
+    this.previewUrls.splice(i, 1);
+  }
+
+  async submit() {
     if (!this.form.siteNumber.trim()) { this.error = '請填寫營位編號'; return; }
     if (this.accomTypes.length > 0 && this.form.accomTypeIds.length === 0) {
       this.error = '請選擇住宿類型'; return;
@@ -64,10 +83,17 @@ export class SiteAdd implements OnInit {
     this.submitting = true;
     this.error = '';
     const dto: CampsiteCreateDto = { ...this.form, capacityPeople: +this.form.capacityPeople || 1 };
-    this.campService.createSite(this.zoneId, dto).subscribe({
-      next: () => this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones', this.zoneId, 'sites']),
-      error: (err) => { this.error = err.error?.message ?? '建立失敗'; this.submitting = false; },
-    });
+    try {
+      const res = await this.campService.createSite(this.zoneId, dto).toPromise();
+      const id = res!.id;
+      for (const file of this.selectedFiles) {
+        await this.campService.uploadSitePhoto(id, file).toPromise();
+      }
+      this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones', this.zoneId, 'sites']);
+    } catch (err: any) {
+      this.error = err.error?.message ?? '建立失敗';
+      this.submitting = false;
+    }
   }
 
   cancel() { this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones', this.zoneId, 'sites']); }
