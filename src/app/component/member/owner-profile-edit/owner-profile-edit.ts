@@ -11,6 +11,9 @@ import { MessageService } from 'primeng/api';
   styleUrl: './owner-profile-edit.css',
 })
 export class OwnerProfileEdit implements OnInit {
+  private readonly maxImageSizeBytes = 5 * 1024 * 1024;
+  private readonly supportedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
   ownerData = {
     companyName: '',
     realName: '',
@@ -49,6 +52,13 @@ export class OwnerProfileEdit implements OnInit {
       return;
     }
 
+    if (!this.isSupportedImageFile(file)) {
+      input.value = '';
+      this.selectedAvatarFile = null;
+      this.setError('圖片僅支援 JPG、PNG、WEBP，且大小不可超過 5MB');
+      return;
+    }
+
     if (!file.type.startsWith('image/')) {
       input.value = '';
       this.selectedAvatarFile = null;
@@ -68,6 +78,13 @@ export class OwnerProfileEdit implements OnInit {
   submitOwnerEdit() {
     this.message = '';
     this.messageType = '';
+
+    const validationMessage = this.validateOwnerData();
+
+    if (validationMessage) {
+      this.setError(validationMessage);
+      return;
+    }
 
     const requiredFields = [
       { value: this.ownerData.companyName, message: '請輸入公司或營業名稱' },
@@ -191,5 +208,70 @@ export class OwnerProfileEdit implements OnInit {
   private setError(message: string) {
     this.messageType = 'error';
     this.message = message;
+  }
+
+  private validateOwnerData(): string | null {
+    this.trimOwnerData();
+
+    if (!this.ownerData.companyName) return '請輸入公司或營區名稱';
+    if (!this.ownerData.realName) return '請輸入真實姓名';
+    if (!this.ownerData.idNumber) return '請輸入身分證字號或統一編號';
+    if (!this.ownerData.contactPhone) return '請輸入聯絡電話';
+    if (!this.ownerData.address) return '請輸入聯絡地址';
+    if (!this.ownerData.bankName) return '請輸入銀行名稱';
+    if (!this.ownerData.bankAccount) return '請輸入銀行帳號';
+    if (!this.ownerData.bankAccountName) return '請輸入戶名';
+
+    if (this.ownerData.companyName.length > 255) return '公司或營區名稱不可超過 255 字';
+    if (this.ownerData.realName.length < 2 || this.ownerData.realName.length > 50) {
+      return '真實姓名需為 2 到 50 字';
+    }
+    if (!this.isValidIdNumberOrTaxId(this.ownerData.idNumber)) {
+      return '身分證需為 1 碼英文加 9 碼數字，統一編號需為 8 碼數字';
+    }
+    if (!this.isValidPhone(this.ownerData.contactPhone)) {
+      return '聯絡電話需為手機 09xxxxxxxx，或市話 0x-xxxxxxx';
+    }
+    if (this.ownerData.address.length < 5 || this.ownerData.address.length > 255) {
+      return '聯絡地址需為 5 到 255 字';
+    }
+    if (this.ownerData.bankName.length < 2 || this.ownerData.bankName.length > 100) {
+      return '銀行名稱需為 2 到 100 字';
+    }
+    if (!this.isValidBankAccount(this.ownerData.bankAccount)) {
+      return '銀行帳號只能包含數字或 -，長度需為 6 到 30 字';
+    }
+    if (this.ownerData.bankAccountName.length < 2 || this.ownerData.bankAccountName.length > 100) {
+      return '戶名需為 2 到 100 字';
+    }
+
+    return null;
+  }
+
+  private trimOwnerData() {
+    this.ownerData.companyName = this.ownerData.companyName.trim();
+    this.ownerData.realName = this.ownerData.realName.trim();
+    this.ownerData.idNumber = this.ownerData.idNumber.trim().toUpperCase();
+    this.ownerData.contactPhone = this.ownerData.contactPhone.trim();
+    this.ownerData.address = this.ownerData.address.trim();
+    this.ownerData.bankName = this.ownerData.bankName.trim();
+    this.ownerData.bankAccount = this.ownerData.bankAccount.trim();
+    this.ownerData.bankAccountName = this.ownerData.bankAccountName.trim();
+  }
+
+  private isValidIdNumberOrTaxId(value: string): boolean {
+    return /^[A-Z][12]\d{8}$/.test(value) || /^\d{8}$/.test(value);
+  }
+
+  private isValidPhone(value: string): boolean {
+    return /^09\d{8}$/.test(value) || /^0\d{1,2}-?\d{6,8}$/.test(value);
+  }
+
+  private isValidBankAccount(value: string): boolean {
+    return /^[0-9-]{6,30}$/.test(value);
+  }
+
+  private isSupportedImageFile(file: File): boolean {
+    return this.supportedImageTypes.includes(file.type) && file.size <= this.maxImageSizeBytes;
   }
 }

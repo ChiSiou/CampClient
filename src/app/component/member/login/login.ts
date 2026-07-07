@@ -118,8 +118,9 @@ export class Login {
     });
   }
 
-  guestLogin() {
-    this.router.navigate(['/']);
+  continueAsVisitor() {
+    this.memberService.clearLoginData();
+    this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   login(data: loginData) {

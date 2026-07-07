@@ -1,6 +1,6 @@
 import { Menu } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
-import { Component, HostListener, OnDestroy, viewChild } from '@angular/core';
+import { Component, HostBinding, HostListener, OnDestroy, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -29,6 +29,11 @@ export class HeaderWMenu implements OnDestroy {
   private profileSubscription?: Subscription;
   private unreadRefreshTimer?: ReturnType<typeof setInterval>;
 
+  @HostBinding('class.owner-role')
+  get isOwnerRole(): boolean {
+    return this.activeUserRole === 'Owner';
+  }
+
   ngOnInit() {
     this.unreadCountSubscription = this.notificationService.unreadCount$.subscribe((count) => {
       this.unreadCount = count;
@@ -45,6 +50,17 @@ export class HeaderWMenu implements OnDestroy {
 
     this.loadUnreadCount();
     this.unreadRefreshTimer = setInterval(() => this.loadUnreadCount(), 15000);
+    if (this.memberservice.isAuthenticated()) {
+      this.loadProfile();
+    }
+    const token = localStorage.getItem('token');
+    if (token != null) {
+      const decoded: any = jwtDecode(token);
+      console.log(decoded);
+    }
+  }
+
+  private loadProfile() {
     this.memberservice.getProfile().subscribe({
       next: (res) => {
         this.profile = res.profileData ?? res.ProfileData;
@@ -66,11 +82,6 @@ export class HeaderWMenu implements OnDestroy {
         console.log(err);
       },
     });
-    const token = localStorage.getItem('token');
-    if (token != null) {
-      const decoded: any = jwtDecode(token);
-      console.log(decoded);
-    }
   }
 
   @HostListener('window:focus')
@@ -211,7 +222,7 @@ export class HeaderWMenu implements OnDestroy {
         this.activeUserRole = res.activeRole;
         this.userrole = res.roles;
         this.notificationService.refreshUnreadCount().subscribe();
-        this.memberservice.getProfile().subscribe();
+        this.loadProfile();
 
         if (res.activeRole === 'Owner') {
           this.routes.navigate(['/ownerCenter']);

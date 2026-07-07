@@ -121,6 +121,15 @@
   flex: 0 0 auto;
 }
 
+:host(.owner-role) ::ng-deep .header-actions > a .pi-user {
+  width: 1rem;
+  height: 1rem;
+}
+
+:host(.owner-role) ::ng-deep .header-actions > a .pi-user::before {
+  content: '\ea11';
+}
+
 /* ---------- Main content ---------- */
 .site-main {
   flex: 1 1 auto;

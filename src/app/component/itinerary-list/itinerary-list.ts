@@ -67,7 +67,7 @@ export class ItineraryList implements OnInit {
         this.itineraries = orders
           .filter((order) => this.isPaidOrder(order))
           .flatMap((order) => this.toItineraryItems(order))
-          .filter((item) => item.tripStatus === 'upcoming')
+          .filter((item) => item.tripStatus === 'upcoming' || item.tripStatus === 'current')
           .sort((a, b) => this.toDateTime(a.checkinDate) - this.toDateTime(b.checkinDate));
         this.loading = false;
       },
