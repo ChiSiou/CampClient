@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MemberService } from '../Service/member-service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-memberedit',
@@ -31,6 +32,7 @@ export class Memberedit implements OnInit {
   constructor(
     private memberservice: MemberService,
     private router: Router,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -42,8 +44,10 @@ export class Memberedit implements OnInit {
       next: (res) => {
         const profile = res.profileData ?? res.ProfileData;
         this.memberData.name = profile?.name ?? profile?.Name ?? this.memberservice.getname() ?? '';
-        this.memberData.email = profile?.email ?? profile?.Email ?? this.memberservice.getemail() ?? '';
-        this.memberData.phone = profile?.phone ?? profile?.Phone ?? this.memberservice.getphone() ?? '';
+        this.memberData.email =
+          profile?.email ?? profile?.Email ?? this.memberservice.getemail() ?? '';
+        this.memberData.phone =
+          profile?.phone ?? profile?.Phone ?? this.memberservice.getphone() ?? '';
 
         const profilePictureUrl = profile?.profilePictureUrl ?? profile?.ProfilePictureUrl;
         this.profilePhotoPreview = this.toAbsoluteImageUrl(profilePictureUrl);
@@ -106,38 +110,73 @@ export class Memberedit implements OnInit {
     const confirmPassword = this.memberData.confirmPassword.trim();
 
     if (!name) {
-      this.setError('請輸入姓名');
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '失敗',
+        detail: '請輸入姓名',
+      });
       return;
     }
 
     if (!phone) {
-      this.setError('請輸入電話');
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '失敗',
+        detail: '請輸入電話',
+      });
       return;
     }
 
     if (oldPassword || newPassword || confirmPassword) {
       if (!oldPassword) {
-        this.setError('請輸入舊密碼');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '請輸入舊密碼',
+        });
         return;
       }
 
       if (!newPassword) {
-        this.setError('請輸入新密碼');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '請輸入新密碼',
+        });
         return;
       }
 
       if (!confirmPassword) {
-        this.setError('請再次輸入新密碼');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '請再次輸入新密碼',
+        });
         return;
       }
 
       if (newPassword.length < 6) {
-        this.setError('新密碼長度至少需要 6 個字元');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '新密碼長度至少需要 6 個字元',
+        });
         return;
       }
 
       if (newPassword !== confirmPassword) {
-        this.setError('兩次輸入的新密碼不一致');
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '兩次輸入的新密碼不一致',
+        });
         return;
       }
     }
@@ -159,6 +198,13 @@ export class Memberedit implements OnInit {
 
     this.memberservice.memberEdit(formData).subscribe({
       next: () => {
+        this.memberservice.updateCurrentProfile({
+          name,
+          phone,
+          email: this.memberData.email,
+          profilePictureUrl: this.profilePhotoPreview,
+        });
+        this.memberservice.getProfile().subscribe();
         this.submitting = false;
         this.messageType = 'success';
         this.message = '會員資料已更新';
@@ -166,10 +212,22 @@ export class Memberedit implements OnInit {
         this.memberData.newPassword = '';
         this.memberData.confirmPassword = '';
         setTimeout(() => this.router.navigate(['/member-center']), 600);
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'success',
+          summary: '成功',
+          detail: '會員資料已更新',
+        });
       },
       error: (err) => {
         this.submitting = false;
-        this.setError(err.error?.message ?? '資料更新失敗，請稍後再試');
+
+        this.messageService.add({
+          key: 'top-right',
+          severity: 'error',
+          summary: '失敗',
+          detail: '' + (err.error?.message || '舊密碼錯誤' || '請稍後再試'),
+        });
       },
     });
   }
@@ -198,7 +256,11 @@ export class Memberedit implements OnInit {
 
     if (!trimmedUrl) return '';
 
-    if (trimmedUrl.startsWith('data:') || trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+    if (
+      trimmedUrl.startsWith('data:') ||
+      trimmedUrl.startsWith('http://') ||
+      trimmedUrl.startsWith('https://')
+    ) {
       return trimmedUrl;
     }
 

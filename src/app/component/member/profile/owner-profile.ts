@@ -6,6 +6,7 @@ import { ChatService } from '../../../services/chat.service';
 import { OwnerOrderList } from '../interface/ownerOrderList';
 import { CampManagementService } from '../../../services/camp-management.service';
 import { CampgroundListItemDto } from '../../../interfaces/camp-management.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-owner-profile',
@@ -25,6 +26,7 @@ export class OwnerProfile {
   campcount = 0;
   recentordercount = 0;
   private readonly apiOrigin = 'https://localhost:7011';
+  private profileSubscription?: Subscription;
 
   constructor(
     private memberservice: MemberService,
@@ -33,12 +35,18 @@ export class OwnerProfile {
   ) {}
 
   ngOnInit(): void {
+    this.profileSubscription = this.memberservice.currentProfile$.subscribe((profile) => {
+      if (profile?.name) {
+        this.name = profile.name;
+      }
+    });
+
     this.memberservice.getProfile().subscribe({
       next: (res) => {
         console.log('res', res);
         const profile = res.profileData ?? res.ProfileData;
         const ownerProfile = profile?.ownerProfile ?? profile?.OwnerProfile;
-        this.name = profile?.name ?? profile?.Name ?? '';
+        this.name = ownerProfile?.realname ?? ownerProfile?.realName ?? ownerProfile?.Realname ?? profile?.name ?? profile?.Name ?? '';
         this.email = profile?.email ?? profile?.Email ?? '';
         this.createdAt = ownerProfile?.createdAt ?? ownerProfile?.CreatedAt ?? '';
         const roles = profile?.roles ?? profile?.Roles ?? [];
@@ -79,6 +87,10 @@ export class OwnerProfile {
         console.log(err.message);
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.profileSubscription?.unsubscribe();
   }
 
   onAvatarError() {

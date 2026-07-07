@@ -14,12 +14,22 @@ import { switchRoleResponse } from '../interface/switchRoleResponse';
 import { OrderList } from '../interface/orderList';
 import { LoginServiceResult, ServiceResult } from '../interface/ServiceResult';
 import { OwnerOrderList } from '../interface/ownerOrderList';
+import { BehaviorSubject, tap } from 'rxjs';
+
+export interface CurrentMemberProfile {
+  name?: string;
+  email?: string;
+  phone?: string;
+  profilePictureUrl?: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class MemberService {
   private apiUrl = 'https://localhost:7011/api/Member';
+  private currentProfileSubject = new BehaviorSubject<CurrentMemberProfile | null>(null);
+  currentProfile$ = this.currentProfileSubject.asObservable();
 
   private logoutTimer: any;
   selectedFile: File | null = null;
@@ -38,6 +48,7 @@ export class MemberService {
     localStorage.removeItem('token');
     localStorage.removeItem('roles');
     localStorage.removeItem('activeRole');
+    localStorage.removeItem('currentProfile');
 
     if (this.logoutTimer) {
       clearTimeout(this.logoutTimer);
@@ -187,7 +198,40 @@ export class MemberService {
     return this.http.get<OwnerOrderList[]>('https://localhost:7011/api/OwnerOrder/recent');
   }
   getProfile() {
-    return this.http.get<any>(`${this.apiUrl}/GetProfile`);
+    return this.http.get<any>(`${this.apiUrl}/GetProfile`).pipe(
+      tap((res) => {
+        const profile = res.profileData ?? res.ProfileData;
+        if (profile) {
+          const ownerProfile = profile.ownerProfile ?? profile.OwnerProfile;
+          const activeRole = profile.activeRole ?? profile.ActiveRole ?? this.getActiveRole();
+          const displayName =
+            activeRole === 'Owner'
+              ? (ownerProfile?.realname ?? ownerProfile?.realName ?? ownerProfile?.Realname ?? profile.name ?? profile.Name)
+              : (profile.name ?? profile.Name);
+
+          this.updateCurrentProfile({
+            name: displayName,
+            email: profile.email ?? profile.Email,
+            phone:
+              activeRole === 'Owner'
+                ? (ownerProfile?.contactPhone ?? ownerProfile?.ContactPhone ?? profile.phone ?? profile.Phone)
+                : (profile.phone ?? profile.Phone),
+            profilePictureUrl: profile.profilePictureUrl ?? profile.ProfilePictureUrl,
+          });
+        }
+      }),
+    );
+  }
+  updateCurrentProfile(profile: CurrentMemberProfile) {
+    const nextProfile = {
+      ...(this.currentProfileSubject.value ?? {}),
+      ...profile,
+    };
+
+    this.currentProfileSubject.next(nextProfile);
+
+    localStorage.setItem('currentProfile', JSON.stringify(nextProfile));
+    window.dispatchEvent(new CustomEvent('currentProfileChanged', { detail: nextProfile }));
   }
   Usergetphoto() {
     var id = this.getid();

@@ -29,7 +29,7 @@
       <!-- right side -->
       <div class="header-actions">
         <div class="user-info">
-          <span class="user-info__name">{{ username ?? 'Guest' }}</span>
+          <span class="user-info__name">{{ username || profile?.name || profile?.Name || 'Guest' }}</span>
           (<span class="user-info__role">{{ activeUserRole ?? 'Guest' }}</span>)
         </div>
 
