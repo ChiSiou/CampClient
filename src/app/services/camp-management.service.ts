@@ -19,8 +19,15 @@ import {
 @Injectable({ providedIn: 'root' })
 export class CampManagementService {
   private base = `${environment.apiUrl}/CampManagement`;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  geocode(address: string) {
+    return this.http.get<{ lat: number; lng: number }>(`${this.apiUrl}/Geo/geocode`, {
+      params: { address }
+    });
+  }
 
   // Campground
   listMine(searchTerm?: string) {
