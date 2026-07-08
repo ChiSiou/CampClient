@@ -243,8 +243,17 @@ export class ChatWidget implements OnInit, OnDestroy {
     return this.conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
   }
 
-  avatarUrl(userId: number, customUrl?: string) {
-    return customUrl ?? `${environment.apiUrl}/Member/GetProfilePhoto/${userId}`;
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
+
+  avatarSrc(url?: string | null): string | null {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${this.apiHost}${url}`;
+  }
+
+  avatarSrcFor(userId: number, url?: string | null): string | null {
+    if (this.avatarErrorIds.has(userId)) return null;
+    return this.avatarSrc(url);
   }
 
   onAvatarError(userId: number) {

@@ -1,9 +1,26 @@
 <section id="tags" class="bk">
   <div class="container">
 
+    <!-- 搜尋列：依標籤／作者名稱／標題／內文 -->
+    <div class="d-flex justify-content-center pt-4">
+      <p-inputgroup class="forum-search">
+        <input pInputText type="text" [(ngModel)]="searchPost" (keyup.enter)="search()"
+          placeholder="搜尋標題、內文、標籤或作者..." />
+        @if(searchPost){
+        <p-inputgroup-addon>
+          <i class="pi pi-times" style="cursor:pointer" (click)="clearSearch()"></i>
+        </p-inputgroup-addon>
+        }
+        <p-inputgroup-addon>
+          <i class="pi pi-search" style="cursor:pointer" (click)="search()"></i>
+        </p-inputgroup-addon>
+      </p-inputgroup>
+    </div>
+
     <!-- 分類篩選按鈕 -->
 
     <div class="justify-align-center py-4">
+
       @if(isLogin){
       <p-button (click)="addPost()" label="我要發文" class="mx-1" />
       }
@@ -17,6 +34,7 @@
         class="mx-1" (onClick)="filterByCategory(cat)">
       </p-button>
       }
+
     </div>
     <!-- 文章列表 -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 align-items-stretch g-4 py-3">
@@ -53,7 +71,7 @@
     </div>
 
     @if (filteredPosts.length === 0) {
-    <p class="text-center text-muted py-5">目前沒有符合分類的文章</p>
+    <p class="text-center text-muted py-5">目前沒有符合條件的文章</p>
     }
 
   </div>

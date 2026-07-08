@@ -28,9 +28,11 @@
       <!-- 作者資訊列 -->
       <div class="meta-row">
         <div class="author-info">
-          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-            size="large">
-          </p-avatar>
+          @if (avatarSrc(post.avatarUrl); as avatar) {
+          <p-avatar [image]="avatar" shape="circle" size="large"></p-avatar>
+          } @else {
+          <p-avatar [label]="authorInitial(post.userName)" shape="circle" size="large"></p-avatar>
+          }
           <div class="author-text">
             <span class="author-name">{{post.userName}} #{{ post.userId }}</span>
             <span class="author-meta">
@@ -89,7 +91,14 @@
         <div class="field">
           <label for="edit_content">內容 *</label>
           <textarea id="edit_content" pTextarea [(ngModel)]="edit_mainContent" name="edit_mainContent" rows="8"
-            class="w-full" placeholder="請輸入文章內容"></textarea>
+            class="w-full" placeholder="請輸入文章內容" (ngModelChange)="editContentError = null"></textarea>
+          <small class="error-msg" *ngIf="editContentError">{{ editContentError }}</small>
+        </div>
+
+        <div class="field">
+          <label for="edit_postTag">標籤</label>
+          <input id="edit_postTag" type="text" pInputText [(ngModel)]="edit_postTag" name="edit_postTag"
+            class="w-full" placeholder="請輸入標籤，以逗號分隔" />
         </div>
 
         <div class="field">
@@ -296,6 +305,32 @@
       </p-card>
       }
     </p-card>
+
+    <!-- 推薦文章：同作者／同標籤 -->
+    @if (relatedPosts.length > 0) {
+    <div class="related-posts">
+      <h4 class="related-posts__title">你可能也喜歡</h4>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 align-items-stretch g-4">
+        @for (rp of relatedPosts; track rp.postId) {
+        <div class="col">
+          <div class="lc-block card card-cover h-100 overflow-hidden text-white bg-dark rounded-5 shadow-lg"
+            [style.background-image]="'url(' + relatedMainImage(rp) + ')'" (click)="gotoRelatedPost(rp.postId)">
+            <div class="d-flex flex-column h-100 p-4 pb-3 text-white text-shadow-1">
+              <small class="lc-block text-uppercase">{{ rp.postCategoryName }}</small>
+              <div class="lc-block mt-auto mb-2">
+                <h2 class="h6 lh-1 fw-bold">{{ rp.title }}</h2>
+                <p class="text-truncate mb-0">{{ rp.mainContent }}</p>
+              </div>
+              <ul class="lc-block d-flex align-items-center justify-content-between list-unstyled mb-0">
+                <li class="small">{{ rp.userName }} · {{ rp.postDate | date:'yyyy-MM-dd' }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
 
   </div>
 </div>

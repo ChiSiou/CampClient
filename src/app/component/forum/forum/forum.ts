@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -9,10 +10,14 @@ import { CardModule, Card } from 'primeng/card';
 import { MemberService } from '../../member/Service/member-service';
 import { MessageService } from 'primeng/api';
 import { Toast } from "primeng/toast";
+import { Search } from '../../search/search';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputGroup } from "primeng/inputgroup";
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 
 @Component({
   selector: 'app-forum',
-  imports: [CommonModule, ButtonModule, Card, Toast],
+  imports: [CommonModule, ButtonModule, Card, Toast, Search, InputTextModule, FormsModule, InputGroup, InputGroupAddonModule],
   templateUrl: './forum.html',
   styleUrl: './forum.css',
   providers: [MessageService],
@@ -26,6 +31,7 @@ export class Forum implements OnInit {
 
   categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區', '日常分享'];
 
+  searchPost = "";
 
   private messageService = inject(MessageService);
   isLogin: boolean = false;
@@ -35,10 +41,10 @@ export class Forum implements OnInit {
   }
 
   ngOnInit(): void {
-    this.sforumService.getPosts().subscribe({
+    this.sforumService.getPosts(1, 100).subscribe({
       next: (data) => {
         this.posts = data;
-        this.filteredPosts = data;
+        this.applyFilters();
       },
       error: (err) => console.error('載入文章失敗', err),
     });
@@ -59,6 +65,10 @@ export class Forum implements OnInit {
 
   filterByCategory(category: string): void {
     this.selectedCategory = category === '全部' ? null : category;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
     this.filteredPosts = this.selectedCategory
       ? this.posts.filter(p => p.postCategoryName === this.selectedCategory)
       : this.posts;
@@ -90,6 +100,22 @@ export class Forum implements OnInit {
 
   toLogin() {
     this.router.navigate(['login']);
+  }
+
+  search(): void {
+    const keyword = this.searchPost.trim();
+    this.sforumService.getPosts(1, 100, keyword || undefined).subscribe({
+      next: (data) => {
+        this.posts = data;
+        this.applyFilters();
+      },
+      error: (err) => console.error('搜尋文章失敗', err),
+    });
+  }
+
+  clearSearch(): void {
+    this.searchPost = '';
+    this.search();
   }
 
 }

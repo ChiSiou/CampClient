@@ -32,6 +32,7 @@ import {
 } from '../../interfaces/camp.interface';
 
 import { ChatService } from '../../services/chat.service';
+import { MemberService } from '../member/Service/member-service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -70,6 +71,7 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     private campSelectionService: CampSelectionService,
     private chatService: ChatService,
     private paymentService: PaymentService,
+    private memberService: MemberService,
   ) { }
 
 
@@ -314,8 +316,14 @@ export class CampDetail implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // 自己是這個營地的營主時，不能開聊天視窗跟自己聊天
+  get isOwnCamp(): boolean {
+    if (!this.detail || !this.memberService.isAuthenticated()) return false;
+    return Number(this.memberService.getid()) === this.detail.ownerUserId;
+  }
+
   contactOwner() {
-    if (!this.detail) return;
+    if (!this.detail || this.isOwnCamp) return;
     // this.chatService.openChatWith(this.detail.ownerUserId, this.detail.ownerName || '營主');
     this.chatService.openChatWith(this.detail.ownerUserId, this.detail.name, this.detail.imageUrls[0]);
   }

@@ -4,6 +4,11 @@
   background: linear-gradient(180deg, #fbfff5 0%, #fbfdf6 50%, #ffffff 100%);
 }
 
+.forum-search {
+  width: 100%;
+  max-width: 480px;
+}
+
 .posts-section {
   margin: 0;
 }

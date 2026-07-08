@@ -1,7 +1,7 @@
 .detail-page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 24px 16px 60px;
+  padding: 24px 16px 100px;
 }
 
 .back {
@@ -247,4 +247,198 @@
 .line-subtotal {
   font-weight: 700;
   color: #2e7d32;
+}
+
+/* ===== 底部小計列 ===== */
+.detail-summary-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e2e2e2;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.07);
+  z-index: 100;
+}
+
+.detail-summary-text {
+  font-size: 0.95em;
+  color: #444;
+}
+
+.detail-summary-text strong {
+  color: #2e7d32;
+  font-size: 1.15em;
+}
+
+.detail-summary-btn {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ===== 浮動購物車 ===== */
+.floating-cart {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6em;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(46,125,50,0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-cart:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 6px 22px rgba(46,125,50,0.55);
+}
+
+.floating-cart.bounce {
+  animation: cart-bounce 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.floating-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.5em;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #fff;
+}
+
+@keyframes cart-bounce {
+  0%   { transform: translateX(-50%) scale(1); }
+  30%  { transform: translateX(-50%) scale(1.4); }
+  60%  { transform: translateX(-50%) scale(0.88); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+/* ===== Lightbox ===== */
+.clickable-img {
+  cursor: zoom-in;
+}
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease;
+}
+
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 88vh;
+  border-radius: 10px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  object-fit: contain;
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.1s;
+}
+
+.lightbox-img:active {
+  cursor: grabbing;
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.8);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.4em;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===== Lightbox 放大縮小控制列 ===== */
+.lightbox-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 999px;
+  padding: 8px 20px;
+  backdrop-filter: blur(6px);
+}
+
+.lightbox-controls button {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.3em;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.lightbox-controls button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-controls span {
+  color: #fff;
+  font-size: 0.9em;
+  min-width: 46px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.85;
 }

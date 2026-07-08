@@ -1,3 +1,15 @@
+<!-- 底部小計列 -->
+@if (cart.totalQuantity() > 0) {
+  <div class="detail-summary-bar">
+    <span class="detail-summary-text">
+      🛒 裝備小計（{{ nights() }} 晚）：<strong>${{ cart.totalAmount(nights()) | number }}</strong>
+    </span>
+    <button class="detail-summary-btn" (click)="backToList()">回清單確認</button>
+  </div>
+}
+
+<div id="cart-icon-target" class="cart-fly-target"></div>
+
 <div class="detail-page">
   <button class="back" (click)="backToList()">← 回加購清單</button>
 
@@ -9,7 +21,8 @@
 
   <div *ngIf="detail()" class="detail">
     <div class="product-banner">
-      <img *ngIf="detail()!.mainImageUrl" [src]="detail()!.mainImageUrl" [alt]="detail()!.name" />
+      <img *ngIf="detail()!.mainImageUrl" [src]="detail()!.mainImageUrl" [alt]="detail()!.name"
+           class="clickable-img" (click)="openLightbox(detail()!.mainImageUrl)" />
       <div class="icon-placeholder" *ngIf="!detail()!.mainImageUrl">
         <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
       </div>
@@ -31,7 +44,8 @@
         [class.out]="v.availableStock === 0"
       >
         <div class="variant-image">
-          <img *ngIf="v.image || detail()!.mainImageUrl" [src]="v.image || detail()!.mainImageUrl" [alt]="v.variantName" />
+          <img *ngIf="v.image || detail()!.mainImageUrl" [src]="v.image || detail()!.mainImageUrl" [alt]="v.variantName"
+               class="clickable-img" (click)="openLightbox(v.image || detail()!.mainImageUrl)" />
           <div class="icon-placeholder small" *ngIf="!v.image && !detail()!.mainImageUrl">
             <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
           </div>
@@ -50,9 +64,9 @@
 
           <div class="qty-row">
             <div class="qty-control">
-              <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">−</button>
+              <button (click)="changeQuantity(v.variantId, -1, v.availableStock, undefined, undefined, v.dailyRentalPrice)" [disabled]="getQuantity(v.variantId) === 0">−</button>
               <span class="qty-value">{{ getQuantity(v.variantId) }}</span>
-              <button (click)="changeQuantity(v.variantId, 1, v.availableStock)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+              <button (click)="changeQuantity(v.variantId, 1, v.availableStock, $event, v.image || detail()!.mainImageUrl, v.dailyRentalPrice)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
             </div>
             <span class="line-subtotal" *ngIf="getQuantity(v.variantId) > 0">
               ${{ lineSubTotal(v.dailyRentalPrice, v.variantId) }}
@@ -63,3 +77,25 @@
     </div>
   </div>
 </div>
+
+<!-- Lightbox -->
+@if (lightboxUrl()) {
+  <div class="lightbox-overlay"
+       (mouseup)="onDragEnd()"
+       (mousemove)="onDragMove($event)"
+       (mouseleave)="onDragEnd()"
+       (wheel)="onWheel($event)"
+       (click)="onOverlayClick($event)">
+    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+    <img [src]="lightboxUrl()!"
+         [style.transform]="'translate(' + imgX + 'px, ' + imgY + 'px) scale(' + imgScale + ')'"
+         (mousedown)="onDragStart($event)"
+         (click)="$event.stopPropagation()"
+         class="lightbox-img" />
+    <div class="lightbox-controls" (click)="$event.stopPropagation()">
+      <button (click)="zoomOut()">−</button>
+      <span (click)="resetZoom()">{{ (imgScale * 100) | number:'1.0-0' }}%</span>
+      <button (click)="zoomIn()">+</button>
+    </div>
+  </div>
+}
