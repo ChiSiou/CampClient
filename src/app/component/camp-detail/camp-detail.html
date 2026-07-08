@@ -107,6 +107,7 @@
           官方網站
         </a>
         }
+        @if (!isOwnCamp) {
         <button type="button" class="meta-item meta-item--link contact-owner-btn" (click)="contactOwner()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -115,6 +116,7 @@
           </svg>
           聯絡營主
         </button>
+        }
       </div>
     </div>
 

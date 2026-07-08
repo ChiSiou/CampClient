@@ -28,9 +28,11 @@
       <!-- 作者資訊列 -->
       <div class="meta-row">
         <div class="author-info">
-          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"
-            size="large">
-          </p-avatar>
+          @if (avatarSrc(post.avatarUrl); as avatar) {
+          <p-avatar [image]="avatar" shape="circle" size="large"></p-avatar>
+          } @else {
+          <p-avatar [label]="authorInitial(post.userName)" shape="circle" size="large"></p-avatar>
+          }
           <div class="author-text">
             <span class="author-name">{{post.userName}} #{{ post.userId }}</span>
             <span class="author-meta">
@@ -90,6 +92,12 @@
           <label for="edit_content">內容 *</label>
           <textarea id="edit_content" pTextarea [(ngModel)]="edit_mainContent" name="edit_mainContent" rows="8"
             class="w-full" placeholder="請輸入文章內容"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="edit_postTag">標籤</label>
+          <input id="edit_postTag" type="text" pInputText [(ngModel)]="edit_postTag" name="edit_postTag"
+            class="w-full" placeholder="請輸入標籤，以逗號分隔" />
         </div>
 
         <div class="field">
