@@ -21,6 +21,16 @@ export class EquipmentDetailComponent implements OnInit {
   detail = signal<EquipmentDetailDto | null>(null);
   loading = signal(true);
   notFound = signal(false);
+
+  lightboxUrl = signal<string | null>(null);
+
+  openLightbox(url: string | null | undefined): void {
+    if (url) this.lightboxUrl.set(url);
+  }
+
+  closeLightbox(): void {
+    this.lightboxUrl.set(null);
+  }
   private campgroundId = 0;
   private checkInDate = '';
   private checkOutDate = '';

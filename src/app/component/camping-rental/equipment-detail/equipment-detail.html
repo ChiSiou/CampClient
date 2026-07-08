@@ -9,7 +9,8 @@
 
   <div *ngIf="detail()" class="detail">
     <div class="product-banner">
-      <img *ngIf="detail()!.mainImageUrl" [src]="detail()!.mainImageUrl" [alt]="detail()!.name" />
+      <img *ngIf="detail()!.mainImageUrl" [src]="detail()!.mainImageUrl" [alt]="detail()!.name"
+           class="clickable-img" (click)="openLightbox(detail()!.mainImageUrl)" />
       <div class="icon-placeholder" *ngIf="!detail()!.mainImageUrl">
         <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
       </div>
@@ -31,7 +32,8 @@
         [class.out]="v.availableStock === 0"
       >
         <div class="variant-image">
-          <img *ngIf="v.image || detail()!.mainImageUrl" [src]="v.image || detail()!.mainImageUrl" [alt]="v.variantName" />
+          <img *ngIf="v.image || detail()!.mainImageUrl" [src]="v.image || detail()!.mainImageUrl" [alt]="v.variantName"
+               class="clickable-img" (click)="openLightbox(v.image || detail()!.mainImageUrl)" />
           <div class="icon-placeholder small" *ngIf="!v.image && !detail()!.mainImageUrl">
             <span class="icon">{{ categoryIcon(detail()!.category) }}</span>
           </div>
@@ -63,3 +65,11 @@
     </div>
   </div>
 </div>
+
+<!-- Lightbox -->
+@if (lightboxUrl()) {
+  <div class="lightbox-overlay" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+    <img [src]="lightboxUrl()!" (click)="$event.stopPropagation()" />
+  </div>
+}
