@@ -1,79 +1,55 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<div class="register-page">
+  <div class="register-card">
+    <div class="logo">
+      <div class="icon">CampGo</div>
+      <h1>CampGo</h1>
+      <p>加入會員，開始你的露營旅程</p>
+    </div>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CampGo 註冊</title>
-  <link rel="stylesheet" href="./register.css">
-</head>
-
-<body>
-
-  <div class="register-page">
-    <div class="register-card">
-
-      <div class="logo">
-        <div class="icon">🏕️</div>
-        <h1>CampGo</h1>
-        <p>加入我們，開始你的露營旅程</p>
+    <form class="register-form" (ngSubmit)="submituser()">
+      <div class="form-group">
+        <label for="name">姓名</label>
+        <input id="name" [(ngModel)]="memberData.Name" name="name" type="text" placeholder="請輸入姓名" required />
       </div>
 
-      <form class="register-form">
+      <div class="form-group">
+        <label for="phone">電話</label>
+        <input id="phone" [(ngModel)]="memberData.Phone" name="phone" type="tel" inputmode="numeric" maxlength="10"
+          pattern="^09[0-9]{8}$" placeholder="請輸入 09 開頭的手機號碼" required />
+      </div>
 
-        <div class="form-group">
-          <label for="name">姓名</label>
-          <input [(ngModel)]="memberData.Name" name="name" type="text" placeholder="請輸入姓名" required />
-        </div>
+      <div class="form-group">
+        <label for="email">MAIL</label>
+        <input id="email" [(ngModel)]="memberData.Email" name="email" type="email" placeholder="請輸入 Email" required />
+      </div>
 
-        <div class="form-group">
-          <label for="phone">電話</label>
-          <input
-            [(ngModel)]="memberData.Phone"
-            name="phone"
-            type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            pattern="^09[0-9]{8}$"
-            placeholder="請輸入 09 開頭手機號碼"
-            required
-          />
-        </div>
+      <div class="form-group">
+        <label for="password">密碼</label>
+        <input id="password" [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼" required />
+      </div>
 
-        <div class="form-group">
-          <label for="email">MAIL</label>
-          <input [(ngModel)]="memberData.Email" name="email" type="email" placeholder="請輸入 Email" required />
-        </div>
+      <div class="form-group">
+        <label for="confirmPassword">確認密碼</label>
+        <input id="confirmPassword" [(ngModel)]="memberData.ConfirmPassword" name="confirmPassword" type="password"
+          placeholder="請再次輸入密碼" required />
+      </div>
 
-        <div class="form-group">
-          <label for="password">密碼</label>
-          <input [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼" required />
-        </div>
-        <div class="form-group photo-upload">
-          <label class="register-btn">
-            選擇圖片
-            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
-          </label>
+      <div class="form-group photo-upload">
+        <label class="register-btn">
+          上傳照片
+          <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+        </label>
 
-          <button type="submit" class="register-btn" (click)="submituser()">
-            註冊帳號
-          </button> @if (previewUrl) {
-          <img [src]="previewUrl" class="preview-img" />
-          }
-        </div>
+        <button type="submit" class="register-btn">註冊帳號</button>
+        @if (previewUrl) {
+          <img [src]="previewUrl" class="preview-img" alt="會員照片預覽" />
+        }
+      </div>
 
-
-
-        <div class="login-link">
-          已經有帳號？
-          <a routerLink="/login">前往登入</a>
-        </div>
-
-      </form>
-
-    </div>
+      <div class="login-link">
+        已經有帳號？
+        <a routerLink="/login">前往登入</a>
+      </div>
+    </form>
   </div>
-
-</body>
-
-</html>
+</div>

@@ -22,6 +22,7 @@ export class Register {
     Phone: '',
     Email: '',
     Password: '',
+    ConfirmPassword: '',
   };
 
   selectedFile: File | null = null;
@@ -71,6 +72,34 @@ export class Register {
       return;
     }
 
+    if (!this.memberData.Password) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '密碼未填寫',
+        detail: '請輸入密碼',
+      });
+      return;
+    }
+    if (this.memberData.Password.length < 6) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '失敗',
+        detail: '密碼長度至少需要 6 個字元',
+      });
+      return;
+    }
+    if (this.memberData.Password !== this.memberData.ConfirmPassword) {
+      this.messageService.add({
+        key: 'top-right',
+        severity: 'error',
+        summary: '密碼不一致',
+        detail: '兩次輸入的密碼不一致',
+      });
+      return;
+    }
+
     if (!this.selectedFile) {
       alert('請先選擇照片');
       return;
@@ -81,7 +110,7 @@ export class Register {
         this.messageService.add({
           key: 'top-right',
           severity: 'success',
-          summary: '註冊成功',  
+          summary: '註冊成功',
           detail: '註冊成功，請到信箱完成驗證後再登入',
         });
         this.router.navigate(['/login']);
