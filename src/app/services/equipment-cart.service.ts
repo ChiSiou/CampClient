@@ -7,20 +7,31 @@ import { EquipmentSelectionItem } from '../interfaces/camp.interface';
 @Injectable({ providedIn: 'root' })
 export class EquipmentCartService {
   private quantities = signal<Map<number, number>>(new Map());
+  private prices = new Map<number, number>(); // variantId -> dailyRentalPrice
   shippingMethodId = signal<number | null>(null);
 
   getQuantity(variantId: number): number {
     return this.quantities().get(variantId) ?? 0;
   }
 
-  setQuantity(variantId: number, quantity: number): void {
+  setQuantity(variantId: number, quantity: number, dailyPrice?: number): void {
     const next = new Map(this.quantities());
     if (quantity <= 0) {
       next.delete(variantId);
+      this.prices.delete(variantId);
     } else {
       next.set(variantId, quantity);
+      if (dailyPrice !== undefined) this.prices.set(variantId, dailyPrice);
     }
     this.quantities.set(next);
+  }
+
+  totalAmount(nights: number): number {
+    let total = 0;
+    this.quantities().forEach((qty, variantId) => {
+      total += (this.prices.get(variantId) ?? 0) * qty * nights;
+    });
+    return total;
   }
 
   toSelectionItems(): EquipmentSelectionItem[] {
@@ -42,6 +53,7 @@ export class EquipmentCartService {
 
   clear(): void {
     this.quantities.set(new Map());
+    this.prices.clear();
     this.shippingMethodId.set(null);
   }
 

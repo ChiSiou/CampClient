@@ -120,9 +120,9 @@ export class EquipmentDetailComponent implements OnInit {
     return this.cart.getQuantity(variantId);
   }
 
-  changeQuantity(variantId: number, delta: number, maxStock: number, event?: MouseEvent, imgUrl?: string | null): void {
+  changeQuantity(variantId: number, delta: number, maxStock: number, event?: MouseEvent, imgUrl?: string | null, dailyPrice?: number): void {
     const next = this.getQuantity(variantId) + delta;
-    this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock));
+    this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock), dailyPrice);
     if (delta > 0 && event && imgUrl) this.flyToCart(event, imgUrl);
   }
 
