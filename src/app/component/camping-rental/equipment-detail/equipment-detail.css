@@ -253,7 +253,8 @@
 .floating-cart {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 58px;
   height: 58px;
   background: linear-gradient(135deg, #43a047, #2e7d32);
@@ -269,7 +270,7 @@
 }
 
 .floating-cart:hover {
-  transform: scale(1.1);
+  transform: translateX(-50%) scale(1.1);
   box-shadow: 0 6px 22px rgba(46,125,50,0.55);
 }
 
@@ -296,10 +297,10 @@
 }
 
 @keyframes cart-bounce {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(1.4); }
-  60%  { transform: scale(0.88); }
-  100% { transform: scale(1); }
+  0%   { transform: translateX(-50%) scale(1); }
+  30%  { transform: translateX(-50%) scale(1.4); }
+  60%  { transform: translateX(-50%) scale(0.88); }
+  100% { transform: translateX(-50%) scale(1); }
 }
 
 /* ===== Lightbox ===== */
