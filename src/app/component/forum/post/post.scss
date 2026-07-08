@@ -241,7 +241,7 @@
     background-color: #f6fbee;
   }
 
-  + .embed-result-item {
+  +.embed-result-item {
     border-top: 1px solid #f0f0f0;
   }
 
@@ -517,6 +517,54 @@
   line-height: 1.6;
 }
 
+.error-msg {
+  color: #c0392b;
+  font-size: 0.85rem;
+}
+
+
+// 推薦文章：同作者／同標籤
+.related-posts {
+  margin-top: 2.5rem;
+
+  &__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .card-cover {
+    position: relative;
+    cursor: pointer;
+    min-height: 220px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    border-radius: 1rem !important;
+    transition: transform 0.3s;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    &:hover {
+      transform: scale(1.03);
+    }
+
+    >* {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .text-shadow-1 {
+    text-shadow: 0 .1rem .1rem rgba(0, 0, 0, .75);
+  }
+}
 
 // 響應式
 @media (max-width: 600px) {
