@@ -18,6 +18,7 @@ import { CampSelectionService, CampSelectionEntry, ZoneSelectionSummary } from '
 import { GanttRowItem, CampOrderSummaryDto, CampMapZoneDto, CampZoneDetailDto } from '../../../interfaces/camp.interface';
 import { TENT_ICON_SVG, HOME_ICON_SVG } from '../../../shared/map-icons';
 import { Lightbox } from '../../shared/lightbox/lightbox';
+import { environment } from '../../../../environments/environment';
 
 interface DragState {
   rowIndex: number;
@@ -233,13 +234,23 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
     this.calendarService.getZoneDetail(row.zoneId).subscribe({
       next: res => {
-        this.infoDetail = res;
+        // 照片路徑可能是完整外部網址（舊資料用 Unsplash）或後端本機上傳的相對路徑（/uploads/...，
+        // 之後上架系統的圖都會是這種），相對路徑要補上後端網域，不然瀏覽器會拿前端網域去要，一定 404。
+        this.infoDetail = { ...res, photoUrls: res.photoUrls.map(url => this.resolveImageUrl(url)) };
         this.infoLoading = false;
       },
       error: () => {
         this.infoLoading = false;
       },
     });
+  }
+
+  // 跟 camp-card.ts / camp-detail.ts / liked.ts 用同一套判斷邏輯
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
+  private resolveImageUrl(imageUrl: string): string {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+    if (imageUrl.startsWith('/')) return `${this.apiHost}${imageUrl}`;
+    return imageUrl;
   }
 
   openLightbox(index: number) {
