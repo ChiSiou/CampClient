@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MemberService } from '../Service/member-service';
 import { MessageService } from 'primeng/api';
@@ -111,8 +111,22 @@ export class OwnerRegister implements OnInit {
     this.memberService.ownerregister(this.ownerData, this.selectedFile).subscribe({
       next: (res) => {
         this.loading = false;
-        this.router.navigate(['/']);
-        this.showMessage('success', '申請成功', res.message || '申請成功，請等待審核');
+        this.memberService.switchRole('Owner').subscribe({
+          next: (roleRes) => {
+            localStorage.setItem('token', roleRes.token);
+            localStorage.setItem('roles', JSON.stringify(roleRes.roles));
+            localStorage.setItem('activeRole', roleRes.activeRole);
+            window.dispatchEvent(new CustomEvent('authChanged', { detail: roleRes }));
+            this.memberService.startTokenTimer();
+            this.memberService.getProfile().subscribe();
+            this.showMessage('success', '申請成功', res.message || '申請成功，已切換為營主');
+            this.router.navigate(['/']);
+          },
+          error: () => {
+            this.showMessage('success', '申請成功', res.message || '申請成功，請重新登入或切換身分');
+            this.router.navigate(['/']);
+          },
+        });
       },
       error: (err) => {
         this.loading = false;
@@ -193,5 +207,13 @@ export class OwnerRegister implements OnInit {
 
   private isSupportedImageFile(file: File): boolean {
     return this.supportedImageTypes.includes(file.type) && file.size <= this.maxImageSizeBytes;
+  }
+  quickregistor() {
+    this.ownerData.companyName = 'CampGo營地';
+    this.ownerData.idNumber = 'A123456789';
+    this.ownerData.address = '台北市信義區松仁路100號';
+    this.ownerData.bankName = '台灣銀行';
+    this.ownerData.bankAccount = '1234567890';
+    this.ownerData.bankAccountName = 'CampGo營地';
   }
 }

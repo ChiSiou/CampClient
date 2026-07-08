@@ -94,6 +94,16 @@ export class HeaderWMenu implements OnDestroy {
     this.applyCurrentProfile((event as CustomEvent).detail);
   }
 
+  @HostListener('window:authChanged', ['$event'])
+  onAuthChanged(event: Event) {
+    const auth = (event as CustomEvent).detail;
+
+    this.activeUserRole = auth?.activeRole ?? this.memberservice.getActiveRole();
+    this.userrole = auth?.roles ?? this.memberservice.getrole();
+    this.loadUnreadCount();
+    this.loadProfile();
+  }
+
   private loadStoredProfile() {
     const rawProfile = localStorage.getItem('currentProfile');
 
