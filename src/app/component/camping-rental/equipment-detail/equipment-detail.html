@@ -1,10 +1,14 @@
-<!-- 浮動購物車 badge -->
+<!-- 底部小計列 -->
 @if (cart.totalQuantity() > 0) {
-  <div id="cart-icon-target" class="floating-cart" (click)="backToList()">
-    🛒
-    <span class="floating-cart-badge">{{ cart.totalQuantity() }}</span>
+  <div class="detail-summary-bar">
+    <span class="detail-summary-text">
+      🛒 裝備小計（{{ nights() }} 晚）：<strong>${{ cart.totalAmount(nights()) | number }}</strong>
+    </span>
+    <button class="detail-summary-btn" (click)="backToList()">回清單確認</button>
   </div>
 }
+
+<div id="cart-icon-target" class="cart-fly-target"></div>
 
 <div class="detail-page">
   <button class="back" (click)="backToList()">← 回加購清單</button>
@@ -60,9 +64,9 @@
 
           <div class="qty-row">
             <div class="qty-control">
-              <button (click)="changeQuantity(v.variantId, -1, v.availableStock)" [disabled]="getQuantity(v.variantId) === 0">−</button>
+              <button (click)="changeQuantity(v.variantId, -1, v.availableStock, undefined, undefined, v.dailyRentalPrice)" [disabled]="getQuantity(v.variantId) === 0">−</button>
               <span class="qty-value">{{ getQuantity(v.variantId) }}</span>
-              <button (click)="changeQuantity(v.variantId, 1, v.availableStock, $event, v.image || detail()!.mainImageUrl)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
+              <button (click)="changeQuantity(v.variantId, 1, v.availableStock, $event, v.image || detail()!.mainImageUrl, v.dailyRentalPrice)" [disabled]="getQuantity(v.variantId) >= v.availableStock">+</button>
             </div>
             <span class="line-subtotal" *ngIf="getQuantity(v.variantId) > 0">
               ${{ lineSubTotal(v.dailyRentalPrice, v.variantId) }}

@@ -120,9 +120,9 @@ export class EquipmentDetailComponent implements OnInit {
     return this.cart.getQuantity(variantId);
   }
 
-  changeQuantity(variantId: number, delta: number, maxStock: number, event?: MouseEvent, imgUrl?: string | null): void {
+  changeQuantity(variantId: number, delta: number, maxStock: number, event?: MouseEvent, imgUrl?: string | null, dailyPrice?: number): void {
     const next = this.getQuantity(variantId) + delta;
-    this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock));
+    this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock), dailyPrice);
     if (delta > 0 && event && imgUrl) this.flyToCart(event, imgUrl);
   }
 
@@ -183,6 +183,12 @@ export class EquipmentDetailComponent implements OnInit {
 
   lineSubTotal(dailyPrice: number, variantId: number): number {
     return dailyPrice * this.nights() * this.getQuantity(variantId);
+  }
+
+  // 本頁所有款式的小計總和
+  pageSubTotal(): number {
+    const variants = this.detail()?.variants ?? [];
+    return variants.reduce((sum, v) => sum + this.lineSubTotal(v.dailyRentalPrice, v.variantId), 0);
   }
 
   // 沒有商品/款式照片時，依分類顯示對應的 Emoji 圖示，避免用隨機圖庫圖片混充內容
