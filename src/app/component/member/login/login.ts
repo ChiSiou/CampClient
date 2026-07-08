@@ -167,6 +167,7 @@ export class Login {
   }
 
   Resendpage() {
+    this.memberService.clearLoginData();
     this.router.navigate(['resend-verify-email']);
   }
   quicklogin() {
