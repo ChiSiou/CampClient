@@ -8,13 +8,7 @@
   </div>
 }
 
-<!-- 浮動購物車 badge -->
-@if (cart.totalQuantity() > 0) {
-  <div id="cart-icon-target" class="floating-cart" (click)="backToList()">
-    🛒
-    <span class="floating-cart-badge">{{ cart.totalQuantity() }}</span>
-  </div>
-}
+<div id="cart-icon-target" class="cart-fly-target"></div>
 
 <div class="detail-page">
   <button class="back" (click)="backToList()">← 回加購清單</button>
