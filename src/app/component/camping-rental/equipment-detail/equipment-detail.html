@@ -68,8 +68,22 @@
 
 <!-- Lightbox -->
 @if (lightboxUrl()) {
-  <div class="lightbox-overlay" (click)="closeLightbox()">
+  <div class="lightbox-overlay"
+       (mouseup)="onDragEnd()"
+       (mousemove)="onDragMove($event)"
+       (mouseleave)="onDragEnd()"
+       (wheel)="onWheel($event)"
+       (click)="onOverlayClick($event)">
     <button class="lightbox-close" (click)="closeLightbox()">✕</button>
-    <img [src]="lightboxUrl()!" (click)="$event.stopPropagation()" />
+    <img [src]="lightboxUrl()!"
+         [style.transform]="'translate(' + imgX + 'px, ' + imgY + 'px) scale(' + imgScale + ')'"
+         (mousedown)="onDragStart($event)"
+         (click)="$event.stopPropagation()"
+         class="lightbox-img" />
+    <div class="lightbox-controls" (click)="$event.stopPropagation()">
+      <button (click)="zoomOut()">−</button>
+      <span (click)="resetZoom()">{{ (imgScale * 100) | number:'1.0-0' }}%</span>
+      <button (click)="zoomIn()">+</button>
+    </div>
   </div>
 }
