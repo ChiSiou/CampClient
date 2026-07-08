@@ -1,9 +1,8 @@
 <div class="register-page">
   <div class="register-card">
     <div class="logo">
-      <div class="icon">CampGo</div>
-      <h1>CampGo</h1>
-      <p>加入會員，開始你的露營旅程</p>
+      <img src="logo.png" alt="CampClient" class="logo__icon" />
+      <h1>你的假期</h1>
     </div>
 
     <form class="register-form" (ngSubmit)="submituser()">
@@ -25,7 +24,8 @@
 
       <div class="form-group">
         <label for="password">密碼</label>
-        <input id="password" [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼" required />
+        <input id="password" [(ngModel)]="memberData.Password" name="password" type="password" placeholder="請輸入密碼"
+          required />
       </div>
 
       <div class="form-group">
@@ -42,7 +42,7 @@
 
         <button type="submit" class="register-btn">註冊帳號</button>
         @if (previewUrl) {
-          <img [src]="previewUrl" class="preview-img" alt="會員照片預覽" />
+        <img [src]="previewUrl" class="preview-img" alt="會員照片預覽" />
         }
       </div>
 
