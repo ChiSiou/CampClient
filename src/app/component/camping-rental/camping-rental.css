@@ -232,9 +232,34 @@
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }
 
+.summary-total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .summary-total strong {
   color: #2e7d32;
   font-size: 1.15em;
+}
+
+.cart-icon {
+  font-size: 1.5em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.cart-icon.bounce {
+  animation: cart-bounce 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes cart-bounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.5); }
+  60%  { transform: scale(0.85); }
+  100% { transform: scale(1); }
 }
 
 .actions {

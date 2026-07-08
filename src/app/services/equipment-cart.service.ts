@@ -30,6 +30,12 @@ export class EquipmentCartService {
     }));
   }
 
+  totalQuantity(): number {
+    let total = 0;
+    this.quantities().forEach(q => total += q);
+    return total;
+  }
+
   isEmpty(): boolean {
     return this.quantities().size === 0;
   }
