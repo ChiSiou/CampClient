@@ -27,9 +27,9 @@
             (click)="openConversation(conv)"
             [title]="conv.otherUserName"
           >
-            @if (!avatarErrorIds.has(conv.otherUserId)) {
+            @if (avatarSrcFor(conv.otherUserId, conv.otherUserAvatar); as avatar) {
               <img
-                [src]="avatarUrl(conv.otherUserId, conv.otherUserAvatar)"
+                [src]="avatar"
                 (error)="onAvatarError(conv.otherUserId)"
                 alt=""
               />
@@ -54,9 +54,9 @@
       } @else {
         <header class="chat-header">
           <div class="header-avatar">
-            @if (!avatarErrorIds.has(activeConversation.otherUserId)) {
+            @if (avatarSrcFor(activeConversation.otherUserId, activeConversation.otherUserAvatar); as avatar) {
               <img
-                [src]="avatarUrl(activeConversation.otherUserId, activeConversation.otherUserAvatar)"
+                [src]="avatar"
                 (error)="onAvatarError(activeConversation.otherUserId)"
                 alt=""
               />
@@ -76,8 +76,8 @@
             <div class="message-row" [class.mine]="msg.sendUserId === myUserId">
               @if (msg.sendUserId !== myUserId) {
                 <div class="row-avatar">
-                  @if (!avatarErrorIds.has(msg.sendUserId)) {
-                    <img [src]="avatarUrl(msg.sendUserId)" (error)="onAvatarError(msg.sendUserId)" alt="" />
+                  @if (avatarSrcFor(msg.sendUserId, activeConversation.otherUserAvatar); as avatar) {
+                    <img [src]="avatar" (error)="onAvatarError(msg.sendUserId)" alt="" />
                   } @else {
                     <span class="avatar-fallback">{{ initialOf(activeConversation.otherUserName) }}</span>
                   }

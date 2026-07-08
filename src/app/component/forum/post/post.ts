@@ -23,6 +23,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { Toast } from "primeng/toast";
 import { IReply } from '../interfaces/IReply';
 import { PrimeNG } from 'primeng/config';
+import { environment } from '../../../../environments/environment';
 
 interface UploadEvent {
   currentFiles: any;
@@ -66,6 +67,7 @@ export class Post implements OnInit {
   isEditPost: boolean = false;
   edit_title: string = '';
   edit_mainContent: string = '';
+  edit_postTag: string = '';
   edit_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
   edit_selectedFiles: File[] = [];
 
@@ -247,6 +249,18 @@ export class Post implements OnInit {
     return this.postMainPic ? this.postMainPic : 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=1920';
   }
 
+  authorInitial(name?: string | null): string {
+    return name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
+  }
+
+  private readonly apiHost = environment.apiUrl.replace('/api', '');
+
+  avatarSrc(url?: string | null): string | null {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${this.apiHost}${url}`;
+  }
+
   copyPostRoute(): void {
     if (this.postRoute) {
       navigator.clipboard.writeText(this.postRoute);
@@ -258,6 +272,7 @@ export class Post implements OnInit {
     this.isEditPost = true;
     this.edit_title = this.post.title;
     this.edit_mainContent = this.post.mainContent;
+    this.edit_postTag = this.post.postTag ?? '';
     this.edit_moreImages = this.post.moreImages ? [...this.post.moreImages] : [];
     this.edit_selectedFiles = [];
 
@@ -368,7 +383,7 @@ export class Post implements OnInit {
       ...this.post,
       title: this.edit_title,
       mainContent: this.edit_mainContent,
-      postTag: this.post.postTag ?? '',
+      postTag: this.edit_postTag ?? '',
       campId: this.edit_campId,
       attractionId: this.edit_attractionId,
       isHaveImgs: moreImages.length > 0,
