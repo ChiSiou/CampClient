@@ -1,3 +1,13 @@
+<!-- 底部小計列 -->
+@if (cart.totalQuantity() > 0) {
+  <div class="detail-summary-bar">
+    <span class="detail-summary-text">
+      🛒 裝備小計（{{ nights() }} 晚）：<strong>${{ cart.totalQuantity() > 0 ? pageSubTotal() : 0 | number }}</strong>
+    </span>
+    <button class="detail-summary-btn" (click)="backToList()">回清單確認</button>
+  </div>
+}
+
 <!-- 浮動購物車 badge -->
 @if (cart.totalQuantity() > 0) {
   <div id="cart-icon-target" class="floating-cart" (click)="backToList()">

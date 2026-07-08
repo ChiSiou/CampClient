@@ -1,7 +1,7 @@
 .detail-page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 24px 16px 60px;
+  padding: 24px 16px 100px;
 }
 
 .back {
@@ -247,6 +247,43 @@
 .line-subtotal {
   font-weight: 700;
   color: #2e7d32;
+}
+
+/* ===== 底部小計列 ===== */
+.detail-summary-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e2e2e2;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.07);
+  z-index: 100;
+}
+
+.detail-summary-text {
+  font-size: 0.95em;
+  color: #444;
+}
+
+.detail-summary-text strong {
+  color: #2e7d32;
+  font-size: 1.15em;
+}
+
+.detail-summary-btn {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 /* ===== 浮動購物車 ===== */

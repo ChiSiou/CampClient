@@ -185,6 +185,12 @@ export class EquipmentDetailComponent implements OnInit {
     return dailyPrice * this.nights() * this.getQuantity(variantId);
   }
 
+  // 本頁所有款式的小計總和
+  pageSubTotal(): number {
+    const variants = this.detail()?.variants ?? [];
+    return variants.reduce((sum, v) => sum + this.lineSubTotal(v.dailyRentalPrice, v.variantId), 0);
+  }
+
   // 沒有商品/款式照片時，依分類顯示對應的 Emoji 圖示，避免用隨機圖庫圖片混充內容
   categoryIcon(category: string): string {
     const icons: Record<string, string> = {
