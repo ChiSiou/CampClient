@@ -119,7 +119,6 @@ export class Login {
   }
 
   continueAsVisitor() {
-    this.memberService.clearLoginData();
     this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
@@ -168,6 +167,11 @@ export class Login {
   }
 
   Resendpage() {
+    this.memberService.clearLoginData();
     this.router.navigate(['resend-verify-email']);
+  }
+  quicklogin() {
+    this.email = 'CampPlatform0420@gmail.com';
+    this.password = '!@#CampPlatform';
   }
 }

@@ -108,27 +108,21 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  async locateByAddress() {
+  locateByAddress() {
     if (!this.form.area.trim()) return;
     this.locating = true;
     this.error = '';
-    try {
-      const res = await fetch(
-        `https://photon.komoot.io/api/?q=${encodeURIComponent(this.form.area)}&limit=1&bbox=118,21,123,26`
-      );
-      const data = await res.json();
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].geometry.coordinates;
-        this.map?.setView([lat, lng], 13);
-        this.setLocation(lat, lng);
-      } else {
+    this.campService.geocode(this.form.area).subscribe({
+      next: (res) => {
+        this.map?.setView([res.lat, res.lng], 15);
+        this.setLocation(res.lat, res.lng);
+        this.locating = false;
+      },
+      error: () => {
         this.error = '找不到此地址，請調整關鍵字或直接點地圖選點';
-      }
-    } catch {
-      this.error = '定位失敗，請直接點地圖選點';
-    } finally {
-      this.locating = false;
-    }
+        this.locating = false;
+      },
+    });
   }
 
   onFilesSelected(event: Event) {
