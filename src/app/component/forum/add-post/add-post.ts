@@ -78,6 +78,8 @@ export class AddPost {
     valid: false,
   };
 
+  contentError: string | null = null;
+
   constructor(private sforumService: Sforum, private router: Router, private primeng: PrimeNG) {
     this.primeng.setTranslation({ pending: '等待上傳' });
 
@@ -102,6 +104,8 @@ export class AddPost {
   }
 
   onSubmit(form: any) {
+    this.contentError = null;
+
     if (this.new_title.trim() && this.new_mainContent.trim() && this.new_postCategoryId) {
       form.valid = true;
     } else {
@@ -198,14 +202,11 @@ export class AddPost {
       moreImages: this.uploadedImageUrls.map((url) => ({ imageUrl: url })),
     };
 
-    this.sforumService.postPost(param).subscribe((data) => {
+    this.sforumService.postPost(param).subscribe({
+      next: (data) => {
+        this.posts.push(param);
+        data = this.posts;
 
-
-      this.posts.push(param);
-      data = this.posts;
-      console.log(data);
-
-      try {
         this.messageService.add({
           severity: 'success',
           summary: '發文成功',
@@ -213,16 +214,17 @@ export class AddPost {
           life: 3000,
         });
         this.router.navigate(['forum']);
-      }
-      catch (err) {
+      },
+      error: (err) => {
         console.error('發文失敗', err);
+        this.contentError = err.error?.message ?? '發文失敗，請稍後再試。';
         this.messageService.add({
           severity: 'error',
           summary: '發文失敗',
-          detail: '請稍後再試。',
+          detail: this.contentError ?? '請稍後再試。',
           life: 3000,
         });
-      }
+      },
     });
   }
 }

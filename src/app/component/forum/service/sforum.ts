@@ -32,12 +32,20 @@ export class Sforum {
     return post.userName ?? '';
   }
 
-  getPosts(page: number = 1, size: number = 20): Observable<IForum[]> {
-    return this.http.get<IForum[]>(`${this.apiUrl}?page=${page}&size=${size}`);
+  getPosts(page: number = 1, size: number = 20, keyword?: string): Observable<IForum[]> {
+    let url = `${this.apiUrl}?page=${page}&size=${size}`;
+    if (keyword) {
+      url += `&keyword=${encodeURIComponent(keyword)}`;
+    }
+    return this.http.get<IForum[]>(url);
   }
 
   getPostById(id: number) {
     return this.http.get<IForum>(`${this.apiUrl}/${id}`);
+  }
+
+  getRelatedPosts(postId: number, size: number = 6): Observable<IForum[]> {
+    return this.http.get<IForum[]>(`${this.apiUrl}/${postId}/related?size=${size}`);
   }
 
   postPost(para: IForum) {

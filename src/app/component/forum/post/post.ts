@@ -67,6 +67,7 @@ export class Post implements OnInit {
   isEditPost: boolean = false;
   edit_title: string = '';
   edit_mainContent: string = '';
+  editContentError: string | null = null;
   edit_postTag: string = '';
   edit_moreImages: { fromId?: number | null; imageUrl?: string | null }[] = [];
   edit_selectedFiles: File[] = [];
@@ -100,6 +101,9 @@ export class Post implements OnInit {
   likeCount: number = 0;
   likeBurst: boolean = false;
 
+  // 推薦文章：同作者／同標籤
+  relatedPosts: IForum[] = [];
+
   postForm = {
     submitted: false,
     valid: false,
@@ -111,21 +115,48 @@ export class Post implements OnInit {
 
   ngOnInit(): void {
     this.nowUserId = Number(this.sMember.getid());
-    this.postId = Number(this.route.snapshot.paramMap.get('id'));
-    this.postRoute = window.location.href;
+    // 用 paramMap 訂閱而非 snapshot，這樣從「相關文章」點到另一篇貼文時（同一個路由元件被重用）也能重新載入
+    this.route.paramMap.subscribe((params) => {
+      this.postId = Number(params.get('id'));
+      this.postRoute = window.location.href;
+      this.isEditPost = false;
+      this.isReplyPost = false;
+
+      this.loadPost();
+      this.loadReplies();
+      this.loadInteracts();
+      this.loadRelatedPosts();
+    });
+  }
+
+  loadPost(): void {
     this.sforumService.getPostById(this.postId).subscribe({
       next: (data) => {
         this.post = data;
-        console.log(this.post);
-        if (this.post?.isHaveImgs && this.post?.moreImages?.length) {
-          this.postMainPic = this.post.moreImages?.[0]?.imageUrl ?? '';
-        }
+        this.postMainPic = (this.post?.isHaveImgs && this.post?.moreImages?.length)
+          ? (this.post.moreImages?.[0]?.imageUrl ?? '')
+          : undefined;
       },
       error: (err) => console.error('載入文章失敗', err),
     });
+  }
 
-    this.loadReplies();
-    this.loadInteracts();
+  loadRelatedPosts(): void {
+    this.sforumService.getRelatedPosts(this.postId).subscribe({
+      next: (data) => (this.relatedPosts = data),
+      error: (err) => console.error('載入推薦文章失敗', err),
+    });
+  }
+
+  relatedMainImage(post: IForum): string {
+    if (post.isHaveImgs && post.moreImages && post.moreImages.length > 0) {
+      return post.moreImages[0].imageUrl ?? '';
+    }
+    return 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=600';
+  }
+
+  gotoRelatedPost(id: number): void {
+    this.router.navigate(['post', id]);
   }
 
   loadInteracts() {
@@ -270,6 +301,7 @@ export class Post implements OnInit {
   editPost(id: number) {
     if (!this.post) return;
     this.isEditPost = true;
+    this.editContentError = null;
     this.edit_title = this.post.title;
     this.edit_mainContent = this.post.mainContent;
     this.edit_postTag = this.post.postTag ?? '';
@@ -354,6 +386,8 @@ export class Post implements OnInit {
   async submitEditPost() {
     if (!this.post) return;
 
+    this.editContentError = null;
+
     if (!this.edit_title.trim() || !this.edit_mainContent.trim()) {
       this.messageService.add({
         severity: 'error',
@@ -410,10 +444,11 @@ export class Post implements OnInit {
       },
       error: (err) => {
         console.error('編輯失敗', err);
+        this.editContentError = err.error?.message ?? '編輯失敗，請稍後再試。';
         this.messageService.add({
           severity: 'error',
           summary: '編輯失敗',
-          detail: '請稍後再試。',
+          detail: this.editContentError ?? '請稍後再試。',
           life: 3000,
         });
       },
