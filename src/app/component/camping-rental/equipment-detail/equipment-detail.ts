@@ -120,9 +120,65 @@ export class EquipmentDetailComponent implements OnInit {
     return this.cart.getQuantity(variantId);
   }
 
-  changeQuantity(variantId: number, delta: number, maxStock: number): void {
+  changeQuantity(variantId: number, delta: number, maxStock: number, event?: MouseEvent, imgUrl?: string | null): void {
     const next = this.getQuantity(variantId) + delta;
     this.cart.setQuantity(variantId, Math.min(Math.max(next, 0), maxStock));
+    if (delta > 0 && event && imgUrl) this.flyToCart(event, imgUrl);
+  }
+
+  private flyToCart(event: MouseEvent, imgUrl: string): void {
+    // 從款式圖片起飛
+    const card = (event.target as HTMLElement).closest('.variant-card');
+    const imgEl = card?.querySelector('.variant-image img') as HTMLElement | null;
+    const source = (imgEl ?? event.target as HTMLElement).getBoundingClientRect();
+
+    // 目標：summary bar 的購物車 icon
+    const cartIcon = document.getElementById('cart-icon-target');
+    const cartRect = cartIcon?.getBoundingClientRect();
+    const targetX = cartRect ? cartRect.left + cartRect.width / 2 : window.innerWidth / 2;
+    const targetY = cartRect ? cartRect.top + cartRect.height / 2 : window.innerHeight - 40;
+
+    const clone = document.createElement('img') as HTMLImageElement;
+    clone.src = imgUrl;
+    Object.assign(clone.style, {
+      position:     'fixed',
+      left:         `${source.left + source.width / 2 - 30}px`,
+      top:          `${source.top + source.height / 2 - 30}px`,
+      width:        '60px',
+      height:       '60px',
+      objectFit:    'cover',
+      borderRadius: '10px',
+      zIndex:       '99999',
+      pointerEvents:'none',
+      opacity:      '1',
+      transition:   'none',
+      boxShadow:    '0 4px 16px rgba(0,0,0,0.35)',
+    });
+    document.body.appendChild(clone);
+
+    // 下一幀才加 transition，確保起始位置已渲染
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      Object.assign(clone.style, {
+        transition: 'left 0.65s cubic-bezier(0.4,0,0.2,1), top 0.65s cubic-bezier(0.4,0,0.2,1), width 0.65s ease, height 0.65s ease, opacity 0.65s ease, border-radius 0.65s ease',
+        left:         `${targetX - 12}px`,
+        top:          `${targetY - 12}px`,
+        width:        '24px',
+        height:       '24px',
+        borderRadius: '50%',
+        opacity:      '0',
+      });
+    }));
+
+    setTimeout(() => {
+      clone.remove();
+      // 購物車 icon 彈跳
+      const icon = document.getElementById('cart-icon-target');
+      if (icon) {
+        icon.classList.remove('bounce');
+        void icon.offsetWidth; // reflow 重置動畫
+        icon.classList.add('bounce');
+      }
+    }, 650);
   }
 
   lineSubTotal(dailyPrice: number, variantId: number): number {
