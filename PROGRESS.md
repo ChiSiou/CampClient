@@ -327,6 +327,21 @@
 
 **解法**：停掉 `ng serve` → 刪 `.angular/cache`（和 `node_modules/.vite`）→ 重開 → `Ctrl+Shift+R`。以後遇到「莫名 NG0912／元件重複／改了沒反應」第一招就是清這個快取。
 
+### 🟢 部署準備：照片改存 Cloudflare R2 + 順手修的兩個 bug（2026-07-09）
+
+開始部署上雲端，第一步先處理照片儲存（後端詳細見 `slnCampApi/PROGRESS.md` 同名章節：改用 Cloudflare R2，S3 相容、免費 10GB 永久、零流量費）。前端這輪動到的：
+
+**修 bug 1：`photo-gallery.html`（同仁的營區照片管理元件）圖片讀不到**
+- 原因：`<img [src]="host + photo.url">` **無條件**字串相接，換 R2 後 `photo.url` 已經是完整網址（`https://pub-xxxx.r2.dev/...`），被接成語法錯誤的網址（`https://localhost:7011https://pub-xxxx.r2.dev/...`），讀不到。
+- 修法：加 `resolveImageUrl()`（跟 `camp-card.ts`/`camp-detail.ts`/`liked.ts`/`gantt-calendar.ts` 同一套判斷邏輯：`http(s)://` 開頭原樣使用，`/` 開頭才補後端網域），HTML 改呼叫它。
+- **這是這輪第三次抓到同一種模式的 bug**（收藏頁、甘特圖 INFO 彈窗、這裡）——每個顯示圖片的地方都各自刻邏輯，沒有共用，之後有空建議抽成共用 pipe。
+
+**修 bug 2：社群發文 `add-post.ts` 沒有防重複送出，連點兩下發兩篇文**
+- 原因：`onSubmit()` 從一開始就沒有任何鎖，按鈕也沒有 loading/disabled 狀態。以前圖片存本機磁碟很快，使用者來不及點第二下；換 R2 後圖片上傳多了網路來回時間（`uploadAllFiles()` 逐張 `await`，多張圖會疊加），這個既有的洞才被踩到。
+- 修法：加 `submitting` 旗標，`onSubmit()` 一進來先檢查擋掉重複呼叫；按鈕改 `[disabled]="submitting"` + `[loading]="submitting"` + 文字變「發布中...」；順手補上 `uploadAllFiles()` 失敗時完全沒有 `.catch()` 的洞（原本上傳失敗會讓按鈕永遠卡死鎖住、也不會告訴使用者）。
+
+**⚠️ 舊照片（本機 `/uploads`）沒有搬去 R2**，部署到 Azure 後這些會變破圖，正式照片要重新上傳、測試假資料不用管。詳見後端 PROGRESS 同章節。
+
 ## 📌 下次接續：待辦事項（不要漏掉）
 
 1. ~~**後端在等 ngrok 設定好**~~ **（已可暫緩）**：付款成功 → 訂單狀態變已付款**現在靠 OrderResultURL 在本機就通、已實測成功**。ngrok 只剩 server-to-server `ReturnUrl` 備援，上雲端再處理。
