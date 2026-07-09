@@ -16,9 +16,20 @@ export class PhotoGallery implements OnInit {
 
   photos: CampMediumDto[] = [];
   uploading = false;
-  readonly host = environment.apiUrl.replace('/api', '');
+  private readonly host = environment.apiUrl.replace('/api', '');
 
   constructor(private campService: CampManagementService) {}
+
+  // 照片路徑可能是完整外部網址（R2 回傳的、或舊資料的 Unsplash 網址）或後端本機上傳的相對路徑
+  // （/uploads/...，換到 R2 之前的舊資料），相對路徑才需要補上後端網域，完整網址原樣使用——
+  // 不然把 host 無條件接在完整網址前面會變成語法錯誤的網址（例如 R2 網址會被接成
+  // "https://localhost:7011https://pub-xxxx.r2.dev/..."，瀏覽器讀不到）。
+  // 跟 camp-card.ts / camp-detail.ts / liked.ts / gantt-calendar.ts 用同一套判斷邏輯。
+  resolveImageUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `${this.host}${url}`;
+    return url;
+  }
 
   ngOnInit() {
     this.loadPhotos();

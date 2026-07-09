@@ -82,7 +82,13 @@
       </div>
 
       <div class="form-actions">
-        <p-button label="送出" icon="pi pi-send" type="submit"></p-button>
+        <p-button
+          [label]="submitting ? '發布中...' : '送出'"
+          icon="pi pi-send"
+          type="submit"
+          [disabled]="submitting"
+          [loading]="submitting"
+        ></p-button>
       </div>
 
     </form>

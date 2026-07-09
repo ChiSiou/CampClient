@@ -79,6 +79,9 @@ export class AddPost {
   };
 
   contentError: string | null = null;
+  // 送出後要跑上傳圖片(可能多張、每張都要跟後端來回)+建立貼文兩段非同步流程，沒有鎖住的話
+  // 使用者容易在還沒看到成功訊息前手滑再點一次，變成連發兩篇重複貼文
+  submitting = false;
 
   constructor(private sforumService: Sforum, private router: Router, private primeng: PrimeNG) {
     this.primeng.setTranslation({ pending: '等待上傳' });
@@ -104,6 +107,8 @@ export class AddPost {
   }
 
   onSubmit(form: any) {
+    if (this.submitting) return; // 上一次送出還沒跑完，忽略這次點擊，避免連發重複貼文
+
     this.contentError = null;
 
     if (this.new_title.trim() && this.new_mainContent.trim() && this.new_postCategoryId) {
@@ -122,10 +127,21 @@ export class AddPost {
       return;
     }
 
+    this.submitting = true;
+
     if (this.selectedFiles.length > 0) {
-      this.uploadAllFiles().then(() => {
-        this.addNewPost();
-      });
+      this.uploadAllFiles()
+        .then(() => this.addNewPost())
+        .catch((err) => {
+          console.error('圖片上傳失敗', err);
+          this.submitting = false; // 沒有這行的話，上傳失敗會讓按鈕永遠卡在鎖住狀態
+          this.messageService.add({
+            severity: 'error',
+            summary: '發文失敗',
+            detail: '圖片上傳失敗，請稍後再試。',
+            life: 3000,
+          });
+        });
     } else {
       this.addNewPost();
     }
@@ -214,6 +230,8 @@ export class AddPost {
           life: 3000,
         });
         this.router.navigate(['forum']);
+        // 導頁離開了，submitting 不用重置也沒差，但保留以防導航失敗時使用者還卡在這頁
+        this.submitting = false;
       },
       error: (err) => {
         console.error('發文失敗', err);
@@ -224,6 +242,7 @@ export class AddPost {
           detail: this.contentError ?? '請稍後再試。',
           life: 3000,
         });
+        this.submitting = false;
       },
     });
   }

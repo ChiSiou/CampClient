@@ -14,7 +14,7 @@
   <div class="photo-grid">
     @for (photo of photos; track photo.id) {
       <div class="photo-card">
-        <img [src]="host + photo.url" alt="照片" />
+        <img [src]="resolveImageUrl(photo.url)" alt="照片" />
         @if (photo.isCover) {
           <span class="cover-badge">封面</span>
         }
