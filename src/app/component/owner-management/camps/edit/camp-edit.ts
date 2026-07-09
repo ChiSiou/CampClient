@@ -31,6 +31,7 @@ export class CampEdit implements AfterViewInit, OnDestroy {
   loading = true;
   submitting = false;
   locating = false;
+  fetchingElevation = false;
   error = '';
   highlightInput = '';
 
@@ -126,6 +127,25 @@ export class CampEdit implements AfterViewInit, OnDestroy {
       error: () => {
         this.error = '找不到此地址，請調整關鍵字或直接點地圖選點';
         this.locating = false;
+      },
+    });
+  }
+
+  fetchElevation() {
+    if (!this.form.latitude || !this.form.longitude) {
+      this.error = '請先選擇地址或在地圖上點選位置';
+      return;
+    }
+    this.fetchingElevation = true;
+    this.error = '';
+    this.campService.elevation(this.form.latitude, this.form.longitude).subscribe({
+      next: (res) => {
+        this.form.elevation = Math.round(res.elevation);
+        this.fetchingElevation = false;
+      },
+      error: () => {
+        this.error = '找不到此座標的高度資料，請手動輸入';
+        this.fetchingElevation = false;
       },
     });
   }
