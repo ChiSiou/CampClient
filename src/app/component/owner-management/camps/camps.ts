@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CampManagementService } from '../../../services/camp-management.service';
 import { CampgroundListItemDto, CampgroundStatus } from '../../../interfaces/camp-management.interface';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-camps',
@@ -14,7 +15,7 @@ import { CampgroundListItemDto, CampgroundStatus } from '../../../interfaces/cam
 export class Camps implements OnInit {
   campgrounds: CampgroundListItemDto[] = [];
   CampgroundStatus = CampgroundStatus;
-  apiHost = 'https://localhost:7011';
+  apiHost = environment.apiUrl.replace('/api', '');
 
   searchName = '';
   searchStatus = '';

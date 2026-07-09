@@ -54,8 +54,8 @@ interface LikedCampDto {
   styleUrl: './liked.css',
 })
 export class Liked implements OnInit {
-  private campApiUrl = 'https://localhost:7011/api/CampLike';
-  private postInteractApiUrl = 'https://localhost:7011/api/APIPostInteract';
+  private campApiUrl = `${environment.apiUrl}/CampLike`;
+  private postInteractApiUrl = `${environment.apiUrl}/APIPostInteract`;
 
   allItems: LikedItem[] = [];
   activeTab: 'all' | 'camp' | 'post' = 'all';

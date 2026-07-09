@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { MemberService } from '../../member/Service/member-service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'member-center',
@@ -14,7 +15,7 @@ export class MemberCenter {
   profilePhotoUrl = '';
   imageLoadFailed = false;
 
-  private readonly apiOrigin = 'https://localhost:7011';
+  private readonly apiOrigin = environment.apiUrl.replace('/api', '');
   private profileSubscription?: Subscription;
 
   constructor(private memberservice: MemberService) {}

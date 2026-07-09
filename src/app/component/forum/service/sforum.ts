@@ -6,14 +6,15 @@ import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { IReply } from '../interfaces/IReply';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Sforum {
-  private apiUrl = 'https://localhost:7011/api/APIPost';
-  private apiReplyUrl = 'https://localhost:7011/api/APIReply';
-  private apiExplorationUrl = 'https://localhost:7011/api/Exploration';
+  private apiUrl = `${environment.apiUrl}/APIPost`;
+  private apiReplyUrl = `${environment.apiUrl}/APIReply`;
+  private apiExplorationUrl = `${environment.apiUrl}/Exploration`;
 
   constructor(
     private http: HttpClient,
@@ -57,7 +58,7 @@ export class Sforum {
   }
 
   uploadImage(formData: FormData) {
-    return this.http.post<{ imageUrl: string }>('https://localhost:7011/api/Upload/review-image', formData);
+    return this.http.post<{ imageUrl: string }>(`${environment.apiUrl}/Upload/review-image`, formData);
   }
 
   putPostAPI(id: number, para: IForum) {

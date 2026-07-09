@@ -4,14 +4,15 @@ import { IReview } from '../interfaces/IReview';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SReview {
 
-  private connString = "https://localhost:7011/api/APIReview";
-  private apiUrl = 'https://localhost:7011/api/Member';
+  private connString = `${environment.apiUrl}/APIReview`;
+  private apiUrl = `${environment.apiUrl}/Member`;
 
   constructor(
     private httpClient: HttpClient,
@@ -51,7 +52,7 @@ export class SReview {
   }
 
   uploadImage(formData: FormData) {
-    return this.httpClient.post<{ imageUrl: string }>('https://localhost:7011/api/Upload/review-image', formData);
+    return this.httpClient.post<{ imageUrl: string }>(`${environment.apiUrl}/Upload/review-image`, formData);
   }
 
   putReviewAPI(id: number, para: IReview) {

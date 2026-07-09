@@ -7,6 +7,7 @@ import { OwnerOrderList } from '../interface/ownerOrderList';
 import { CampManagementService } from '../../../services/camp-management.service';
 import { CampgroundListItemDto } from '../../../interfaces/camp-management.interface';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-owner-profile',
@@ -25,7 +26,7 @@ export class OwnerProfile {
   campgrounds: CampgroundListItemDto[] = [];
   campcount = 0;
   recentordercount = 0;
-  private readonly apiOrigin = 'https://localhost:7011';
+  private readonly apiOrigin = environment.apiUrl.replace('/api', '');
   private profileSubscription?: Subscription;
 
   constructor(

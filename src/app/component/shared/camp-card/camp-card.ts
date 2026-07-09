@@ -22,7 +22,7 @@ export class CampCard {
   currentImageIndex = 0;
   likeLoading = false;
 
-  private readonly campLikeUrl = 'https://localhost:7011/api/CampLike';
+  private readonly campLikeUrl = `${environment.apiUrl}/CampLike`;
   private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   constructor(

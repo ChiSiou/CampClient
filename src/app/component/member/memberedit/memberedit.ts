@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MemberService } from '../Service/member-service';
 import { MessageService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-memberedit',
@@ -27,7 +28,7 @@ export class Memberedit implements OnInit {
   profilePhotoPreview = '';
   imageLoadFailed = false;
 
-  private readonly apiOrigin = 'https://localhost:7011';
+  private readonly apiOrigin = environment.apiUrl.replace('/api', '');
 
   constructor(
     private memberservice: MemberService,
