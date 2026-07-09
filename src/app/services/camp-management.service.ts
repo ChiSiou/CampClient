@@ -29,6 +29,12 @@ export class CampManagementService {
     });
   }
 
+  elevation(lat: number, lng: number) {
+    return this.http.get<{ elevation: number }>(`${this.apiUrl}/Geo/elevation`, {
+      params: { lat, lng }
+    });
+  }
+
   // Campground
   listMine(searchTerm?: string) {
     const url = searchTerm
