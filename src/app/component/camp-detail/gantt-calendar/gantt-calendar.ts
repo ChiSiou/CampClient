@@ -466,11 +466,21 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
     if (!this.zoneMapEl?.nativeElement) return;
     delete (L.Icon.Default.prototype as any)._getIconUrl;
 
-    this.zoneMap = L.map(this.zoneMapEl.nativeElement).setView([23.5, 121], 8);
-    // 改用 Esri 衛星空拍圖（免費、不用 API key），這樣框出來的範圍能直接對照實際場地長相
+    // 沒設 maxZoom 時 Leaflet 預設只給到 18，Zone 通常範圍很小，fitBounds 很容易一下就頂到上限，
+    // 放大鍵變灰、畫面卻還很小張看不清楚，這裡拉高上限。
+    this.zoneMap = L.map(this.zoneMapEl.nativeElement, { maxZoom: 21 }).setView([23.5, 121], 8);
+    // 改用國土測繪中心（NLSC）臺灣通用版正射影像（免費、不用 API key、不用註冊）。
+    // 實測比對過：Esri 全球衛星圖在台灣鄉間/山區（露營地常見地形）大多只到 18 級（超過就是固定的灰色
+    // 「無資料」佔位圖，兩個不同座標抓回來的圖檔 MD5 完全一樣，證實沒有真圖資）；NLSC 這份台灣官方圖資
+    // 同一座標在 20 級仍是有變化的真實影像（MD5 不同、檔案大小不同），清晰度明顯更好，且僅限台灣範圍
+    // （這個專案的營區目前都在台灣，沒有海外資料，暫時沒有這個限制的影響）。
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community' }
+      'https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}',
+      {
+        attribution: 'Tiles © 國土測繪中心 NLSC',
+        maxZoom: 21,
+        maxNativeZoom: 20, // 實測驗證到 20 級為止，超過就放大顯示 20 級的圖磚
+      }
     ).addTo(this.zoneMap);
 
     this.zoneMapReady = true;

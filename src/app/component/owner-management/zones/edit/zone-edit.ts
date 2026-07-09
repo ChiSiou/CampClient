@@ -99,9 +99,13 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
 
   private initMap(lat: number, lng: number) {
     const center: L.LatLngExpression = lat && lng ? [lat, lng] : [23.5, 121.0];
-    this.map = L.map(this.mapContainer.nativeElement).setView(center, lat ? 15 : 7);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri',
+    // 改用國土測繪中心（NLSC）臺灣正射影像，比 Esri 全球衛星圖在台灣鄉間/山區清晰很多
+    // （實測驗證：Esri 在這類地形大多只到 18 級、超過就是固定的無資料佔位圖；NLSC 到 20 級仍是真實影像）。
+    this.map = L.map(this.mapContainer.nativeElement, { maxZoom: 21 }).setView(center, lat ? 15 : 7);
+    L.tileLayer('https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+      attribution: 'Tiles © 國土測繪中心 NLSC',
+      maxZoom: 21,
+      maxNativeZoom: 20,
     }).addTo(this.map);
     this.map.on('click', (e: L.LeafletMouseEvent) => { this.drawnPoints.push(e.latlng); this.updateDrawing(); });
     setTimeout(() => this.map?.invalidateSize(), 100);
