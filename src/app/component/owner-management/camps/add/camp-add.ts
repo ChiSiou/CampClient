@@ -109,11 +109,17 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
+  // 定位搜尋關鍵字跟「地址」欄位分開：地址會存進資料庫、前台會顯示，必須是真實地址；
+  // 但拿地址丟 Google 定位常常不準，用「營區名稱」搜尋反而更精準。
+  // 定位框選填：有填就用它定位，留空自動退回用地址欄位，正常情況營主不用多打字。
+  locateQuery = '';
+
   locateByAddress() {
-    if (!this.form.area.trim()) return;
+    const query = this.locateQuery.trim() || this.form.area.trim();
+    if (!query) return;
     this.locating = true;
     this.error = '';
-    this.campService.geocode(this.form.area).subscribe({
+    this.campService.geocode(query).subscribe({
       next: (res) => {
         this.map?.setView([res.lat, res.lng], 15);
         this.setLocation(res.lat, res.lng);

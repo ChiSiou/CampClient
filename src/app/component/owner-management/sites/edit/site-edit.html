@@ -61,8 +61,11 @@
       }
 
       <div class="form-group">
-        <label>描述</label>
-        <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="營位特色、備注..."></textarea>
+        <!-- 一般營區的個別營位描述前台不會顯示（前台看的是 Zone 描述），只出現在營主後台列表，
+             改標示成內部備註，拿來記「為什麼標維護中」這類資訊 -->
+        <label>{{ zoneType === 1 ? '內部備註（客人看不到）' : '描述' }}</label>
+        <textarea [(ngModel)]="form.description" name="description" rows="3"
+          [placeholder]="zoneType === 1 ? '例：地面破損維修中，預計 8 月開放' : '營位特色、備注...'"></textarea>
       </div>
 
       @if (error) { <div class="error-msg">{{ error }}</div> }

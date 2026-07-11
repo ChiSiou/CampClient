@@ -46,19 +46,21 @@
 
     <div class="form-group">
       <label>地區/地址 <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="form.area" name="area" placeholder="例：南投縣仁愛鄉..." />
+    </div>
+
+    <div class="form-group">
+      <label>地圖定位</label>
       <div class="area-row">
-        <input type="text" [(ngModel)]="form.area" name="area" placeholder="例：南投縣仁愛鄉..." />
+        <input type="text" [(ngModel)]="locateQuery" name="locateQuery"
+          placeholder="選填：地址不準時可改打營區名稱" />
         <button type="button" (click)="locateByAddress()" [disabled]="locating" class="btn-locate">
           {{ locating ? '定位中...' : '搜尋定位' }}
         </button>
       </div>
-    </div>
-
-    <div class="form-group">
-      <label>點地圖選點（自動填入經緯度）</label>
       <div #mapContainer class="map-container"></div>
       <div class="latlng-display">
-        緯度：{{ form.latitude || '—' }}　經度：{{ form.longitude || '—' }}
+        緯度：{{ form.latitude || '—' }}　經度：{{ form.longitude || '—' }}（也可直接點地圖選點）
       </div>
     </div>
 

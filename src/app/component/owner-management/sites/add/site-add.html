@@ -56,10 +56,13 @@
       </div>
     }
 
-    <div class="form-group">
-      <label>描述</label>
-      <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="營位特色、備注..."></textarea>
-    </div>
+    <!-- 一般營區不填個別營位描述：前台顯示的是 Zone 的描述，批次建立填了也只是複製 N 份沒人看的字 -->
+    @if (zoneType !== 1) {
+      <div class="form-group">
+        <label>描述</label>
+        <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="營位特色、備注..."></textarea>
+      </div>
+    }
 
     <!-- 一般營區的營位不上傳照片：前台（甘特圖/Zone 詳細頁）一律顯示 Zone 層級的照片 -->
     @if (zoneType !== 1) {

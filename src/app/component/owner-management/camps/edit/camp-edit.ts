@@ -114,11 +114,16 @@ export class CampEdit implements AfterViewInit, OnDestroy {
     else this.marker = L.marker([lat, lng]).addTo(this.map!);
   }
 
+  // 定位搜尋關鍵字跟「地址」欄位分開（同 camp-add）：地址存資料庫、前台顯示；
+  // 定位框選填，打營區名稱通常比地址定位更準，留空自動退回用地址欄位。
+  locateQuery = '';
+
   locateByAddress() {
-    if (!this.form.area.trim()) return;
+    const query = this.locateQuery.trim() || this.form.area.trim();
+    if (!query) return;
     this.locating = true;
     this.error = '';
-    this.campService.geocode(this.form.area).subscribe({
+    this.campService.geocode(query).subscribe({
       next: (res) => {
         this.map?.setView([res.lat, res.lng], 15);
         this.setLocation(res.lat, res.lng);

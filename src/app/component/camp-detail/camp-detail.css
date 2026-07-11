@@ -17,7 +17,9 @@
 .photo-grid {
   display: grid;
   grid-template-columns: 3fr 2fr;
-  grid-template-rows: 1fr;
+  /* 1fr 隱含 minmax(auto, 1fr)，內容（照片）會把格子撐到超過 480px；
+     改成 minmax(0, 1fr) 才會真的鎖死在 480px，不會被內容撐開 */
+  grid-template-rows: minmax(0, 1fr);
   height: 480px;
   gap: 6px;
   margin-top: 24px;
@@ -38,6 +40,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* Grid 子項目預設 min-height: auto，內容（照片）會把它撐到超過 100% 高度，
+     被 .photo-grid 的 overflow: hidden 裁掉，連帶切到裡面的查看更多按鈕 */
+  min-height: 0;
   gap: 6px;
 }
 
@@ -72,8 +77,9 @@
 
 .view-all-btn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  /* 用 18px（大於 .photo-grid 的 border-radius: 16px），確保不會被外層圓角裁切角落 */
+  bottom: 18px;
+  right: 18px;
   background: white;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
