@@ -93,7 +93,9 @@ export class Search implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
+    await import('leaflet.markercluster');
+
     // Icon.Default 內部的 _getIconUrl 永遠會自動加上偵測到的 imagePath 前綴（造成 /media/ 那段）
     // 刪掉這個覆寫方法，讓它改用 Icon 原本單純回傳 options.xxxUrl 的版本，不會加前綴
     delete (L.Icon.Default.prototype as any)._getIconUrl;
