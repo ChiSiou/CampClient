@@ -13,7 +13,9 @@
     <form (ngSubmit)="submit()">
       <div class="form-group">
         <label>營位編號 <span class="required">*</span></label>
-        <input type="text" [(ngModel)]="form.siteNumber" name="siteNumber" placeholder="例：A-01" />
+        <!-- 一般營區的編號是系統自動接續產生的，鎖住不讓手改，避免改成跟其他位置撞號 -->
+        <input type="text" [(ngModel)]="form.siteNumber" name="siteNumber" placeholder="例：A-01"
+          [readonly]="zoneType === 1" [class.readonly-input]="zoneType === 1" />
       </div>
 
       <div class="form-group">
@@ -71,7 +73,9 @@
       </div>
     </form>
 
-    @if (siteId) {
+    <!-- 一般營區（zoneType=1）不顯示營位照片管理：前台一律顯示 Zone 層級的照片，
+         個別營位傳了也沒地方顯示，只會誤導營主白做工 -->
+    @if (siteId && zoneType !== 1) {
       <app-photo-gallery referenceType="site" [referenceId]="siteId" />
     }
   }

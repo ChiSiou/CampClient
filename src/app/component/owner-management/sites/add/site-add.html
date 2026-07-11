@@ -8,10 +8,19 @@
   </div>
 
   <form (ngSubmit)="submit()">
-    <div class="form-group">
-      <label>營位編號 <span class="required">*</span></label>
-      <input type="text" [(ngModel)]="form.siteNumber" name="siteNumber" placeholder="例：A-01" />
-    </div>
+    @if (zoneType === 1) {
+      <!-- 一般營區沒有具名最小單位：填數量批次建立，編號自動接續產生 -->
+      <div class="form-group">
+        <label>新增數量 <span class="required">*</span></label>
+        <input type="number" [(ngModel)]="quantity" name="quantity" min="1" />
+        <span class="field-hint">將自動建立編號並批次新增，例如一次建立 10 個可訂位置</span>
+      </div>
+    } @else {
+      <div class="form-group">
+        <label>營位編號 <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="form.siteNumber" name="siteNumber" placeholder="例：A-01" />
+      </div>
+    }
 
     <div class="form-group">
       <label>容納人數</label>
@@ -52,29 +61,34 @@
       <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="營位特色、備注..."></textarea>
     </div>
 
-    <div class="form-group">
-      <label>營位照片</label>
-      <label class="photo-upload-area">
-        <input type="file" accept="image/*" multiple (change)="onFilesSelected($event)" hidden />
-        ＋ 點此選擇照片（可多選）
-      </label>
-      @if (previewUrls.length > 0) {
-        <div class="photo-preview-list">
-          @for (url of previewUrls; track $index) {
-            <div class="photo-preview-item">
-              <img [src]="url" />
-              <button type="button" (click)="removeFile($index)">×</button>
-            </div>
-          }
-        </div>
-      }
-    </div>
+    <!-- 一般營區的營位不上傳照片：前台（甘特圖/Zone 詳細頁）一律顯示 Zone 層級的照片 -->
+    @if (zoneType !== 1) {
+      <div class="form-group">
+        <label>營位照片</label>
+        <label class="photo-upload-area">
+          <input type="file" accept="image/*" multiple (change)="onFilesSelected($event)" hidden />
+          ＋ 點此選擇照片（可多選）
+        </label>
+        @if (previewUrls.length > 0) {
+          <div class="photo-preview-list">
+            @for (url of previewUrls; track $index) {
+              <div class="photo-preview-item">
+                <img [src]="url" />
+                <button type="button" (click)="removeFile($index)">×</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
 
     @if (error) { <div class="error-msg">{{ error }}</div> }
 
     <div class="form-actions">
       <button type="button" (click)="cancel()" class="btn-cancel">取消</button>
-      <button type="submit" [disabled]="submitting" class="btn-submit">{{ submitting ? '建立中...' : '建立營位' }}</button>
+      <button type="submit" [disabled]="submitting" class="btn-submit">
+        {{ submitting ? '建立中...' : (zoneType === 1 ? '批次建立營位' : '建立營位') }}
+      </button>
     </div>
   </form>
 </div>
