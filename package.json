@@ -1,9 +1,6 @@
 {
   "name": "camp-client",
   "version": "0.0.0",
-  "sideEffects": [
-    "leaflet.markercluster"
-  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
