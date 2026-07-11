@@ -57,7 +57,7 @@
             <td><span class="level-badge campground">營地</span></td>
             <td class="name-cell">
               @if (c.coverImageUrl) {
-                <img [src]="apiHost + c.coverImageUrl" alt="{{ c.name }}" class="thumb" />
+                <img [src]="resolveImageUrl(c.coverImageUrl)" alt="{{ c.name }}" class="thumb" />
               } @else {
                 <div class="thumb no-thumb"></div>
               }

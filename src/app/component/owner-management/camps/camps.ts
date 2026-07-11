@@ -39,6 +39,14 @@ export class Camps implements OnInit {
     });
   }
 
+  // 換 R2 之後 coverImageUrl 可能已經是完整網址（https://pub-xxxx.r2.dev/...），
+  // 舊資料才是後端本機相對路徑（/uploads/...），兩種都要處理，不能無條件接 apiHost
+  resolveImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return this.apiHost + url;
+  }
+
   toggleStatus(id: number, currentStatus: number) {
     const newStatus = currentStatus === CampgroundStatus.Active ? CampgroundStatus.Draft : CampgroundStatus.Active;
     const msg = newStatus === CampgroundStatus.Active ? '確定要上架此營地？（需通過 KYC 驗證且至少有一個營區/營位）' : '確定要下架此營地？';
