@@ -43,25 +43,24 @@ export class PhotoGallery implements OnInit {
     req.subscribe({ next: (photos) => this.photos = photos });
   }
 
-  onFileSelected(event: Event) {
+  async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+    const files = Array.from(input.files ?? []);
+    if (files.length === 0) return;
 
     this.uploading = true;
-    const req =
-      this.referenceType === 'campground' ? this.campService.uploadCampgroundPhoto(this.referenceId, file) :
-      this.referenceType === 'zone'       ? this.campService.uploadZonePhoto(this.referenceId, file) :
-                                            this.campService.uploadSitePhoto(this.referenceId, file);
-
-    req.subscribe({
-      next: (photo) => {
-        this.photos.push(photo);
-        this.uploading = false;
-        input.value = ''; // 清空 file input，讓同一張圖可以重複上傳
-      },
-      error: () => { this.uploading = false; },
-    });
+    for (const file of files) {
+      const req =
+        this.referenceType === 'campground' ? this.campService.uploadCampgroundPhoto(this.referenceId, file) :
+        this.referenceType === 'zone'       ? this.campService.uploadZonePhoto(this.referenceId, file) :
+                                              this.campService.uploadSitePhoto(this.referenceId, file);
+      try {
+        const photo = await req.toPromise();
+        if (photo) this.photos.push(photo);
+      } catch { }
+    }
+    this.uploading = false;
+    input.value = '';
   }
 
   deletePhoto(mediaId: number) {

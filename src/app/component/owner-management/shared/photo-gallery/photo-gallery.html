@@ -3,7 +3,7 @@
     <h3>圖片相簿</h3>
     <label class="btn-upload" [class.uploading]="uploading">
       {{ uploading ? '上傳中...' : '+ 上傳圖片' }}
-      <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploading" hidden />
+      <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" [disabled]="uploading" hidden />
     </label>
   </div>
 
