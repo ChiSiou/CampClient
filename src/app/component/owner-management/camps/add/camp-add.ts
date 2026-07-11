@@ -162,6 +162,11 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     this.previewUrls.splice(i, 1);
   }
 
+  // 記住「已經成功建立」的營地 id：如果建立成功但照片上傳失敗，使用者按重試時
+  // 不能再呼叫一次 createCampground，不然每重試一次就多一筆孤兒營地（Name/Area 都一樣、
+  // 只是照片沒傳成功），要沿用同一筆繼續補傳照片
+  private createdCampgroundId: number | null = null;
+
   async submit() {
     if (!this.form.name.trim() || !this.form.area.trim()) {
       this.error = '請填寫必填欄位（名稱、地區）';
@@ -169,22 +174,37 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     }
     this.submitting = true;
     this.error = '';
-    const dto: CampgroundCreateDto = {
-      ...this.form,
-      latitude: +this.form.latitude || 0,
-      longitude: +this.form.longitude || 0,
-      elevation: +this.form.elevation || 0,
-      basePrice: +this.form.basePrice || 0,
-    };
+
     try {
-      const res = await this.campService.createCampground(dto).toPromise();
-      const id = res!.id;
-      for (const file of this.selectedFiles) {
+      let id = this.createdCampgroundId;
+      if (id === null) {
+        const dto: CampgroundCreateDto = {
+          ...this.form,
+          latitude: +this.form.latitude || 0,
+          longitude: +this.form.longitude || 0,
+          elevation: +this.form.elevation || 0,
+          basePrice: +this.form.basePrice || 0,
+        };
+        const res = await this.campService.createCampground(dto).toPromise();
+        id = res!.id;
+        this.createdCampgroundId = id;
+      }
+
+      // 每上傳成功一張就從待傳清單移除，重試時只會補傳「還沒成功」的那幾張，
+      // 不會把已經傳過的檔案再送一次
+      for (const file of [...this.selectedFiles]) {
         await this.campService.uploadCampgroundPhoto(id, file).toPromise();
+        const idx = this.selectedFiles.indexOf(file);
+        if (idx >= 0) {
+          this.selectedFiles.splice(idx, 1);
+          this.previewUrls.splice(idx, 1);
+        }
       }
       this.router.navigate(['/ownerCenter/camps']);
     } catch (err: any) {
-      this.error = err.error?.message ?? '建立失敗，請稍後再試';
+      this.error = this.createdCampgroundId
+        ? (err.error?.message ?? '照片上傳失敗，營地已建立，請重新選擇照片或直接按「建立營地」繼續上傳')
+        : (err.error?.message ?? '建立失敗，請稍後再試');
       this.submitting = false;
     }
   }
