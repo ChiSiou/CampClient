@@ -21,7 +21,6 @@ export class OrderDetail implements OnInit {
   loading = true;
   error = '';
 
-  selectedDetailIds: number[] = [];
   cancelling = false;
   cancelError = '';
   refundResult: RefundResultDto | null = null;
@@ -41,30 +40,18 @@ export class OrderDetail implements OnInit {
     });
   }
 
-  canCancel(detail: OrderDetailItemDto): boolean {
-    return detail.status === 1;
-  }
-
-  toggleSelect(id: number) {
-    const idx = this.selectedDetailIds.indexOf(id);
-    if (idx >= 0) this.selectedDetailIds.splice(idx, 1);
-    else this.selectedDetailIds.push(id);
-  }
-
-  isSelected(id: number): boolean {
-    return this.selectedDetailIds.includes(id);
-  }
-
   submitCancel() {
-    if (this.selectedDetailIds.length === 0) { this.cancelError = '請勾選要退款的項目'; return; }
-    if (!confirm('確定要申請取消/退款？送出後立即執行，無法撤回。')) return;
+    const allPaidIds = (this.order?.details ?? [])
+      .filter(d => d.status === 1)
+      .map(d => d.orderDetailId);
+    if (allPaidIds.length === 0) { this.cancelError = '沒有可退款的項目'; return; }
+    if (!confirm('確定要取消整筆訂單並退款？送出後立即執行，無法撤回。')) return;
     this.cancelling = true;
     this.cancelError = '';
-    this.orderService.cancelOrder(this.orderId, { orderDetailIds: this.selectedDetailIds }).subscribe({
+    this.orderService.cancelOrder(this.orderId, { orderDetailIds: allPaidIds }).subscribe({
       next: (result) => {
         this.refundResult = result;
         this.cancelling = false;
-        this.selectedDetailIds = [];
         this.loadDetail();
       },
       error: (err) => {

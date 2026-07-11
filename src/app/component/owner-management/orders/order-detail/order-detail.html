@@ -56,7 +56,6 @@
       <table class="detail-table">
         <thead>
           <tr>
-            <th>勾選</th>
             <th>類型</th>
             <th>項目</th>
             <th>入住日期</th>
@@ -69,14 +68,7 @@
         </thead>
         <tbody>
           @for (d of order.details; track d.orderDetailId) {
-            <tr [class.selected-row]="isSelected(d.orderDetailId)">
-              <td>
-                @if (canCancel(d)) {
-                  <input type="checkbox"
-                    [checked]="isSelected(d.orderDetailId)"
-                    (change)="toggleSelect(d.orderDetailId)" />
-                }
-              </td>
+            <tr>
               <td>{{ d.itemType === 'Campsite' ? '營位' : '裝備' }}</td>
               <td>
                 @if (d.itemType === 'Campsite') {
@@ -104,8 +96,8 @@
       @if (order.status === 1 || order.status === 3) {
         <div class="cancel-section">
           @if (cancelError) { <div class="error-msg">{{ cancelError }}</div> }
-          <button (click)="submitCancel()" [disabled]="cancelling || selectedDetailIds.length === 0" class="btn-cancel-order">
-            {{ cancelling ? '處理中...' : '申請取消/退款（' + selectedDetailIds.length + ' 筆）' }}
+          <button (click)="submitCancel()" [disabled]="cancelling" class="btn-cancel-order">
+            {{ cancelling ? '處理中...' : '申請取消整筆訂單/退款' }}
           </button>
           <p class="cancel-note">送出後立即執行退款，無法撤回。</p>
         </div>
