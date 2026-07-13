@@ -159,6 +159,9 @@ export class HeaderWMenu implements OnDestroy {
       this.routes.navigate(['/ownerCenter/notifications']);
     }
   }
+  forum() {
+    this.routes.navigate(['/forum']);
+  }
   profiles() {
     if (this.activeUserRole === 'User') {
       this.routes.navigate(['/member-center']);
@@ -175,6 +178,7 @@ export class HeaderWMenu implements OnDestroy {
   }
   readonly menu = viewChild.required<Menu>('menu');
   readonly menuItems: MenuItem[] = [
+    { label: '野營社群', icon: 'pi pi-comments', command: () => this.forum() },
     { label: '我的收藏', icon: 'pi pi-heart', command: () => this.liked() },
     { label: '訂單', icon: 'pi pi-receipt', command: () => this.order() },
     { label: '行程', icon: 'pi pi-map', command: () => this.itinerary() },
