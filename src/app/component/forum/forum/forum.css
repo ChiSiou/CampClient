@@ -25,29 +25,31 @@
 }
 
 .card-cover {
+  position: relative;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card-cover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
-}
-
-.card-cover__img-wrap {
-  overflow: hidden;
-}
-
-.card-cover__img-wrap img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+  min-height: 320px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
   transition: transform 0.3s;
 }
 
-.card-cover:hover .card-cover__img-wrap img {
-  transform: scale(1.05);
+.card-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.card-cover:hover {
+  transform: scale(1.03);
+}
+
+.card-cover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.text-shadow-1 {
+  text-shadow: 0 .1rem .1rem rgba(0, 0, 0, .75);
 }
