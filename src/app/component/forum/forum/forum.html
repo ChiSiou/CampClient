@@ -40,27 +40,29 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 align-items-stretch g-4 py-3">
       @for (post of filteredPosts; track post.postId) {
       <div class="col">
-        <div class="lc-block card card-cover h-100 overflow-hidden text-white bg-dark rounded-5 shadow-lg"
-          [style.background-image]="'url(' + getMainImage(post) + ')'" (click)="gotoPost(post.postId)">
-          <div class="d-flex flex-column h-100 p-4 pb-3 text-white text-shadow-1">
-            <small class="lc-block text-uppercase">{{ post.postCategoryName }}</small>
-            <div class="lc-block mt-auto mb-2">
+        <div class="lc-block card card-cover h-100 bg-white rounded-5" (click)="gotoPost(post.postId)">
+          <div class="card-cover__img-wrap">
+            <img [src]="getMainImage(post)" [alt]="post.title" class="img-fluid card-img-top" loading="lazy">
+          </div>
+          <div class="d-flex flex-column p-4 pb-3">
+            <small class="lc-block text-uppercase text-muted">{{ post.postCategoryName }}</small>
+            <div class="lc-block mb-2">
               <h2 class="h5 lh-1 fw-bold">{{ post.title }}</h2>
               <p class="text-truncate mb-0">{{ post.mainContent }}</p>
             </div>
-            <ul class="lc-block d-flex align-items-center justify-content-between list-unstyled mb-0">
-              <li class="small d-flex align-items-center">
+            <ul class="lc-block d-flex align-items-center justify-content-between list-unstyled mb-0 mt-auto">
+              <li class="small d-flex align-items-center text-muted">
                 <span>{{ post.postDate | date:'yyyy-MM-dd' }}</span>
                 <span *ngIf="likeCountMap[post.postId]" class="ms-2">
                   <i class="pi pi-heart-fill" style="color:#e74c3c; font-size:0.75rem;"></i>
                   {{ likeCountMap[post.postId] }}
                 </span>
                 <span *ngIf="post.commentCount" class="ms-2"><i class="pi pi-comment me-1"
-                    style="color:#ffffff; font-size:0.75rem;"></i>{{
+                    style="font-size:0.75rem;"></i>{{
                   post.commentCount}}</span>
               </li>
               <li>
-                <a class="btn btn-link btn-sm text-white" href="javascript:void(0)"
+                <a class="btn btn-link btn-sm" href="javascript:void(0)"
                   (click)="$event.stopPropagation(); gotoPost(post.postId)">閱讀更多</a>
               </li>
             </ul>
