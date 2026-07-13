@@ -19,19 +19,19 @@
 
     <!-- 分類篩選按鈕 -->
 
-    <div class="justify-align-center py-4">
+    <div class="justify-align-center py-4 my-1">
 
       @if(isLogin){
-      <p-button (click)="addPost()" label="我要發文" class="mx-1" />
+      <p-button (click)="addPost()" label="我要發文" class="mx-2" />
       }
       @else {
-      <p-button (click)="toLogin()" label="登入發文" class="mx-1" />
+      <p-button (click)="toLogin()" label="登入發文" class="mx-2" />
       }
 
       @for (cat of categories; track cat) {
       <p-button [label]="cat" variant="outlined"
         [severity]="selectedCategory === cat || (cat === '全部' && !selectedCategory) ? 'success' : 'secondary'"
-        class="mx-1" (onClick)="filterByCategory(cat)">
+        class="mx-2 my-1" (onClick)="filterByCategory(cat)">
       </p-button>
       }
 
