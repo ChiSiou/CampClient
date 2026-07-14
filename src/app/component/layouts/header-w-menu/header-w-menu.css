@@ -232,4 +232,19 @@
   .site-footer__inner {
     grid-template-columns: 1fr;
   }
+
+  /* 手機窄螢幕：logo + 使用者名稱文字 + 3 顆圖示按鈕擠不下（實測 scrollWidth 溢出約 28px），
+     藏起使用者名稱文字，身份還是能從頭像/選單按鈕點進去看到 */
+  .user-info {
+    display: none;
+  }
+
+  .site-header__inner {
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
 }

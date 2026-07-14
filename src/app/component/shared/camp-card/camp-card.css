@@ -255,3 +255,25 @@
   height: 14px;
   object-fit: contain;
 }
+
+/* ===== RWD：手機寬度下橫式卡片改直式，避免固定 280px 圖片寬度把內容擠爆 ===== */
+@media (max-width: 600px) {
+  .camp-card--horizontal {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .camp-card--horizontal .camp-card__img-wrap {
+    width: 100%;
+    height: 200px;
+  }
+
+  .camp-card--horizontal .camp-card__highlights,
+  .camp-card--horizontal .camp-card__tags {
+    max-height: none;
+  }
+
+  .camp-card--horizontal .camp-card__name {
+    -webkit-line-clamp: unset;
+  }
+}

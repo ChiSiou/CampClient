@@ -190,4 +190,13 @@
   .camps-grid {
     grid-template-columns: 1fr;
   }
+
+  /* 手機版 search-bar 改直式堆疊後變高，蓋在 240px 的 Banner 圖上會溢出蓋到導覽列，
+     改成不疊圖、放在 Banner 下方的正常文件流裡 */
+  .banner-search {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    padding: 16px 20px 0;
+  }
 }

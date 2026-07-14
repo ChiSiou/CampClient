@@ -190,3 +190,42 @@
   color: #717171 !important;
   width: 100% !important;
 }
+
+/* ===== RWD：手機寬度塞不下 3 個欄位並排，改直式堆疊，分隔線改水平線 ===== */
+@media (max-width: 640px) {
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 20px;
+    padding: 10px 16px;
+    gap: 4px;
+  }
+
+  .search-bar--compact {
+    padding: 10px 16px;
+  }
+
+  .search-bar__field {
+    width: 100%;
+    padding: 8px 0;
+  }
+
+  .search-bar__divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .search-bar__submit {
+    width: 100%;
+    height: 44px;
+    border-radius: 22px;
+    margin-top: 4px;
+    gap: 8px;
+  }
+
+  .search-bar__submit::after {
+    content: '搜尋';
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
