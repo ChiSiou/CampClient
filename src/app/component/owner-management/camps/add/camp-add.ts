@@ -241,7 +241,7 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
           this.previewUrls.splice(idx, 1);
         }
       }
-      this.router.navigate(['/ownerCenter/camps']);
+      this.router.navigate(['/ownerCenter/camps', id, 'zones', 'add']);
     } catch (err: any) {
       this.error = this.createdCampgroundId
         ? (err.error?.message ?? '照片上傳失敗，營地已建立，請重新選擇照片或直接按「建立營地」繼續上傳')

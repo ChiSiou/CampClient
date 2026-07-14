@@ -211,7 +211,7 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
       for (const file of this.selectedFiles) {
         await this.campService.uploadZonePhoto(id, file).toPromise();
       }
-      this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones']);
+      this.router.navigate(['/ownerCenter/camps', this.campgroundId, 'zones', id, 'sites', 'add']);
     } catch (err: any) {
       this.error = err.error?.message ?? '建立失敗';
       this.submitting = false;
