@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -20,7 +20,7 @@ export interface SearchBarInitial {
   styleUrl: './search-bar.css',
   imports: [FormsModule, DatePickerModule, PopoverModule, ButtonModule],
 })
-export class SearchBar implements OnInit {
+export class SearchBar implements OnInit, OnDestroy {
   @Input() initial?: SearchBarInitial;
   @Input() compact = false;
 
@@ -53,6 +53,12 @@ export class SearchBar implements OnInit {
         this.quantities[r.itemId] = r.quantity;
       });
     });
+  }
+
+  // 元件被砍掉前（例如換頁）先關閉懸浮面板，不然它是渲染在 document.body、
+  // 不受 Angular 元件生命週期管理，會變成沒人清理的孤兒 DOM，飄在其他頁面上
+  ngOnDestroy() {
+    this.guestPanel?.hide();
   }
 
   get guestLabel(): string {
