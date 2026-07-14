@@ -8,6 +8,69 @@
   font-size: 1.4rem;
 }
 
+.step-indicator {
+  display: flex;
+  margin-bottom: 28px;
+}
+
+.step-dot {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  color: #999;
+}
+
+.step-dot:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #ddd;
+  z-index: 0;
+}
+
+.step-dot.done:not(:last-child)::after {
+  background: #4a7c59;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #eee;
+  color: #999;
+  font-size: 0.8rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.step-dot.active .step-num {
+  background: #4a7c59;
+  color: #fff;
+}
+
+.step-dot.done .step-num {
+  background: #4a7c59;
+  color: #fff;
+}
+
+.step-label {
+  display: block;
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+
+.step-dot.active .step-label {
+  color: #2d6a3f;
+  font-weight: 600;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -138,22 +201,26 @@
 
 .area-row {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 
 .area-row input {
   flex: 1;
+  min-width: 180px;
 }
 
 .btn-locate {
   padding: 8px 14px;
   background: #4a7c59;
   color: #fff;
-  border: none;
+  /* 邊框寬度跟 input 一致（1px），只是顏色設成透明，這樣兩者的實際佔用高度才會完全相同 */
+  border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .btn-locate:disabled {
@@ -162,10 +229,11 @@
 }
 
 .map-container {
-  height: 320px;
+  height: 480px;
   border-radius: 8px;
   border: 1px solid #ccc;
   margin-bottom: 6px;
+  isolation: isolate;
 }
 
 .latlng-display {

@@ -91,22 +91,24 @@
 
 .area-row {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .area-row input {
   flex: 1;
+  min-width: 180px;
 }
 
 .btn-locate {
   padding: 8px 14px;
   background: #4a7c59;
   color: #fff;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .btn-locate:disabled {
@@ -119,6 +121,7 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   margin-bottom: 6px;
+  isolation: isolate;
 }
 
 .latlng-display {

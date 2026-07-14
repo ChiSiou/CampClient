@@ -45,6 +45,8 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
   locating = false;
   fetchingElevation = false;
   error = '';
+  currentStep = 1;
+  stepLabels = ['基本資料', '地區與地圖', '標籤', '照片'];
   selectedFiles: File[] = [];
   previewUrls: string[] = [];
 
@@ -85,7 +87,14 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     this.form.highlights.splice(i, 1);
   }
 
-  ngAfterViewInit() {
+  private mapInitialized = false;
+
+  ngAfterViewInit() {}
+
+  // 地圖延後到使用者第一次切到「地區與地圖」那步才初始化：
+  // 第 1 步時這個容器是 display:none，這時候建立 Leaflet 地圖會抓到 0 尺寸，
+  // 之後就算切到可見的步驟，畫面也是空白的（invalidateSize 救不回一開始就抓錯的尺寸）。
+  private initMap() {
     this.map = L.map(this.mapContainer.nativeElement).setView([23.5, 121.0], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -109,11 +118,17 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
+  // 定位搜尋關鍵字跟「地址」欄位分開：地址會存進資料庫、前台會顯示，必須是真實地址；
+  // 但拿地址丟 Google 定位常常不準，用「營區名稱」搜尋反而更精準。
+  // 定位框選填：有填就用它定位，留空自動退回用地址欄位，正常情況營主不用多打字。
+  locateQuery = '';
+
   locateByAddress() {
-    if (!this.form.area.trim()) return;
+    const query = this.locateQuery.trim() || this.form.area.trim();
+    if (!query) return;
     this.locating = true;
     this.error = '';
-    this.campService.geocode(this.form.area).subscribe({
+    this.campService.geocode(query).subscribe({
       next: (res) => {
         this.map?.setView([res.lat, res.lng], 15);
         this.setLocation(res.lat, res.lng);
@@ -160,6 +175,32 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
   removeFile(i: number) {
     this.selectedFiles.splice(i, 1);
     this.previewUrls.splice(i, 1);
+  }
+
+  nextStep() {
+    this.error = '';
+    if (this.currentStep === 1 && (!this.form.name.trim() || !this.form.phone.trim())) {
+      this.error = '請填寫必填欄位（名稱、聯絡電話）';
+      return;
+    }
+    if (this.currentStep === 2 && !this.form.area.trim()) {
+      this.error = '請填寫地區/地址';
+      return;
+    }
+    this.currentStep++;
+    if (this.currentStep === 2) {
+      if (!this.mapInitialized) {
+        this.mapInitialized = true;
+        setTimeout(() => this.initMap(), 0);
+      } else {
+        setTimeout(() => this.map?.invalidateSize(), 0);
+      }
+    }
+  }
+
+  prevStep() {
+    this.error = '';
+    this.currentStep--;
   }
 
   async submit() {
