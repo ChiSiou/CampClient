@@ -140,6 +140,17 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
   }
   isFacilitySelected(id: number) { return this.form.facilityIds.includes(id); }
 
+  // Demo 用：帶入除了範圍（geoJson）以外的欄位，範圍要展示現場在地圖上打點畫多邊形
+  fillDemoData() {
+    this.form.zoneName = 'A區 - 星空景觀區';
+    this.form.zoneDescription = '緊鄰觀景平台，視野開闊，適合夜間觀星，鄰近衛浴與炊事區。';
+    this.form.zoneType = 1;
+    this.form.pricing.weekdayPrice = 600;
+    this.form.pricing.weekendPrice = 900;
+    this.form.facilityIds = this.facilities.slice(0, 3).map(f => f.id);
+    this.form.tagIds = this.tags.slice(0, 3).map(t => t.id);
+  }
+
   get drawnPointCount() { return this.drawnPoints.length; }
 
   undoLastPoint() { if (this.drawnPoints.length > 0) { this.drawnPoints.pop(); this.updateDrawing(); } }

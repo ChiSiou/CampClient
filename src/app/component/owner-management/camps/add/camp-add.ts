@@ -87,6 +87,18 @@ export class CampAdd implements AfterViewInit, OnDestroy, OnInit {
     this.form.highlights.splice(i, 1);
   }
 
+  // Demo 用：帶入除了座標/海拔以外的欄位（那兩個要展示真的搜尋定位／抓高度 API，不能用假資料蓋掉）
+  fillDemoData() {
+    this.form.name = '阿里山星空營地';
+    this.form.phone = '0912-345-678';
+    this.form.description = '座落於阿里山半山腰，鄰近步道與雲海觀景平台，適合親子與情侶露營，夜晚可仰望滿天星空。';
+    this.form.rules = '請勿大聲喧嘩，晚間 10 點後保持安靜；請將垃圾分類帶下山；營區內禁止升營火。';
+    this.form.highlights = ['夜間觀星', '日出雲海', '森林步道'];
+    this.form.area = '嘉義縣阿里山鄉中正村 5 號';
+    this.form.basePrice = 800;
+    this.form.tagIds = this.tags.slice(0, 3).map(t => t.id);
+  }
+
   private mapInitialized = false;
 
   ngAfterViewInit() {}
