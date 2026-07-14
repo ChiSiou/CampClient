@@ -69,3 +69,29 @@
   color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
+
+/* ===== RWD：手機版沒有多餘寬度放外側的 prev/next 按鈕，收進圖片內側 ===== */
+@media (max-width: 600px) {
+  .lightbox-nav {
+    font-size: 28px;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .lightbox-nav--prev { left: 4px; }
+  .lightbox-nav--next { right: 4px; }
+
+  .lightbox-close {
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 6px;
+  }
+
+  .lightbox-counter {
+    bottom: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+}

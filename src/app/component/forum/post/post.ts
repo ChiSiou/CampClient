@@ -555,7 +555,9 @@ export class Post implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: '留言失敗',
-          detail: '請檢查是否已登入。',
+          detail: err.status === 400
+            ? (err.error?.message ?? '留言內容不符合社群規範，請修改後再送出。')
+            : '請檢查是否已登入。',
           life: 3000,
         });
       },
@@ -641,7 +643,9 @@ export class Post implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: '編輯失敗',
-          detail: '請稍後再試。',
+          detail: err.status === 400
+            ? (err.error?.message ?? '留言內容不符合社群規範，請修改後再送出。')
+            : '請稍後再試。',
           life: 3000,
         });
       },

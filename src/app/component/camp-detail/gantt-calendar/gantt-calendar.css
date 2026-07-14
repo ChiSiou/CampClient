@@ -46,6 +46,13 @@
   padding: 16px;
   border: 1px solid #ebebeb;
   border-radius: 16px;
+  /* 保留手指滑動捲動能力，只隱藏捲軸的視覺樣式 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gantt__table-wrap::-webkit-scrollbar {
+  display: none;
 }
 
 .gantt__table {
@@ -160,6 +167,20 @@
   border-color: #c0d694;
   border-left-width: 0;
   border-radius: 0 16px 16px 0;
+}
+
+/* 點兩下選日期：第一下點的那格，等待使用者點第二下決定入住/退房 */
+.gantt__cell--pending {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px #8fae54;
+  border-radius: 16px;
+}
+
+.gantt__interaction-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #717171;
+  margin-bottom: 12px;
 }
 
 .gantt__cell--dragging {
@@ -531,4 +552,100 @@
   outline: none;
   border-color: #3f6b45;
   box-shadow: 0 0 0 3px rgba(63, 107, 69, 0.14);
+}
+
+/* ===== RWD：手機版把「表格＋260px 固定寬度摘要欄」改上下堆疊，
+   表格本身已經有 overflow-x: auto，維持自己的橫向捲動即可，不用另外改表格內部寬度 ===== */
+@media (max-width: 900px) {
+  .gantt__layout {
+    flex-direction: column;
+  }
+
+  .gantt__summary {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #ebebeb;
+    padding-left: 0;
+    padding-top: 20px;
+  }
+
+  .gantt__zone-map {
+    height: 380px;
+  }
+
+  .gantt__toolbar {
+    flex-wrap: wrap;
+    row-gap: 14px;
+    column-gap: 10px;
+  }
+
+  /* 跳日期輸入框換行後，跟上面「上10天/日期範圍/下10天」那排貼太近，
+     獨立成一整行、拉開間距、加寬方便點擊 */
+  .gantt__date-picker {
+    flex-basis: 100%;
+    margin-top: 4px;
+    margin-left: 0;
+    text-align: center;
+    padding: 8px 10px;
+  }
+
+  /* 表格欄位縮窄，讓手機一次能看到更多天，減少「拖曳選格」跟「橫向捲動看更多天」搶同一個手勢的情況 */
+  .gantt__row-label-cell {
+    width: 84px;
+    font-size: 12px;
+  }
+
+  .gantt__date-cell,
+  .gantt__cell {
+    width: 52px;
+  }
+
+  .gantt__date-cell {
+    font-size: 11px;
+    padding: 6px 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gantt__zone-map {
+    height: 300px;
+  }
+
+  .gantt__row-label-cell {
+    width: 72px;
+  }
+
+  .gantt__date-cell,
+  .gantt__cell {
+    width: 44px;
+  }
+
+  .gantt__cell {
+    height: 36px;
+  }
+
+  /* 工具列太擠：上/下 10 天按鈕縮成純箭頭圓鈕，日期範圍文字縮小，
+     騰出空間給下面獨立一行的跳日期輸入框 */
+  .gantt__nav-btn-label {
+    display: none;
+  }
+
+  .gantt__nav-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .gantt__range-label {
+    font-size: 12px;
+  }
+
+  .gantt__toolbar {
+    gap: 8px;
+  }
 }

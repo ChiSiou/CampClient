@@ -51,6 +51,13 @@ export class Register {
     };
     reader.readAsDataURL(this.selectedFile);
   }
+  quickRegister() {
+    this.memberData.Name = '陳維昕';
+    this.memberData.Phone = '0965164875';
+    this.memberData.Email = 'CampPlatform0420@gmail.com';
+    this.memberData.Password = '!@#CampPlatform';
+    this.memberData.ConfirmPassword = '!@#CampPlatform';
+  }
   submituser() {
     if (!this.emailPattern.test(this.memberData.Email.trim())) {
       this.messageService.add({

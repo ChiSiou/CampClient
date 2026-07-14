@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePickerModule } from 'primeng/datepicker';
-import { PopoverModule } from 'primeng/popover';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { ButtonModule } from 'primeng/button';
 import { SearchService } from '../../../services/search.service';
 import { CampSearchOption, RequirementItem } from '../../../interfaces/camp.interface';
@@ -23,6 +23,10 @@ export interface SearchBarInitial {
 export class SearchBar implements OnInit {
   @Input() initial?: SearchBarInitial;
   @Input() compact = false;
+
+  // 換頁前要主動關閉，不然懸浮面板是傳送到 document.body 渲染的，
+  // 換頁把這個元件砍掉的時機如果搶在面板自己的關閉流程前面，會留下沒人清理的孤兒 DOM
+  @ViewChild('guestPanel') guestPanel!: Popover;
 
   area = '';
   dateRange: Date[] = [];
@@ -68,6 +72,8 @@ export class SearchBar implements OnInit {
   }
 
   search() {
+    this.guestPanel?.hide();
+
     const params: Record<string, any> = { pageNumber: 1 };
     params['area'] = this.area || null;
     params['checkInDate'] = this.dateRange?.[0] ? this.formatDate(this.dateRange[0]) : null;

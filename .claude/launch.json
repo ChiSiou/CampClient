@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["ng", "serve"],
       "port": 4200
+    },
+    {
+      "name": "prod-dist",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-s", "dist/CampClient/browser", "-l", "8085"],
+      "port": 8085
     }
   ]
 }

@@ -314,6 +314,7 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
 
   removeAtCheckout(row: GanttRowItem, dateIndex: number, event: Event) {
     event.stopPropagation();
+    this.pendingTap = null; // 保險：避免按鈕的 mousedown 冒泡誤觸發待選狀態殘留白框
     const date = this.matrixDates[dateIndex];
 
     const directEntry = this.selections.find(s => s.displayRowCampsiteId === row.campsiteId && date === s.checkOutDate);
@@ -355,16 +356,41 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
   @HostListener('document:mouseup')
   onMouseUp() {
     if (!this.drag) return;
-    const row = this.ganttRows[this.drag.rowIndex];
+    const rowIndex = this.drag.rowIndex;
+    const row = this.ganttRows[rowIndex];
+    const clickedIdx = this.drag.startDateIndex; // 沒有真的拖曳的話，start === end，就是使用者點的那一格
 
     const [fromIdx, toIdx] = [this.drag.startDateIndex, this.drag.endDateIndex].sort((a, b) => a - b);
     this.drag = null;
 
-    // 退房日 = 拖曳放開滑鼠的那一格，不額外往後加一天：使用者拖到哪天，那天就是退房日，
-    // 跟 isSelected() 的 [checkInDate, checkOutDate) 慣例完全相容——退房日本身不會被算進已選的晚數
-    // 至少要拖 2 格（1 晚）才算有效選位，只點 1 格（入住=退房，0 晚）視為無效操作直接忽略
-    if (toIdx <= fromIdx) return;
+    // 有拖出範圍：沿用原本邏輯，直接送出選位（桌機滑鼠拖曳）
+    if (toIdx > fromIdx) {
+      this.pendingTap = null; // 用拖曳完成選位，清掉任何還沒補第二下的點擊狀態
+      this.commitSelection(row, fromIdx, toIdx);
+      return;
+    }
 
+    // 沒有拖曳距離＝單純點擊一格：改成「點兩下決定入住/退房」，桌機、手機都適用
+    // （手機摸不動拖曳，只會走到這個分支；桌機滑鼠點擊也一樣可以用這套）
+    if (this.pendingTap && this.pendingTap.rowIndex === rowIndex) {
+      if (this.pendingTap.dateIndex === clickedIdx) {
+        // 點了同一格兩次：取消，重新選
+        this.pendingTap = null;
+        return;
+      }
+      const [a, b] = [this.pendingTap.dateIndex, clickedIdx].sort((x, y) => x - y);
+      this.pendingTap = null;
+      this.commitSelection(row, a, b);
+      return;
+    }
+
+    // 第一次點擊，或換了別列點擊：記錄成待補的入住/退房其中一格，等第二次點擊
+    this.pendingTap = { rowIndex, dateIndex: clickedIdx };
+  }
+
+  // 退房日 = 兩次點擊（或拖曳放開滑鼠）裡比較晚的那一格，不額外往後加一天：
+  // 跟 isSelected() 的 [checkInDate, checkOutDate) 慣例完全相容——退房日本身不會被算進已選的晚數
+  private commitSelection(row: GanttRowItem, fromIdx: number, toIdx: number) {
     const checkInDate = this.matrixDates[fromIdx];
     const checkOutDate = this.matrixDates[toIdx];
 
@@ -373,12 +399,33 @@ export class GanttCalendar implements OnInit, OnChanges, AfterViewInit {
       zoneId: row.zoneId,
       checkInDate,
       checkOutDate,
-      displayRowCampsiteId: row.campsiteId, // 畫面高亮永遠用拖的那一列，跟送給後端的 campsiteId 無關
+      displayRowCampsiteId: row.campsiteId, // 畫面高亮永遠用選取的那一列，跟送給後端的 campsiteId 無關
       displayName: this.rowLabel(row),
       zoneType: row.zoneType,
     };
 
     this.addOrMergeSelection(entry);
+  }
+
+  // 「等待第二次點擊」的暫存狀態：只記錄使用者點的第一格，還沒真的送進 selections
+  pendingTap: { rowIndex: number; dateIndex: number } | null = null;
+
+  isPendingStart(rowIndex: number, dateIndex: number): boolean {
+    return !!this.pendingTap && this.pendingTap.rowIndex === rowIndex && this.pendingTap.dateIndex === dateIndex;
+  }
+
+  // 手機版拖曳選格用不了（觸控不會觸發 mouseenter），改顯示「點選入住日、退房日」的提示；
+  // 桌機兩種操作都能用，維持原本拖曳的提示文字。跟其他 RWD 斷點一致，用螢幕寬度判斷
+  private readonly mobileBreakpoint = 900;
+  viewportWidth = window.innerWidth;
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.viewportWidth = window.innerWidth;
+  }
+
+  get isMobileView(): boolean {
+    return this.viewportWidth <= this.mobileBreakpoint;
   }
 
   // 同一列如果有跟新選位「重疊或緊接著」的舊選位，合併成一筆連續的，不要疊成兩筆

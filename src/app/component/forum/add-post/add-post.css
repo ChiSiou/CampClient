@@ -17,6 +17,13 @@
   margin-bottom: 2rem;
 }
 
+.sample-post-actions {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 720px;
+  margin: -1.25rem auto 1rem;
+}
+
 .add-post-form {
   background: #fff;
   border-radius: 16px;

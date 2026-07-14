@@ -3,7 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import * as L from 'leaflet';
+// 一定要用 default import 而不是 `import * as L`：
+// esbuild（production build）處理 `import * as` 時會把 CommonJS 模組的屬性「複製」成新物件，
+// markercluster 是載入後才把 markerClusterGroup 掛到原始 leaflet 模組上，複製品看不到，
+// 部署後會炸 "markerClusterGroup is not a function"（開發模式打包方式不同所以沒事）。
+// default import 拿到的是原始模組物件本身，事後掛上去的插件方法才看得到。
+import L from 'leaflet';
 import 'leaflet.markercluster';
 import { CampCard } from '../shared/camp-card/camp-card';
 import { SearchBar, SearchBarInitial } from '../shared/search-bar/search-bar';

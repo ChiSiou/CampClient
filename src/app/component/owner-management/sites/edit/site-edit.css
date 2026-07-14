@@ -10,6 +10,7 @@
 .required { color: #c0392b; }
 .form-group input, .form-group textarea { border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; font-size: 0.95rem; outline: none; }
 .form-group input:focus, .form-group textarea:focus { border-color: #4a7c59; }
+.readonly-input { background: #f5f5f5; color: #888; cursor: not-allowed; }
 
 .radio-group { display: flex; gap: 20px; }
 .radio-label { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer; font-weight: normal; }

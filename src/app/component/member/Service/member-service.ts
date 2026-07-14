@@ -15,6 +15,7 @@ import { OrderList } from '../interface/orderList';
 import { LoginServiceResult, ServiceResult } from '../interface/ServiceResult';
 import { OwnerOrderList } from '../interface/ownerOrderList';
 import { BehaviorSubject, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface CurrentMemberProfile {
   name?: string;
@@ -27,7 +28,7 @@ export interface CurrentMemberProfile {
   providedIn: 'root',
 })
 export class MemberService {
-  private apiUrl = 'https://localhost:7011/api/Member';
+  private apiUrl = `${environment.apiUrl}/Member`;
   private currentProfileSubject = new BehaviorSubject<CurrentMemberProfile | null>(null);
   currentProfile$ = this.currentProfileSubject.asObservable();
 
@@ -195,7 +196,7 @@ export class MemberService {
     return this.http.get<OrderList[]>(`${this.apiUrl}/GetOrder`);
   }
   getOwnerRecentOrders() {
-    return this.http.get<OwnerOrderList[]>('https://localhost:7011/api/OwnerOrder/recent');
+    return this.http.get<OwnerOrderList[]>(`${environment.apiUrl}/OwnerOrder/recent`);
   }
   getProfile() {
     return this.http.get<any>(`${this.apiUrl}/GetProfile`).pipe(

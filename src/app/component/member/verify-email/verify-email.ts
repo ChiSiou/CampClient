@@ -25,20 +25,17 @@ export class VerifyEmail implements OnInit {
 
     if (!userId || !token) {
       this.message = '驗證連結錯誤';
-      this.success = false;
       return;
     }
 
     this.memberService.verifyEmail({ userId, token }).subscribe({
       next: () => {
-      // 驗證成功後直接導回登入頁
-      this.router.navigate(['/login'], {
-        queryParams: { verified: 'success' }
-      });
+        this.router.navigate(['/login'], {
+          queryParams: { verified: 'success' }
+        });
       },
       error: (err) => {
         this.message = err.error?.message || '信箱驗證失敗，請重新寄送驗證信';
-        this.success = false;
       }
     });
   }

@@ -7,6 +7,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { SPostInteract } from '../../forum/service/sPostInteract';
+import { environment } from '../../../../environments/environment';
 
 interface LikedCampDto {
   campId: number;
@@ -98,7 +99,7 @@ export class Profile {
       return;
     }
 
-    const campLikes$ = this.http.get<LikedCampDto[]>('https://localhost:7011/api/CampLike').pipe(
+    const campLikes$ = this.http.get<LikedCampDto[]>(`${environment.apiUrl}/CampLike`).pipe(
       map((items) => (Array.isArray(items) ? items.length : 0)),
       catchError(() => of(0)),
     );

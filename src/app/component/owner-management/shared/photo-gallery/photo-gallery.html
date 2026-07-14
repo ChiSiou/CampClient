@@ -19,10 +19,12 @@
           <span class="cover-badge">封面</span>
         }
         <div class="photo-actions">
+          <!-- 一定要標 type="button"：這個元件會被放進各編輯頁，如果落在 <form> 裡，
+               沒標 type 的按鈕預設是 submit，按「刪除照片」會直接觸發整個表單的儲存+跳頁 -->
           @if (!photo.isCover) {
-            <button (click)="setCover(photo.id)" class="btn-set-cover">設為封面</button>
+            <button type="button" (click)="setCover(photo.id)" class="btn-set-cover">設為封面</button>
           }
-          <button (click)="deletePhoto(photo.id)" class="btn-delete">刪除</button>
+          <button type="button" (click)="deletePhoto(photo.id)" class="btn-delete">刪除</button>
         </div>
       </div>
     }

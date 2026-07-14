@@ -65,7 +65,6 @@ export class AddPost {
     { id: 7, name: '露營裝備' },
     { id: 8, name: '天氣分享' },
     { id: 9, name: '抱怨專區' },
-    { id: 10, name: '日常分享' },
   ];
 
   // 使用者傳圖
@@ -99,6 +98,19 @@ export class AddPost {
       });
       this.router.navigate(['login']);
     }
+  }
+
+  fillSamplePost() {
+    this.new_title = '週末露營心得分享：新手也能輕鬆上手';
+    this.new_mainContent =
+      '這次帶著家人到營地度過了愉快的兩天一夜，天氣非常好，晚上還能看到滿天星星。\n' +
+      '想跟大家分享一些新手露營的小技巧：\n' +
+      '1. 提前確認營地是否有水源和電源\n' +
+      '2. 帳篷選擇雙層設計比較防水\n' +
+      '3. 記得攜帶足夠的保暖衣物\n' +
+      '希望對大家有幫助，也歡迎分享你們的露營經驗！';
+    this.new_postCategoryId = this.categories[0].id;
+    this.new_postTag = '露營,新手教學,心得分享';
   }
 
   onSelect(event: UploadEvent) {

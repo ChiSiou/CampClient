@@ -467,3 +467,15 @@
   background: #d1d5db;
   cursor: not-allowed;
 }
+
+/* ===== RWD：手機版確認按鈕改滿版，比較好點（Grid 排版本身已用 auto-fit/auto-fill 會自動reflow，不用額外處理） ===== */
+@media (max-width: 600px) {
+  .zone-detail__footer {
+    justify-content: stretch;
+  }
+
+  .confirm-btn {
+    width: 100%;
+    padding: 14px 28px;
+  }
+}

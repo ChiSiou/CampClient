@@ -17,7 +17,9 @@
 .photo-grid {
   display: grid;
   grid-template-columns: 3fr 2fr;
-  grid-template-rows: 1fr;
+  /* 1fr 隱含 minmax(auto, 1fr)，內容（照片）會把格子撐到超過 480px；
+     改成 minmax(0, 1fr) 才會真的鎖死在 480px，不會被內容撐開 */
+  grid-template-rows: minmax(0, 1fr);
   height: 480px;
   gap: 6px;
   margin-top: 24px;
@@ -38,6 +40,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* Grid 子項目預設 min-height: auto，內容（照片）會把它撐到超過 100% 高度，
+     被 .photo-grid 的 overflow: hidden 裁掉，連帶切到裡面的查看更多按鈕 */
+  min-height: 0;
   gap: 6px;
 }
 
@@ -72,8 +77,9 @@
 
 .view-all-btn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  /* 用 18px（大於 .photo-grid 的 border-radius: 16px），確保不會被外層圓角裁切角落 */
+  bottom: 18px;
+  right: 18px;
   background: white;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
@@ -409,6 +415,48 @@
     grid-template-columns: 1fr;
     gap: 24px;
   }
+
+  /* 手機版塞不下「左大圖+右 2x2 小圖」的格宮排版，只留封面圖，
+     .photo-grid 本身還是有 (click)="openLightbox(0)"，點下去照樣能看全部照片 */
+  .photo-grid {
+    grid-template-columns: 1fr;
+    height: 260px;
+  }
+
+  .photo-right {
+    display: none;
+  }
+
+  .camp-info__name {
+    font-size: 22px;
+  }
+
+  .explore-map {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-grid {
+    height: 220px;
+    border-radius: 12px;
+    margin-top: 16px;
+  }
+
+  .camp-info__meta {
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .facility-list {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* Section1（基本資訊/注意事項）跟 Section2（甘特圖）中間完全沒有間距，
+   兩個 .container 緊貼在一起，加一段呼吸空間 */
+.gantt-section {
+  margin-top: 40px;
 }
 
 /* ===== 甘特圖預留 ===== */

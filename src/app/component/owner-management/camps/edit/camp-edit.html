@@ -85,10 +85,6 @@
       </div>
     </div>
 
-    @if (campgroundId) {
-    <app-photo-gallery referenceType="campground" [referenceId]="campgroundId" />
-    }
-
     @if (tagsByCategory.length > 0) {
     <div class="form-group">
       <label>標籤</label>
@@ -116,6 +112,11 @@
     </div>
   </form>
 
+  <!-- 照片管理放在 form 外面（跟 zone-edit / site-edit 一致）：
+       它有自己的即時儲存邏輯，放進 form 裡按鈕會誤觸整個表單的 submit -->
+  @if (campgroundId) {
+    <app-photo-gallery referenceType="campground" [referenceId]="campgroundId" />
+  }
 
   }
 </div>

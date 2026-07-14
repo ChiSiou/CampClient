@@ -209,3 +209,43 @@
   font-weight: 400;
   color: #717171;
 }
+
+/* ===== RWD：手機版改上下堆疊——地圖固定高度在上，清單自然捲動在下 =====
+   桌機版靠 .search-page 固定 height + list 內部捲動做出「地圖 sticky 不跟著捲」的效果，
+   手機螢幕太窄擠不下 40%/60% 雙欄，改成整頁一起捲動 */
+@media (max-width: 900px) {
+  .search-page {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 80px);
+  }
+
+  .search-page__list {
+    width: 100%;
+    overflow-y: visible;
+    order: 2;
+    padding: 16px;
+  }
+
+  .search-page__map {
+    width: 100%;
+    height: 300px;
+    position: relative;
+    order: 1;
+  }
+
+  .search-page__toolbar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-page__map {
+    height: 220px;
+  }
+
+  .search-page__sort-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

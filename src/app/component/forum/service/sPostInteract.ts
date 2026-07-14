@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IPostInteract } from '../interfaces/IPostInteract';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SPostInteract {
-  private apiUrl = 'https://localhost:7011/api/APIPostInteract';
+  private apiUrl = `${environment.apiUrl}/APIPostInteract`;
 
   constructor(
     private http: HttpClient,

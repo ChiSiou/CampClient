@@ -101,7 +101,7 @@ export class ZoneEdit implements AfterViewInit, OnDestroy {
     const center: L.LatLngExpression = lat && lng ? [lat, lng] : [23.5, 121.0];
     // 改用國土測繪中心（NLSC）臺灣正射影像，比 Esri 全球衛星圖在台灣鄉間/山區清晰很多
     // （實測驗證：Esri 在這類地形大多只到 18 級、超過就是固定的無資料佔位圖；NLSC 到 20 級仍是真實影像）。
-    this.map = L.map(this.mapContainer.nativeElement, { maxZoom: 21 }).setView(center, lat ? 15 : 7);
+    this.map = L.map(this.mapContainer.nativeElement, { maxZoom: 21 }).setView(center, lat ? 18 : 7);
     L.tileLayer('https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}', {
       attribution: 'Tiles © 國土測繪中心 NLSC',
       maxZoom: 21,

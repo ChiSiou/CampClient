@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CampManagementService } from '../../../services/camp-management.service';
 import { CampgroundListItemDto, CampgroundStatus } from '../../../interfaces/camp-management.interface';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-camps',
@@ -14,7 +15,7 @@ import { CampgroundListItemDto, CampgroundStatus } from '../../../interfaces/cam
 export class Camps implements OnInit {
   campgrounds: CampgroundListItemDto[] = [];
   CampgroundStatus = CampgroundStatus;
-  apiHost = 'https://localhost:7011';
+  apiHost = environment.apiUrl.replace('/api', '');
 
   searchName = '';
   searchStatus = '';
@@ -36,6 +37,14 @@ export class Camps implements OnInit {
       const statusMatch = this.searchStatus === '' || c.status === +this.searchStatus;
       return nameMatch && statusMatch;
     });
+  }
+
+  // 換 R2 之後 coverImageUrl 可能已經是完整網址（https://pub-xxxx.r2.dev/...），
+  // 舊資料才是後端本機相對路徑（/uploads/...），兩種都要處理，不能無條件接 apiHost
+  resolveImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return this.apiHost + url;
   }
 
   toggleStatus(id: number, currentStatus: number) {
