@@ -2,6 +2,11 @@
   <div class="container">
     <h1 class="page-title">發表文章</h1>
 
+    <div class="sample-post-actions">
+      <p-button label="範例貼文" icon="pi pi-file-edit" size="small" [outlined]="true"
+        (onClick)="fillSamplePost()"></p-button>
+    </div>
+
     <form #form="ngForm" (ngSubmit)="onSubmit(postForm)" class="add-post-form">
 
       <div class="field">

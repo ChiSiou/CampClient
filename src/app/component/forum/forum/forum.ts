@@ -29,7 +29,7 @@ export class Forum implements OnInit {
   likeCountMap: Record<number, number> = {};
   // commentCountMap: Record<number, number> = {};
 
-  categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區', '日常分享'];
+  categories = ['全部', '北部專區', '中部專區', '南部專區', '東部專區', '影音圖輯', '新手教學', '露營裝備', '天氣分享', '抱怨專區'];
 
   searchPost = "";
 
