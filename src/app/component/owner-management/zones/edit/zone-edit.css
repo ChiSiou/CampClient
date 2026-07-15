@@ -40,3 +40,11 @@
 
 .tag-category { margin-bottom: 10px; }
 .tag-category-name { font-size: 0.8rem; color: #888; margin-bottom: 6px; }
+@media (max-width: 700px) {
+  .zone-form-page { max-width: none; padding: 20px 16px 40px; }
+  .page-header, .form-row { align-items: stretch; flex-direction: column; gap: 12px; }
+  .form-group input, .form-group textarea { min-height: 44px; box-sizing: border-box; }
+  .map-container { height: 360px; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions button { width: 100%; min-height: 44px; }
+}

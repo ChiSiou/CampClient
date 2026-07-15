@@ -344,32 +344,11 @@
   line-height: 1;
   padding: 0;
 }
-
-@media (max-width: 480px) {
-  .camp-add-page {
-    padding: 16px;
-  }
-
-  .step-label {
-    font-size: 0.68rem;
-  }
-
-  .form-row {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .map-container {
-    height: 320px;
-  }
-
-  .form-actions {
-    flex-wrap: wrap;
-  }
-
-  .form-actions button,
-  .form-actions .btn-submit {
-    flex: 1;
-    min-width: 100px;
-  }
+@media (max-width: 700px) {
+  .camp-add-page { max-width: none; padding: 20px 16px 40px; }
+  .form-row, .area-row, .highlight-input-row { flex-direction: column; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions button, .btn-locate { width: 100%; min-height: 44px; }
+  .map-container { height: 360px; }
+  .step-label { font-size: 11px; }
 }

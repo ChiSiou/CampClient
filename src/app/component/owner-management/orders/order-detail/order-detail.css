@@ -203,3 +203,25 @@
   text-align: right;
   color: #155724;
 }
+
+@media (max-width: 700px) {
+  .order-detail-page { padding: 20px 16px 40px; max-width: none; }
+  .page-header { gap: 14px; }
+  .info-card { padding: 14px; }
+  .info-row { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .info-label { width: auto; }
+  .section { overflow: visible; }
+  .detail-table, .detail-table tbody, .detail-table tr, .detail-table td { display: block; width: 100%; box-sizing: border-box; }
+  .detail-table { border: 0; }
+  .detail-table thead { display: none; }
+  .detail-table tbody { display: grid; gap: 12px; }
+  .detail-table tr { padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fff; }
+  .detail-table td { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 10px; padding: 7px 0; border: 0; overflow-wrap: anywhere; }
+  .detail-table td::before { content: attr(data-label); color: #777; font-size: 13px; font-weight: 700; }
+  .btn-back, .btn-cancel-order { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .btn-cancel-order { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .page-header { align-items: stretch; flex-direction: column; }
+}

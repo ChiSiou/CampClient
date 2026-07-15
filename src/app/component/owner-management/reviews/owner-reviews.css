@@ -126,3 +126,15 @@
   font-size: 0.85rem;
   color: #555;
 }
+
+@media (max-width: 700px) {
+  .reviews-page { padding: 20px 16px 40px; max-width: none; }
+  .page-header { align-items: stretch; flex-direction: column; gap: 12px; }
+  .camp-select { width: 100%; min-width: 0; min-height: 44px; }
+  .review-card { padding: 14px; }
+  .review-date { margin-left: 0; width: 100%; }
+  .review-images { overflow-x: auto; }
+  .owner-reply-title { flex-direction: column; gap: 4px; }
+  .review-actions { align-items: stretch; flex-direction: column; }
+  .review-actions button { min-height: 44px; }
+}

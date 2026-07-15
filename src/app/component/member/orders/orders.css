@@ -497,3 +497,58 @@
     justify-content: space-between;
   }
 }
+
+@media (max-width: 900px) {
+  .orders-page {
+    padding: 28px 24px 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .orders-page {
+    padding: 22px 16px 40px;
+  }
+
+  .orders-header h2 {
+    font-size: 27px;
+  }
+
+  .orders-tabs {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .tab {
+    flex: 1 1 calc(50% - 8px);
+    min-height: 44px;
+    padding-inline: 16px;
+  }
+
+  .order-card,
+  .empty-orders {
+    border-radius: 12px;
+  }
+
+  .camp-img {
+    height: 180px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    min-width: calc(50% - 6px);
+    min-height: 44px;
+  }
+
+  .orders-pagination {
+    gap: 8px;
+  }
+
+  .page-btn {
+    min-width: 0;
+  }
+}

@@ -509,3 +509,68 @@
     justify-content: space-between;
   }
 }
+
+@media (max-width: 900px) {
+  .likes-page {
+    padding: 28px 24px 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .likes-page {
+    padding: 22px 16px 40px;
+  }
+
+  .likes-header h2 {
+    font-size: 27px;
+  }
+
+  .likes-tabs {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .tab {
+    flex: 1 1 calc(50% - 8px);
+    min-height: 44px;
+    padding-inline: 16px;
+  }
+
+  .like-card,
+  .empty-orders {
+    border-radius: 12px;
+  }
+
+  .camp-img {
+    height: 180px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    min-width: calc(50% - 6px);
+    min-height: 44px;
+  }
+
+  .post-meta,
+  .post-stats {
+    flex-wrap: wrap;
+  }
+
+  .post-date {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .likes-pagination {
+    gap: 8px;
+  }
+
+  .page-btn {
+    min-width: 0;
+  }
+}

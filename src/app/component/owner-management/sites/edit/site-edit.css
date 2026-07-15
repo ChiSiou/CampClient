@@ -29,3 +29,11 @@
 .accom-desc { color: #777; font-size: 0.82rem; }
 select { border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; font-size: 0.95rem; outline: none; }
 select:focus { border-color: #4a7c59; }
+@media (max-width: 600px) {
+  .site-form-page { max-width: none; padding: 20px 16px 40px; }
+  .page-header { align-items: stretch; flex-direction: column; gap: 12px; }
+  .form-group input, .form-group textarea { min-height: 44px; box-sizing: border-box; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions button { width: 100%; min-height: 44px; }
+  .accom-item { align-items: flex-start; }
+}

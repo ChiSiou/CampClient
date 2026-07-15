@@ -69,20 +69,20 @@
         <tbody>
           @for (d of order.details; track d.orderDetailId) {
             <tr>
-              <td>{{ d.itemType === 'Campsite' ? '營位' : '裝備' }}</td>
-              <td>
+              <td data-label="類型">{{ d.itemType === 'Campsite' ? '營位' : '裝備' }}</td>
+              <td data-label="項目">
                 @if (d.itemType === 'Campsite') {
                   <span>{{ d.zoneName }} / {{ d.siteNumber }}</span>
                 } @else {
                   <span>{{ d.equipmentName }}</span>
                 }
               </td>
-              <td>{{ d.checkInDate ?? '-' }}</td>
-              <td>{{ d.checkOutDate ?? '-' }}</td>
-              <td>{{ d.quantity }}</td>
-              <td>NT$ {{ d.price | number }}</td>
-              <td>{{ d.actualRefund != null ? 'NT$ ' + (d.actualRefund | number) : '-' }}</td>
-              <td>
+              <td data-label="入住日期">{{ d.checkInDate ?? '-' }}</td>
+              <td data-label="退出日期">{{ d.checkOutDate ?? '-' }}</td>
+              <td data-label="數量">{{ d.quantity }}</td>
+              <td data-label="金額">NT$ {{ d.price | number }}</td>
+              <td data-label="退款金額">{{ d.actualRefund != null ? 'NT$ ' + (d.actualRefund | number) : '-' }}</td>
+              <td data-label="狀態">
                 <span [class]="'detail-status ' + detailStatusClass(d.status)">
                   {{ detailStatusLabel(d.status) }}
                 </span>
@@ -123,12 +123,12 @@
           <tbody>
             @for (item of refundResult.items; track item.orderDetailId) {
               <tr>
-                <td>{{ item.itemName }}</td>
-                <td>{{ item.checkInDate }}</td>
-                <td>{{ item.daysBeforeCheckIn }} 天</td>
-                <td>{{ item.isTyphoonOverride ? '颱風天災全額退款' : item.matchedTierName }}</td>
-                <td>{{ item.isRefundable ? '是' : '否' }}</td>
-                <td>NT$ {{ item.refundAmount | number }}</td>
+                <td data-label="項目">{{ item.itemName }}</td>
+                <td data-label="入住日期">{{ item.checkInDate }}</td>
+                <td data-label="提前天數">{{ item.daysBeforeCheckIn }} 天</td>
+                <td data-label="退款級距">{{ item.isTyphoonOverride ? '颱風天災全額退款' : item.matchedTierName }}</td>
+                <td data-label="可退款">{{ item.isRefundable ? '是' : '否' }}</td>
+                <td data-label="退款金額">NT$ {{ item.refundAmount | number }}</td>
               </tr>
             }
           </tbody>
@@ -153,10 +153,10 @@
           <tbody>
             @for (log of order.paymentLogs; track log.logId) {
               <tr>
-                <td>{{ logActionLabel(log.actionType) }}</td>
-                <td class="txn-id">{{ log.transactionId }}</td>
-                <td>NT$ {{ log.amount | number }}</td>
-                <td>{{ log.refundReason ?? '-' }}</td>
+                <td data-label="類型">{{ logActionLabel(log.actionType) }}</td>
+                <td data-label="交易編號" class="txn-id">{{ log.transactionId }}</td>
+                <td data-label="金額">NT$ {{ log.amount | number }}</td>
+                <td data-label="退款原因">{{ log.refundReason ?? '-' }}</td>
               </tr>
             }
           </tbody>

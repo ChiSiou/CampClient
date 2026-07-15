@@ -225,7 +225,7 @@ export class HeaderWMenu implements OnDestroy {
       this.routes.navigate(['/login']);
     }
   }
-  switchRole(roleName: string) {
+  switchRole(roleName: string, destination?: string) {
     this.memberservice.switchRole(roleName).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.token);
@@ -238,7 +238,9 @@ export class HeaderWMenu implements OnDestroy {
         this.notificationService.refreshUnreadCount().subscribe();
         this.loadProfile();
 
-        if (res.activeRole === 'Owner') {
+        if (res.activeRole === roleName && destination) {
+          this.routes.navigateByUrl(destination);
+        } else if (res.activeRole === 'Owner') {
           this.routes.navigate(['/ownerCenter']);
         } else if (res.activeRole === 'User') {
           this.routes.navigate(['/member-center']);

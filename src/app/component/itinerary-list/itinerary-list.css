@@ -459,3 +459,55 @@
   color: #2f8f46;
   font-size: 14px;
 }
+
+@media (max-width: 560px) {
+  .itinerary-page {
+    padding: 22px 16px 40px;
+  }
+
+  .itinerary-header h1 {
+    font-size: 28px;
+  }
+
+  .summary-row {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .summary-card { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
+
+  .image-wrap {
+    height: 180px;
+  }
+
+  .trip-actions,
+  .refund-panel__actions {
+    flex-direction: column;
+  }
+
+  .trip-btn,
+  .refund-panel__actions .trip-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .refund-panel {
+    padding: 14px 12px;
+  }
+
+  .refund-panel__item label {
+    align-items: flex-start;
+  }
+
+  .refund-panel__calc-row,
+  .refund-panel__calc-total {
+    gap: 16px;
+  }
+
+  .refund-panel__calc-row span:last-child,
+  .refund-panel__calc-total span:last-child {
+    text-align: right;
+  }
+}
