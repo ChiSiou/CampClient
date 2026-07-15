@@ -52,6 +52,10 @@
   font-size: 13px;
 }
 
+.sidebar-toggle {
+  display: none;
+}
+
 
 .owner-sidebar-profile {
   display: flex;
@@ -515,12 +519,39 @@
   }
 
   .sidebar-logo {
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
+  .sidebar-toggle {
+    display: block;
+    padding: 8px 14px;
+    border: 1px solid #d9e5d2;
+    border-radius: 999px;
+    background: #f8faf6;
+    color: #4f753b;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* 選單預設收起來，避免手機上一進頁面就被整條選單擋住內容，展開/收合由上面的按鈕控制 */
   .sidebar-menu {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(2, 1fr);
+    margin-top: 16px;
+  }
+
+  .owner-sidebar.sidebar-open .sidebar-menu {
+    display: grid;
+  }
+
+  .sidebar-menu button:hover {
+    transform: translateY(-2px);
   }
 
   .sidebar-menu button:hover {

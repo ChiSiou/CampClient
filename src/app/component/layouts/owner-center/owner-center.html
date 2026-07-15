@@ -1,14 +1,17 @@
 <div class="owner-center-page">
   <div class="owner-layout">
-    <aside class="owner-sidebar">
+    <aside class="owner-sidebar" [class.sidebar-open]="sidebarOpen">
       <div class="sidebar-logo">
         <h2>營主中心</h2>
         <p>Owner Center</p>
+        <button type="button" class="sidebar-toggle" (click)="toggleSidebar()">
+          {{ sidebarOpen ? '✕ 關閉選單' : '☰ 選單' }}
+        </button>
       </div>
 
 
 
-      <nav class="sidebar-menu">
+      <nav class="sidebar-menu" (click)="sidebarOpen = false">
         <button class="active" routerLink="/ownerCenter/profile">
           <span>🏠</span>
           營主資料

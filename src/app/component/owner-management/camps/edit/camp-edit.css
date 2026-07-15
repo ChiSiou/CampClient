@@ -443,3 +443,28 @@
   color: #888;
   margin-bottom: 6px;
 }
+
+@media (max-width: 480px) {
+  .camp-edit-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .form-actions button {
+    flex: 1;
+    min-width: 100px;
+  }
+}

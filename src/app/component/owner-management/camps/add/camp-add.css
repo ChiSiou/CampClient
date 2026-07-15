@@ -344,3 +344,32 @@
   line-height: 1;
   padding: 0;
 }
+
+@media (max-width: 480px) {
+  .camp-add-page {
+    padding: 16px;
+  }
+
+  .step-label {
+    font-size: 0.68rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .map-container {
+    height: 320px;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .form-actions button,
+  .form-actions .btn-submit {
+    flex: 1;
+    min-width: 100px;
+  }
+}

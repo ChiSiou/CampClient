@@ -15,6 +15,7 @@ export class OwnerCenter {
   name = '';
   ownerProfilePhotoUrl = '';
   imageLoadFailed = false;
+  sidebarOpen = false;
 
   private readonly apiOrigin = environment.apiUrl.replace('/api', '');
   private profileSubscription?: Subscription;
@@ -74,6 +75,10 @@ export class OwnerCenter {
 
   get avatarInitial(): string {
     return (this.name || 'O').trim().charAt(0).toUpperCase();
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   contactCustomer(customerId: number, customerName: string) {
