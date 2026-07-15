@@ -40,6 +40,9 @@ export class Search implements OnInit, AfterViewInit {
   totalCount = 0;
   loading = true;
 
+  // 手機版限定：地圖/列表全螢幕切換（桌機版兩欄並排永遠都看得到，這個狀態不影響桌機版）
+  mobileView: 'list' | 'map' = 'list';
+
   private readonly apiHost = environment.apiUrl.replace('/api', '');
 
   pageSize = 20;
@@ -125,7 +128,24 @@ export class Search implements OnInit, AfterViewInit {
     this.map.on('moveend', () => this.onMapMoveEnd());
   }
 
+  // 手機版切到地圖模式時，地圖容器在「列表模式」下是 display:none（寬高是 0），
+  // Leaflet 不會自動偵測到容器變回可見了，一定要手動呼叫 invalidateSize() 重新量一次尺寸，
+  // 不然地圖會定位錯誤、只顯示左上角一小塊、拖曳範圍也不對。
+  toggleMobileView() {
+    this.mobileView = this.mobileView === 'list' ? 'map' : 'list';
+    if (this.mobileView === 'map') {
+      setTimeout(() => this.map?.invalidateSize(), 0);
+    }
+  }
+
   private onMapMoveEnd() {
+    // 手機版「列表模式」下地圖容器是 display:none（寬高=0），Leaflet 初始化時
+    // 對著這種零尺寸容器算出來的 bounds 是無效值（範圍會縮成一個點）。
+    // 如果照樣把這個範圍寫進網址查詢參數，會把搜尋範圍鎖死成幾乎 0 面積，
+    // 搜尋結果自然變成 0 筆——這不是使用者真的在操作地圖，直接跳過不處理。
+    const size = this.map.getSize();
+    if (size.x === 0 || size.y === 0) return;
+
     const bounds = this.map.getBounds();
 
     this.router.navigate([], {

@@ -92,6 +92,16 @@ export class SearchBar implements OnInit, OnDestroy {
     // 數量歸零時要明確傳 null，merge 模式才會清掉網址上舊的 requirements
     params['requirements'] = requirements.length > 0 ? JSON.stringify(requirements) : null;
 
+    // 使用者用搜尋列重新指定地區/條件，代表要重新搜，不該再被「地圖之前被拖到哪裡」卡住——
+    // 網址上如果還留著上一次地圖移動時寫入的經緯度範圍，merge 模式不會自動清掉它，
+    // 會變成「文字搜南投，但範圍還鎖在別的地方」，明明有符合的營區卻搜不到。
+    // 明確清成 null 才能真正蓋掉舊值，讓這次搜尋不受地圖殘留範圍限制。
+    params['southWestLat'] = null;
+    params['southWestLng'] = null;
+    params['northEastLat'] = null;
+    params['northEastLng'] = null;
+    params['zoom'] = null;
+
     this.router.navigate(['/search'], { queryParams: params, queryParamsHandling: 'merge' });
   }
 

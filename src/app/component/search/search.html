@@ -1,28 +1,31 @@
-<div class="search-page">
+<div class="search-page" [class.search-page--mobile-map]="mobileView === 'map'">
 
   <!-- 左側：搜尋 Bar + 篩選按鈕 + 卡片清單 -->
   <div class="search-page__list">
 
     <div class="search-page__toolbar">
       <app-search-bar [initial]="searchBarInitial" [compact]="true" class="search-page__search-bar" />
-      <app-search-filters
-        [initialTagIds]="initialTagIds"
-        [initialFacilityIds]="initialFacilityIds"
-        [initialMinElevation]="initialMinElevation"
-        [initialMinRating]="initialMinRating"
-      />
     </div>
 
     <div class="search-page__sort-row">
       <div class="search-page__count">共 {{ totalCount }} 筆結果</div>
-      <p-select
-        [options]="sortOptions"
-        [(ngModel)]="sortBy"
-        (onChange)="onSortChange()"
-        optionLabel="label"
-        optionValue="value"
-        class="search-page__sort-select"
-      />
+      <div class="search-page__sort-actions">
+        <app-search-filters
+          class="search-page__filters"
+          [initialTagIds]="initialTagIds"
+          [initialFacilityIds]="initialFacilityIds"
+          [initialMinElevation]="initialMinElevation"
+          [initialMinRating]="initialMinRating"
+        />
+        <p-select
+          [options]="sortOptions"
+          [(ngModel)]="sortBy"
+          (onChange)="onSortChange()"
+          optionLabel="label"
+          optionValue="value"
+          class="search-page__sort-select"
+        />
+      </div>
     </div>
 
     @if (loading) {
@@ -55,5 +58,14 @@
   <div class="search-page__map">
     <div #mapContainer class="search-page__map-container"></div>
   </div>
+
+  <!-- 手機版限定：地圖/列表切換浮動按鈕（桌機版兩欄並排看得到，不需要這顆按鈕） -->
+  <button type="button" class="search-page__mobile-toggle" (click)="toggleMobileView()">
+    @if (mobileView === 'list') {
+      <i class="pi pi-map"></i> 地圖
+    } @else {
+      <i class="pi pi-list"></i> 列表
+    }
+  </button>
 
 </div>

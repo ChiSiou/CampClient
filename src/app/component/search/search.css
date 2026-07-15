@@ -27,11 +27,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .search-page__count {
   font-size: 14px;
   color: #717171;
+  white-space: nowrap;
+}
+
+/* 篩選 + 排序放同一排，兩個都是「篩選/排序結果」的控制項，放一起比較合理，
+   不要跟搜尋卡片放同一排（那邊已經放不下，見下方手機版註解） */
+.search-page__sort-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 :host ::ng-deep .search-page__sort-select {
@@ -210,40 +220,95 @@
   color: #717171;
 }
 
-/* ===== RWD：手機版改上下堆疊——地圖固定高度在上，清單自然捲動在下 =====
-   桌機版靠 .search-page 固定 height + list 內部捲動做出「地圖 sticky 不跟著捲」的效果，
-   手機螢幕太窄擠不下 40%/60% 雙欄，改成整頁一起捲動 */
+/* 桌機版：兩欄並排本來就同時看得到地圖跟列表，不需要這顆切換按鈕。
+   這條規則一定要寫在下面的 @media 區塊「之前」——CSS 同權重時後寫的贏，
+   如果寫在 media query 後面，會把手機版裡的 display:flex 蓋掉，導致按鈕永遠不顯示。 */
+.search-page__mobile-toggle {
+  display: none;
+}
+
+/* ===== RWD：手機版改成「地圖／列表」兩種全螢幕模式，仿 Airbnb 手機版搜尋體驗 =====
+   桌機版兩欄並排看得到地圖也看得到列表，手機螢幕太窄擠不下，
+   改成一次只專注做一件事：不是滑地圖找位置，就是滑卡片比較，
+   靠右下角浮動按鈕切換，不用兩個都塞在同一畫面裡各佔一半、兩邊都太小很難用。 */
 @media (max-width: 900px) {
   .search-page {
-    flex-direction: column;
-    height: auto;
-    min-height: calc(100vh - 80px);
+    position: relative;
+    height: calc(100vh - 80px);
+    overflow: hidden;
   }
 
+  /* 預設（列表模式）：卡片清單佔滿全螢幕、可捲動；地圖整個隱藏（不是縮小，是不存在畫面上） */
   .search-page__list {
     width: 100%;
-    overflow-y: visible;
-    order: 2;
+    height: 100%;
+    overflow-y: auto;
     padding: 16px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .search-page__map {
+    display: none;
+  }
+
+  /* 地圖模式（.search-page--mobile-map）：反過來，地圖佔滿全螢幕、列表整個隱藏 */
+  .search-page--mobile-map .search-page__list {
+    display: none;
+  }
+
+  .search-page--mobile-map .search-page__map {
+    display: block;
     width: 100%;
-    height: 300px;
-    position: relative;
-    order: 1;
+    height: 100%;
   }
 
   .search-page__toolbar {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  /* 篩選+排序這排空間有限，「共 N 筆結果」文字縮短、按鈕群不換行擠成一團 */
+  .search-page__sort-row {
+    flex-wrap: nowrap;
+  }
+
+  .search-page__sort-actions {
+    flex-shrink: 0;
+  }
+
+  :host ::ng-deep .search-page__sort-select {
+    min-width: 0;
+    width: 120px;
+  }
+
+  /* 浮動的地圖/列表切換按鈕：仿 Airbnb，深色藥丸按鈕固定在畫面下方置中 */
+  .search-page__mobile-toggle {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 500;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 999px;
+    background: #222;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+  }
+
+  .search-page__mobile-toggle:active {
+    background: #000;
   }
 }
 
 @media (max-width: 480px) {
-  .search-page__map {
-    height: 220px;
-  }
-
   .search-page__sort-row {
     flex-wrap: wrap;
     gap: 8px;
