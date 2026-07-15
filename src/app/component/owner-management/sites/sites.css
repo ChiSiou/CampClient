@@ -1,4 +1,21 @@
 .sites-page { padding: 24px; max-width: 960px; }
+@media (max-width: 700px) {
+  .sites-page { padding: 20px 16px 40px; max-width: none; }
+  .page-header { align-items: stretch; flex-direction: column; gap: 12px; }
+  table, tbody, tr, td { display: block; width: 100%; box-sizing: border-box; }
+  thead { display: none; }
+  tbody { display: grid; gap: 14px; }
+  tbody tr { padding: 14px; border: 1px solid #e0e0e0; border-radius: 12px; background: #fff; }
+  tbody td { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; padding: 7px 0; border: 0; }
+  tbody td::before { color: #777; font-size: 13px; font-weight: 700; }
+  tbody td:nth-child(1)::before { content: '營位編號'; }
+  tbody td:nth-child(2)::before { content: '容納人數'; }
+  tbody td:nth-child(3)::before { content: '狀態'; }
+  tbody td:nth-child(4)::before { content: '描述'; }
+  tbody td:nth-child(5)::before { content: '操作'; }
+  .desc { max-width: none; }
+  .header-actions, .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+}
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
 .page-header h2 { margin: 0 0 2px 0; font-size: 1.3rem; }
 .subtitle { font-size: 0.85rem; color: #888; display: block; }

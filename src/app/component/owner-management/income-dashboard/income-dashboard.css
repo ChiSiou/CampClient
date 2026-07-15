@@ -399,3 +399,29 @@ th {
     height: 120px;
   }
 }
+
+@media (max-width: 520px) {
+  .income-page { padding: 20px 16px 40px; }
+  .income-hero h1 { font-size: 28px; }
+  .summary-card, .chart-card, .table-card { padding: 16px; }
+  .table-scroll { overflow: visible; }
+  .table-scroll table, .table-scroll tbody, .table-scroll tr, .table-scroll td { display: block; width: 100%; min-width: 0; box-sizing: border-box; }
+  .table-scroll thead { display: none; }
+  .table-scroll tbody { display: grid; gap: 12px; }
+  .table-scroll tbody tr { padding: 12px; border: 1px solid #e2e8dd; border-radius: 10px; }
+  .table-scroll td { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; padding: 7px 0; border: 0; overflow-wrap: anywhere; }
+  .table-scroll td::before { color: #7b8875; font-size: 13px; font-weight: 700; }
+  .revenue-table td:nth-child(1)::before { content: '訂單編號'; }
+  .revenue-table td:nth-child(2)::before { content: '總額'; }
+  .revenue-table td:nth-child(3)::before { content: '平台費'; }
+  .revenue-table td:nth-child(4)::before { content: '淨收入'; }
+  .revenue-table td:nth-child(5)::before { content: '狀態'; }
+  .revenue-table td:nth-child(6)::before { content: '結算日'; }
+  .withdrawal-table td:nth-child(1)::before { content: '申請編號'; }
+  .withdrawal-table td:nth-child(2)::before { content: '金額'; }
+  .withdrawal-table td:nth-child(3)::before { content: '帳號'; }
+  .withdrawal-table td:nth-child(4)::before { content: '狀態'; }
+  .withdrawal-table td:nth-child(5)::before { content: '申請日'; }
+  .table-scroll .empty { display: block; }
+  .table-scroll .empty::before { display: none; }
+}

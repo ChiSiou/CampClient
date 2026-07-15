@@ -355,3 +355,55 @@ time {
     height: 40px;
   }
 }
+
+@media (max-width: 560px) {
+  .notification-page {
+    padding: 22px 16px 40px;
+  }
+
+  .notification-header h1 {
+    font-size: 28px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .summary-row {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .filter-chip { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
+
+  .notification-card {
+    grid-template-columns: 36px minmax(0, 1fr);
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .type-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .notification-card h2 {
+    font-size: 16px;
+  }
+
+  .notification-card p {
+    font-size: 14px;
+  }
+
+  .notification-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+}

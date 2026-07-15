@@ -589,3 +589,20 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 600px) {
+  .owner-sidebar { padding: 16px; }
+  .sidebar-logo { margin-bottom: 12px; }
+  .sidebar-logo p { display: none; }
+  .sidebar-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .sidebar-menu button {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 8px;
+    justify-content: center;
+  }
+}

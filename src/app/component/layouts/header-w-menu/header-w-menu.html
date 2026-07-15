@@ -12,7 +12,7 @@
         <a pButton label="野營社群" routerLink="forum" [text]="true" [rounded]="true" severity="secondary"></a>
         @if (activeUserRole === 'User') {
         @if (userrole.includes('Owner')) {
-        <p-button label="我的營地" (onClick)="switchRole('Owner')" [text]="true" [rounded]="true" severity="secondary">
+        <p-button label="我的營地" (onClick)="switchRole('Owner', '/ownerCenter/camps')" [text]="true" [rounded]="true" severity="secondary">
         </p-button>
         } @else {
         <p-button label="成為營主" routerLink="/owner-register" [text]="true" [rounded]="true" severity="secondary">
@@ -21,7 +21,7 @@
         }
 
         @if (activeUserRole === 'Owner' && userrole.includes('User')) {
-        <p-button label="我是使用者" (onClick)="switchRole('User')" [text]="true" [rounded]="true" severity="secondary">
+        <p-button label="我是使用者" (onClick)="switchRole('User', '/member-center')" [text]="true" [rounded]="true" severity="secondary">
         </p-button>
         }
       </nav>
@@ -55,6 +55,26 @@
         <p-menu #menu [model]="menuItems" [popup]="true" [appendTo]="'body'" />
       </div>
     </div>
+
+    <div class="mobile-role-bar" aria-label="角色切換">
+      <span class="mobile-role-bar__status">
+        目前身分：{{ activeUserRole === 'Owner' ? '營主' : activeUserRole === 'User' ? '會員' : '訪客' }}
+      </span>
+      @if (activeUserRole === 'User' && userrole.includes('Owner')) {
+        <button type="button" class="mobile-role-bar__button" (click)="switchRole('Owner', '/ownerCenter/camps')">
+          <i class="pi pi-building"></i><span>切換營主・我的營地</span>
+        </button>
+      } @else if (activeUserRole === 'User') {
+        <a class="mobile-role-bar__button" routerLink="/owner-register">
+          <i class="pi pi-plus-circle"></i><span>成為營主</span>
+        </a>
+      }
+      @if (activeUserRole === 'Owner' && userrole.includes('User')) {
+        <button type="button" class="mobile-role-bar__button" (click)="switchRole('User', '/member-center')">
+          <i class="pi pi-user"></i><span>切換為一般會員</span>
+        </button>
+      }
+    </div>
   </header>
 
   <main class="site-main">
@@ -79,7 +99,7 @@
 
       <div class="footer-col">
         <h4 class="footer-col__title">營主</h4>
-        <a class="footer-col__link" (click)="switchRole('owner-register')">成為營主</a>
+        <a class="footer-col__link" routerLink="/owner-register">成為營主</a>
         <a class="footer-col__link" routerLink="/host/resources">營主資源</a>
         <a class="footer-col__link" routerLink="forum">營主社群</a>
       </div>

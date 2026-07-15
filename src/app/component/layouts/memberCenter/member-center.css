@@ -265,4 +265,67 @@ body {
   .content {
     padding: 25px;
   }
+
+  .sidebar {
+    padding: 18px 20px 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .profile-card {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    column-gap: 14px;
+    padding-bottom: 16px;
+    text-align: left;
+  }
+
+  .avatar {
+    grid-row: 1 / span 2;
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-card h2 {
+    align-self: end;
+    margin: 0 0 4px;
+    font-size: 19px;
+  }
+
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .menu a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 11px 14px;
+    text-align: center;
+  }
+
+  .menu .logout {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar {
+    padding-inline: 16px;
+  }
+
+  .content {
+    padding: 22px 16px 40px;
+  }
+
+  .menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menu a {
+    padding-inline: 8px;
+  }
 }
