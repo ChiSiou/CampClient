@@ -15,6 +15,8 @@
   tbody td:nth-child(5)::before { content: '操作'; }
   .desc { max-width: none; }
   .header-actions, .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .actions { flex-direction: column; }
+  .actions > a, .actions > button { grid-column: 2; width: 100%; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
 }
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
 .page-header h2 { margin: 0 0 2px 0; font-size: 1.3rem; }
