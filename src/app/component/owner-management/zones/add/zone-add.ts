@@ -142,13 +142,15 @@ export class ZoneAdd implements AfterViewInit, OnDestroy {
 
   // Demo 用：帶入除了範圍（geoJson）以外的欄位，範圍要展示現場在地圖上打點畫多邊形
   fillDemoData() {
-    this.form.zoneName = 'A區 - 星空景觀區';
-    this.form.zoneDescription = '緊鄰觀景平台，視野開闊，適合夜間觀星，鄰近衛浴與炊事區。';
+    this.form.zoneName = 'A區 - 森林芬多精區';
+    this.form.zoneDescription = '區內林木環繞，早晚溫差大時可見薄霧繚繞，適合喜愛安靜山林氛圍的露友。';
     this.form.zoneType = 1;
     this.form.pricing.weekdayPrice = 600;
     this.form.pricing.weekendPrice = 900;
-    this.form.facilityIds = this.facilities.slice(0, 3).map(f => f.id);
-    this.form.tagIds = this.tags.slice(0, 3).map(t => t.id);
+    const wantedFacilities = ['停車場', '衛浴設備', '電源插座', '烤肉設施'];
+    this.form.facilityIds = this.facilities.filter(f => wantedFacilities.includes(f.facilityName)).map(f => f.id);
+    const wantedTags = ['森林系', '溪流旁', '親子適合', '寵物友善'];
+    this.form.tagIds = this.tags.filter(t => wantedTags.includes(t.tagName)).map(t => t.id);
   }
 
   get drawnPointCount() { return this.drawnPoints.length; }

@@ -92,6 +92,22 @@ export class SiteAdd implements OnInit {
     this.previewUrls.splice(i, 1);
   }
 
+  // Demo 用：一般營區帶入建議數量，園區住宿帶入編號＋描述；住宿類型視有無載入資料而定
+  fillDemoData() {
+    this.form.capacityPeople = 4;
+    if (this.zoneType === 1) {
+      this.quantity = 5;
+    } else {
+      this.form.siteNumber = 'A-01';
+      this.form.description = '視野開闊，鄰近衛浴，適合安靜露營。';
+    }
+    if (this.accomTypes.length > 0) {
+      this.form.accomTypeIds = this.zoneType === 2
+        ? [this.accomTypes[0].id]
+        : this.accomTypes.slice(0, 2).map(a => a.id);
+    }
+  }
+
   async submit() {
     if (this.zoneType !== 1 && !this.form.siteNumber.trim()) { this.error = '請填寫營位編號'; return; }
     if (this.zoneType === 1 && (!this.quantity || this.quantity < 1)) { this.error = '數量至少為 1'; return; }
