@@ -252,3 +252,52 @@ td {
   text-decoration: none;
   font-size: 0.9rem;
 }
+
+/* 768px 以下：表格橫排在手機上會被擠壓到操作按鈕滑不到，
+   改成每一列變成一張直向排列的卡片，不需要橫向捲動 */
+@media (max-width: 768px) {
+  .camps-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    border-bottom: 8px solid #f5f5f5;
+    padding: 10px 0;
+  }
+
+  td {
+    border-bottom: none;
+    padding: 6px 16px;
+  }
+
+  .name-cell {
+    flex-wrap: wrap;
+  }
+
+  .thumb,
+  .no-thumb {
+    width: 100px;
+    height: 70px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+}

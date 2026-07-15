@@ -100,3 +100,14 @@
   font-size: 0.78rem;
   cursor: pointer;
 }
+
+@media (max-width: 480px) {
+  .gallery-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .photo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
